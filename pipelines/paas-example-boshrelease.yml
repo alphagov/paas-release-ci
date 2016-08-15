@@ -1,0 +1,126 @@
+---
+groups:
+  - name: branch-manager
+    jobs:
+      - branch-manager
+
+  - name: all
+    jobs:
+      - build
+#      - tests
+#      - s3-upload
+#      - finalise
+
+resource_types:
+- name: git-branches
+  type: docker-image
+  source:
+    repository: cfcommunity/git-branches-resource
+
+- name: semver-iam
+  type: docker-image
+  source:
+    repository: governmentpaas/semver-resource
+
+resources:
+- name: concourse-branch-manager
+  type: git
+  source:
+    uri: https://github.com/alphagov/paas-concourse-branch-manager.git
+    branch: 115142265_do_not_verify
+    ignore_paths: [Gemfile, Gemfile.lock]
+
+- name: branch-manager-git-branches
+  type: git-branches
+  source:
+    uri: https://github.com/alphagov/paas-example-boshrelease.git
+    branch_regexp: ".*"
+    max_branches: 20
+
+- name: branch-manager-templates
+  type: git
+  source:
+    # Set this to the uri of your repo containing your resource/job templates for building branches
+    uri: https://github.com/alphagov/paas-release-ci.git
+    branch: 115142265_initial_pipeline
+    path: [templates/*]
+
+- name: branch-manager-config
+  type: git
+  source:
+    uri: https://github.com/alphagov/paas-release-ci.git
+    branch: 115142265_initial_pipeline
+
+- name: branch-manager-credentials
+  type: git
+  source:
+    uri: https://github.com/alphagov/paas-release-ci.git
+    branch: 115142265_initial_pipeline
+
+- name: paas-example-boshrelease
+  type: git-branches
+  source:
+    uri: https://github.com/alphagov/paas-example-boshrelease.git
+
+
+jobs:
+  - name: branch-manager
+    serial: true
+    plan:
+    - get: concourse-branch-manager
+      params: {depth: 20}
+      trigger: true
+    - get: git-branches
+      resource: branch-manager-git-branches
+      trigger: true
+    - get: template-repo
+      resource: branch-manager-templates
+      params: {depth: 20}
+      trigger: true
+    - get: config-repo
+      resource: branch-manager-config
+      params: {depth: 20}
+      trigger: true
+    - get: credentials-repo
+      resource: branch-manager-credentials
+      params: {depth: 20}
+      trigger: true
+    - task: manage-branches
+      file: concourse-branch-manager/tasks/manage-branches.yml
+      params:
+        BRANCH_RESOURCE_TEMPLATE: template-repo/templates/resources-template.yml.erb
+        BRANCH_JOB_TEMPLATE: template-repo/templates/job-template.yml.erb
+        PIPELINE_COMMON_RESOURCES_TEMPLATE: template-repo/templates/common-resources-template.yml.erb
+        CONCOURSE_URL: {{CONCOURSE_URL}}
+        CONCOURSE_USERNAME: {{CONCOURSE_USERNAME}}
+        CONCOURSE_PASSWORD: {{CONCOURSE_PASSWORD}}
+#        PIPELINE_LOAD_VARS_FROM_1: config-repo/examples/config/my-repo-branch-manager-config.yml
+#        PIPELINE_LOAD_VARS_FROM_2: credentials-repo/examples/credentials/my-repo-branch-manager-credentials.yml
+        PIPELINE_NAME: cbm-example-branches
+        GROUP_PER_BRANCH: true
+
+  - name: build
+    serial: true
+    plan:
+      - get: paas-example-boshrelease
+      - task: build-release
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              #repository: governmentpaas/bosh-cli
+              repository: governmentpaas/git-ssh
+
+          inputs:
+            - name: paas-example-boshrelease
+          run:
+            path: sh
+            args:
+            - -e
+            - -c
+            - |
+              cd paas-example-boshrelease
+              #git branch -a
+              cat git-branches.json
+              #ls -al
