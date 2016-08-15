@@ -8,7 +8,7 @@
 - name: semver-<%= branch_name %>
   type: semver-iam
   source:
-    bucket: <%= repo_name %>
+    bucket: <%= repo_name %>-state
     region_name: eu-west-1
     key: release-version-<%= branch_name %>
     initial_version: 0.0.0
