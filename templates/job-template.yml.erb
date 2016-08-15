@@ -1,5 +1,5 @@
 <% repo_name = File.basename(uri,'.git') %>
-- name: build-<%= repo_name %>-<%= branch_name %>
+- name: build-<%= branch_name %>
   plan:
   - get: release
     resource: <%= repo_name %>-<%= branch_name %>
@@ -12,9 +12,10 @@
         type: docker-image
         source:
           repository: governmentpaas/bosh-cli
-
       inputs:
         - name: release
+      outputs:
+        - name: release-tarball
       run:
         path: sh
         args:
@@ -24,4 +25,24 @@
           cd release
           NAME=$(awk '/^final_name/ {print $2}' config/final.yml)
           bosh create release --name $NAME --force --with-tarball --timestamp-version
+          cp dev_releases/$NAME/$NAME-*.tgz ../release-tarball
+
+- name: test-<%= branch_name %>
+  plan:
+  - task: test-release
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: governmentpaas/bosh-cli
+      inputs:
+        - name: release-tarball
+      run:
+        path: sh
+        args:
+        - -e
+        - -c
+        - |
+          cd release-tarball
           ls -al
