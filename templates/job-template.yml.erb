@@ -1,25 +1,31 @@
 <% repo_name = File.basename(uri,'.git') %>
-- name: s3-init
+- name: s3-init-<%= branch_name %>
   plan:
-    - task: s3-init
-      config:
-        platform: linux
-        image_resource:
-          type: docker-image
-          source:
-            repository: governmentpaas/curl-ssl
-          run:
-            path: sh
-            args:
-              - -e
-              - -c
-              - |
-                echo "Hello World"
+  - get: release
+    resource: <%= repo_name %>-<%= branch_name %>
+    params: {depth: 20}
+    trigger: true
+
+  - task: s3-init
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: governmentpaas/curl-ssl
+        run:
+          path: sh
+          args:
+            - -e
+            - -c
+            - |
+              echo "Hello World"
 
 - name: build-<%= branch_name %>
   plan:
   - get: release-tarballs
   - get: release
+    passed: ['s3-init-<%= branch_name %>']
     resource: <%= repo_name %>-<%= branch_name %>
     params: {depth: 20}
     trigger: true

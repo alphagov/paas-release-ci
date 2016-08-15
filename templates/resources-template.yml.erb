@@ -4,3 +4,11 @@
   source:
     uri: <%= uri %>
     branch: <%= branch_name %>
+
+- name: semver-<%= branch_name %>
+  type: semver-iam
+  source:
+    bucket: <%= repo_name %>
+    region_name: eu-west-1
+    key: release-version-<%= branch_name %>
+    initial_version: 0.0.0
