@@ -4,4 +4,10 @@
   source:
     bucket: <%= repo_name %>
     region_name: eu-west-1
-    regexp: (.*).tgz
+    regexp: ([0-9]+).tgz
+
+- name: paas-cf
+  type: git
+  source:
+    uri: https://github.com/alphagov/paas-cf.git
+    branch: master
