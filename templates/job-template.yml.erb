@@ -1,7 +1,7 @@
 <% repo_name = File.basename(uri,'.git') %>
 - name: build-<%= repo_name %>-<%= branch_name %>
   plan:
-  - get: my-repo-branch
+  - get: release
     resource: <%= repo_name %>-<%= branch_name %>
     params: {depth: 20}
     trigger: true
@@ -11,17 +11,17 @@
       image_resource:
         type: docker-image
         source:
-         #repository: governmentpaas/bosh-cli
-          repository: governmentpaas/git-ssh
+          repository: governmentpaas/bosh-cli
 
       inputs:
-        - name: my-repo-branch
+        - name: release
       run:
         path: sh
         args:
         - -e
         - -c
         - |
-          ls -al
-          cd paas-example-boshrelease
+          cd release
+          NAME=$(awk '/^final_name/ {print $2}' config/final.yml)
+          bosh create release --name $NAME --force --with-tarball --timestamp-version
           ls -al
