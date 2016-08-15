@@ -24,6 +24,7 @@
         args:
           - -e
           - -c
+          - -x
           - |
             NAME=$(awk '/^final_name/ {print $2}' release/config/final.yml)
 
