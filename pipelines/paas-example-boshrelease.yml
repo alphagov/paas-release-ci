@@ -73,6 +73,7 @@ jobs:
       file: concourse-branch-manager/tasks/manage-branches.yml
       params:
         BRANCH_RESOURCE_TEMPLATE: template-repo/templates/resources-template.yml.erb
+        BRANCH_RESOURCE_TYPES_TEMPLATE: template-repo/templates/resource_types-template.yml.erb
         BRANCH_JOB_TEMPLATE: template-repo/templates/job-template.yml.erb
         PIPELINE_COMMON_RESOURCES_TEMPLATE: template-repo/templates/common-resources-template.yml.erb
         CONCOURSE_URL: {{CONCOURSE_URL}}
