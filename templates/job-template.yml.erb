@@ -28,7 +28,7 @@
           - |
             NAME=$(awk '/^final_name/ {print $2}' release/config/final.yml)
 
-            sh -x paas-cf/concourse/scripts/s3init.sh <%= repo_name %> ${NAME}-0.tgz paas-cf/concourse/init_files/empty.tar.gz
+            sh -x paas-cf/concourse/scripts/s3init.sh piotr-dev-state ${NAME}-0.tgz paas-cf/concourse/init_files/empty.tar.gz
 
 - name: build-<%= branch_name %>
   plan:
