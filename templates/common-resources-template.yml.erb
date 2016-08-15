@@ -1,0 +1,7 @@
+<% repo_name = File.basename(uri,'.git') %>
+- name: s3-tarballs
+  type: s3-iam
+  source:
+    bucket: <%= repo_name %>
+    region_name: eu-west-1
+    regexp: (.*).tgz

@@ -26,9 +26,16 @@
           NAME=$(awk '/^final_name/ {print $2}' config/final.yml)
           bosh create release --name $NAME --force --with-tarball --timestamp-version
           cp dev_releases/$NAME/$NAME-*.tgz ../release-tarball
+      on_success:
+        put: s3-tarballs
+        params:
+          file: release-tarball/*.tgz
+          acl: public-read
 
 - name: test-<%= branch_name %>
   plan:
+  - get: s3-tarballs
+    passed: ['build-<%= branch_name %>']
   - task: test-release
     config:
       platform: linux
@@ -37,12 +44,12 @@
         source:
           repository: governmentpaas/bosh-cli
       inputs:
-        - name: release-tarball
+        - name: s3-tarballs
       run:
         path: sh
         args:
         - -e
         - -c
         - |
-          cd release-tarball
+          cd s3-tarballs
           ls -al
