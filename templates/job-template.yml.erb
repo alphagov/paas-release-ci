@@ -1,5 +1,5 @@
 <% repo_name = File.basename(uri,'.git') %>
-- name: <%= repo_name %>-<%= branch_name %>
+- name: build-<%= repo_name %>-<%= branch_name %>
   plan:
   - get: my-repo-branch
     resource: <%= repo_name %>-<%= branch_name %>
