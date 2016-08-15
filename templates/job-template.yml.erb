@@ -1,6 +1,7 @@
 <% repo_name = File.basename(uri,'.git') %>
 - name: build-<%= branch_name %>
   plan:
+  - get: release-tarballs
   - get: release
     resource: <%= repo_name %>-<%= branch_name %>
     params: {depth: 20}
@@ -15,7 +16,7 @@
       inputs:
         - name: release
       outputs:
-        - name: release-tarball
+        - name: release-tarballs
       run:
         path: sh
         args:
@@ -25,16 +26,16 @@
           cd release
           NAME=$(awk '/^final_name/ {print $2}' config/final.yml)
           bosh create release --name $NAME --force --with-tarball --timestamp-version
-          cp dev_releases/$NAME/$NAME-*.tgz ../release-tarball
+          cp dev_releases/$NAME/$NAME-*.tgz ../release-tarballs
       on_success:
-        put: s3-tarballs
+        put: release-tarballs
         params:
           file: release-tarball/*.tgz
           acl: public-read
 
 - name: test-<%= branch_name %>
   plan:
-  - get: s3-tarballs
+  - get: release-tarballs
     passed: ['build-<%= branch_name %>']
   - task: test-release
     config:
@@ -44,12 +45,12 @@
         source:
           repository: governmentpaas/bosh-cli
       inputs:
-        - name: s3-tarballs
+        - name: release-tarballs
       run:
         path: sh
         args:
         - -e
         - -c
         - |
-          cd s3-tarballs
+          cd release-tarballs
           ls -al
