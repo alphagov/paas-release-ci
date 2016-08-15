@@ -1,4 +1,5 @@
-- name: my-repo-branch-<%= branch_name %>
+<% repo_name = File.basename(uri,'.git') %>
+- name: <%= repo_name %>-<%= branch_name %>
   type: git
   source:
     uri: <%= uri %>

@@ -1,7 +1,8 @@
-- name: my-repo-branch-job-<%= branch_name %>
+<% repo_name = File.basename(uri,'.git') %>
+- name: <%= repo_name %>-<%= branch_name %>
   plan:
   - get: my-repo-branch
-    resource: my-repo-branch-<%= branch_name %>
+    resource: <%= repo_name %>-<%= branch_name %>
     params: {depth: 20}
     trigger: true
   - task: build-release
