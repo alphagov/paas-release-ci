@@ -59,11 +59,11 @@
           bosh create release --name $NAME --force --with-tarball --timestamp-version
           cp dev_releases/$NAME/$NAME-*.tgz ../release-tarballs
           ls -al ../release-tarballs
-      on_success:
-        put: release-tarballs
-        params:
-          file: release-tarballs/example-*.tgz
-          acl: public-read
+    on_success:
+      put: release-tarballs
+      params:
+        file: release-tarballs/*.tgz
+        acl: public-read
 
 - name: test-<%= branch_name %>
   plan:
