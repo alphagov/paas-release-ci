@@ -61,7 +61,7 @@
       on_success:
         put: release-tarballs
         params:
-          file: release-tarball/*.tgz
+          file: release-tarballs/*.tgz
           acl: public-read
 
 - name: test-<%= branch_name %>
