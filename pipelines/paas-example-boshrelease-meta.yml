@@ -65,7 +65,6 @@ jobs:
       trigger: true
     - get: config-repo
       params: {depth: 20}
-      trigger: true
     - get: credentials-repo
       params: {depth: 20}
       trigger: true
