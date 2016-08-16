@@ -69,6 +69,7 @@
   plan:
   - get: release-tarballs
     passed: ['build-<%= branch_name %>']
+    trigger: true
   - task: test-release
     config:
       platform: linux
