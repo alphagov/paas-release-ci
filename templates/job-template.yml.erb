@@ -58,10 +58,11 @@
           NAME=$(awk '/^final_name/ {print $2}' config/final.yml)
           bosh create release --name $NAME --force --with-tarball --timestamp-version
           cp dev_releases/$NAME/$NAME-*.tgz ../release-tarballs
+          ls -al ../release-tarballs
       on_success:
         put: release-tarballs
         params:
-          file: release-tarballs/*.tgz
+          file: release-tarballs/example-*.tgz
           acl: public-read
 
 - name: test-<%= branch_name %>
