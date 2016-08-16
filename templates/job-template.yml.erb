@@ -69,6 +69,10 @@
   plan:
   - get: release-tarballs
     passed: ['build-<%= branch_name %>']
+  - get: release
+    passed: ['build-<%= branch_name %>']
+    resource: <%= repo_name %>-<%= branch_name %>
+    params: {depth: 20}
     trigger: true
   - task: test-release
     config:
@@ -79,11 +83,57 @@
           repository: governmentpaas/bosh-cli
       inputs:
         - name: release-tarballs
+        - name: release
       run:
         path: sh
         args:
         - -e
         - -c
         - |
-          cd release-tarballs
+          cd release
+          echo "Running test..."
           ls -al
+- name: upload-<%= branch_name %>
+  plan:
+  - get: release-tarballs
+    passed: ['test-<%= branch_name %>']
+  - get: release
+    passed: ['test-<%= branch_name %>']
+    resource: <%= repo_name %>-<%= branch_name %>
+    params: {depth: 20}
+    trigger: true
+  - task: upload-release
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: governmentpaas/bosh-cli
+      inputs:
+        - name: release-tarballs
+        - name: release
+      run:
+        path: sh
+        args:
+        - -e
+        - -c
+        - |
+          cd release
+          meta_url="http://169.254.169.254/latest/meta-data/iam/security-credentials/"
+          profile_name=$(curl -s "${meta_url}")
+          instance_profile=$(curl -s "${meta_url}/${profile_name}")
+          AWS_ACCESS_KEY_ID=$(echo "${instance_profile}" | awk -F\" '$2 == "AccessKeyId"     { print $4 }')
+          AWS_SECRET_ACCESS_KEY=$(echo "${instance_profile}" | awk -F\" '$2 == "SecretAccessKey" { print $4 }')
+          AWS_SECURITY_TOKEN=$(echo "${instance_profile}" | awk -F\" '$2 == "Token"           { print $4 }')
+          export AWS_ACCESS_KEY_ID
+          export AWS_SECRET_ACCESS_KEY
+          export AWS_SECURITY_TOKEN
+          cat << EOF > config/private.yml
+          ---
+          blobstore:
+            s3:
+              access_key_id: $AWS_ACCESS_KEY_ID
+              secret_access_key: $AWS_SECRET_ACCESS_KEY
+          EOF
+
+          echo yes | bosh create release --final
