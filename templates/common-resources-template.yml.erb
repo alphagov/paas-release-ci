@@ -2,7 +2,7 @@
 - name: release-tarballs
   type: s3-iam
   source:
-    bucket: <%= repo_name %>
+    bucket: <%= repo_name %>-state
     region_name: eu-west-1
     regexp: ([0-9]+).tgz
 
