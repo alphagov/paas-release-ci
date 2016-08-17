@@ -118,8 +118,8 @@
         - -e
         - -c
         - |
+          sed -i '130 a return true if blobstore["s3"]["credentials_source"] == "env_or_profile"' /usr/local/bundle/gems/bosh_cli-1.3232.0//lib/cli/release.rb
           cd release
-          git branch -a
           cat << EOF > config/private.yml
           ---
           blobstore:
