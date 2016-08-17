@@ -119,12 +119,11 @@
         - -c
         - |
           cd release
+          git branch -a
           cat << EOF > config/private.yml
           ---
           blobstore:
             s3:
-              access_key_id: $AWS_ACCESS_KEY_ID
-              secret_access_key: $AWS_SECRET_ACCESS_KEY
               credentials_source: env_or_profile
           EOF
 
