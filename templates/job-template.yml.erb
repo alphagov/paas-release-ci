@@ -93,6 +93,7 @@
           cd release
           echo "Running test..."
           ls -al
+<% if  branch_name == "master" %>
 - name: upload-<%= branch_name %>
   plan:
   - get: release-tarballs
@@ -128,3 +129,4 @@
           EOF
 
           echo yes | bosh create release --final
+<% end %>
