@@ -5,43 +5,136 @@ resource_types:
     source:
       repository: jtarchie/pr
 
+  - name: s3-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/s3-resource
+
 resources:
-  - name: paas-example-boshrelease
+  - name: paas-example-boshrelease-pullrequests
     type: pull-request
     source:
-      repo: richardc/paas-example-boshrelease
+      repo: {{repo}}
       access_token: {{access_token}}
+
+  - name: paas-example-boshrelease
+    type: git
+    source:
+      uri: {{repo_uri}}
+      branch: master
+
+  - name: release-tarballs
+    type: s3-iam
+    source:
+      bucket: {{bucket_name}}
+      region_name: {{region_name}}
+      regexp: example-([0-9]+).tgz
 
 jobs:
   - name: paas-example-boshrelease-pullrequests
     plan:
-    - get: paas-example-boshrelease
+    - get: paas-example-boshrelease-pullrequests
       trigger: true
-    - put: paas-example-boshrelease
+    - put: paas-example-boshrelease-pullrequests
       params:
-        path: paas-example-boshrelease
+        path: paas-example-boshrelease-pullrequests
         status: pending
     - task: build
       config:
         platform: linux
-        image: docker:///concourse/git-resource
+        image_resource:
+          type: docker-image
+          source:
+            repository: governmentpaas/bosh-cli
+            tag: spike_128937731_add_bash_for_building
         inputs:
-          - name: paas-example-boshrelease
+          - name: paas-example-boshrelease-pullrequests
+        outputs:
+          - name: release-tarballs
         run:
           path: sh
           args:
             - -e
             - -c
             - |
-              ls -al
-              exit 1
+              cd paas-example-boshrelease-pullrequests
+
+              NAME=$(awk '/^final_name/ {print $2}' config/final.yml)
+              if [ "$NAME" = "" ]; then
+              cat << "EOF"
+              Please set a final_name in config/final.yml.
+
+              config/final.yml files are valid if they don't have a 'final_name' field (it
+              will prompt at the command line for one when running 'bosh create release --final'),
+              but at various places in this job we need to know what the name is.
+              EOF
+
+                exit 1
+              fi
+
+              VERSION=0.0.$(date +%s)
+              bosh create release \
+                --name $NAME \
+                --version ${VERSION} \
+                --with-tarball \
+                --force
+              cp dev_releases/$NAME/$NAME-*.tgz ../release-tarballs
+              ls -al ../release-tarballs
+
+              echo "Testing your tarball somehow"
+              # TODO
+              echo "It's fine!"
+
+              SHA1=$(openssl sha1 ../release-tarballs/* | cut -d' ' -f 2)
+              BUCKET={{bucket_name}}
+              REGION={{region_name}}
+              cat <<EOF
+
+              releases:
+                - name: $NAME
+                  version: $VERSION
+                  url: https://s3-${REGION}.amazonaws.com/${BUCKET}/${NAME}-${VERSION}.tgz
+                  sha1: $SHA1
+              EOF
       on_success:
-        put: paas-example-boshrelease
-        params:
-          path: paas-example-boshrelease
-          status: success
+        do:
+          - put: release-tarballs
+            params:
+              file: release-tarballs/*.tgz
+              acl: public-read
+          - put: paas-example-boshrelease-pullrequests
+            params:
+              path: paas-example-boshrelease-pullrequests
+              status: success
       on_failure:
-        put: paas-example-boshrelease
+        put: paas-example-boshrelease-pullrequests
         params:
-          path: paas-example-boshrelease
+          path: paas-example-boshrelease-pullrequests
           status: failure
+
+  - name: paas-example-boshrelease
+    plan:
+      - get: paas-example-boshrelease
+        trigger: true
+      - task: build
+        config:
+          platform: linux
+          image: docker:///governmentpaas/bosh-cli
+          inputs:
+            - name: paas-example-boshrelease
+          run:
+            path: sh
+            args:
+              - -e
+              - -c
+              - |
+                sed -i '130 a return true if blobstore["s3"]["credentials_source"] == "env_or_profile"' /usr/local/bundle/gems/bosh_cli-1.3232.0//lib/cli/release.rb
+                cd paas-example-boshrelease
+                cat << EOF > config/private.yml
+                ---
+                blobstore:
+                  s3:
+                    credentials_source: env_or_profile
+                EOF
+
+                echo yes | bosh create release --final
