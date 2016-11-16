@@ -1,0 +1,147 @@
+---
+resource_types:
+  - name: pull-request
+    type: docker-image
+    source:
+      repository: jtarchie/pr
+
+  - name: s3-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/s3-resource
+
+resources:
+  - name: bosh-release-pr
+    type: pull-request
+    source:
+      repo: {{github_repo}}
+      access_token: {{github_access_token}}
+
+  - name: bosh-release-repo
+    type: git
+    source:
+      uri: {{github_repo_uri}}
+      branch: master
+
+  - name: bosh-release-tarballs
+    type: s3-iam
+    source:
+      bucket: {{bucket_name}}
+      region_name: {{aws_region}}
+      regexp: ([a-z0-9]+).tgz
+
+jobs:
+  - name: build-dev-release
+    plan:
+      - get: bosh-release-pr
+        trigger: true
+      - put: bosh-release-pr
+        params:
+          path: bosh-release-pr
+          status: pending
+      - task: build
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/bosh-cli
+              tag: 130188061_add_bash_to_boshcli
+          inputs:
+            - name: bosh-release-pr
+          outputs:
+            - name: bosh-release-tarballs
+          params:
+            BUCKET: {{bucket_name}}
+            REGION: {{aws_region}}
+            NAME: {{boshrelease_name}}
+          run:
+            path: bash
+            args:
+              - -e
+              - -c
+              - |
+                cd bosh-release-pr
+
+                VERSION=0.0.$(date +%s)
+                bosh create release \
+                  --name "${NAME}" \
+                  --version "${VERSION}" \
+                  --with-tarball \
+                  --force
+                cp "dev_releases/${NAME}/${NAME}-${VERSION}.tgz" ../bosh-release-tarballs
+                ls -al ../bosh-release-tarballs
+
+                SHA1=$(openssl sha1 "../bosh-release-tarballs/${NAME}-${VERSION}.tgz" | cut -d' ' -f 2)
+                cat <<EOF
+
+                releases:
+                  - name: ${NAME}
+                    version: ${VERSION}
+                    url: https://s3-${REGION}.amazonaws.com/${BUCKET}/${NAME}-${VERSION}.tgz
+                    sha1: ${SHA1}
+                EOF
+        on_success:
+          do:
+            - put: bosh-release-tarballs
+              params:
+                file: bosh-release-tarballs/*.tgz
+                acl: public-read
+            - put: bosh-release-pr
+              params:
+                path: bosh-release-pr
+                status: success
+        on_failure:
+          put: bosh-release-pr
+          params:
+            path: bosh-release-pr
+            status: failure
+
+  - name: build-final-release
+    plan:
+      - get: bosh-release-repo
+        trigger: true
+      - task: build
+        config:
+          platform: linux
+          image: docker:///governmentpaas/bosh-cli
+          inputs:
+            - name: bosh-release-repo
+          outputs:
+            - name: bosh-release-tarballs
+          params:
+            BUCKET: {{bucket_name}}
+            REGION: {{aws_region}}
+            NAME: {{boshrelease_name}}
+          run:
+            path: bash
+            args:
+              - -eu
+              - -c
+              - |
+                cd bosh-release-repo
+
+                VERSION=1.0
+                bosh create release \
+                  --name "${NAME}" \
+                  --version "${VERSION}" \
+                  --with-tarball \
+                  --force
+                cp "dev_releases/${NAME}/${NAME}-${VERSION}.tgz" ../bosh-release-tarballs
+                ls -al ../bosh-release-tarballs
+
+                SHA1=$(openssl sha1 "../bosh-release-tarballs/${NAME}-${VERSION}.tgz" | cut -d' ' -f 2)
+                cat <<EOF
+
+                releases:
+                  - name: ${NAME}
+                    version: ${VERSION}
+                    url: https://s3-${REGION}.amazonaws.com/${BUCKET}/${NAME}-${VERSION}.tgz
+                    sha1: ${SHA1}
+                EOF
+
+        on_success:
+          put: bosh-release-tarballs
+          params:
+            file: bosh-release-tarballs/*.tgz
+            acl: public-read

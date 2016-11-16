@@ -29,5 +29,9 @@ ci: globals ## Work on the ci account
 pipelines: ## Upload setup pipelines to concourse
 	@scripts/deploy-setup-pipelines.sh
 
+.PHONY: boshrelease-pipelines
+boshrelease-pipelines: ## Upload boshrelease pipelines to concourse
+	@scripts/build-boshrelease-pipelines.sh
+
 showenv: ## Display environment information
 	@scripts/environment.sh
