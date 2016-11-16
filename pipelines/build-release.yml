@@ -1,0 +1,137 @@
+---
+resource_types:
+  - name: pull-request
+    type: docker-image
+    source:
+      repository: jtarchie/pr
+
+  - name: s3-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/s3-resource
+
+resources:
+  - name: bosh-release-pr
+    type: pull-request
+    source:
+      repo: {{repo}}
+      access_token: {{access_token}}
+
+  - name: bosh-release-repo
+    type: git
+    source:
+      uri: {{repo_uri}}
+      branch: master
+
+  - name: bosh-release-tarballs
+    type: s3-iam
+    source:
+      bucket: {{bucket_name}}
+      region_name: {{aws_region}}
+      regexp: ([a-z0-9]+).tgz
+
+jobs:
+  - name: build-dev-release
+    plan:
+    - get: bosh-release-pr
+      trigger: true
+    - put: bosh-release-pr
+      params:
+        path: bosh-release-pr
+        status: pending
+    - task: build
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: governmentpaas/bosh-cli
+            tag: 130188061_add_bash_to_boshcli
+        inputs:
+          - name: bosh-release-pr
+        outputs:
+          - name: bosh-release-tarballs
+        params:
+          BUCKET: {{bucket_name}}
+          REGION: {{aws_region}}
+        run:
+          path: sh
+          args:
+            - -e
+            - -c
+            - |
+              cd bosh-release-pr
+
+              NAME=$(awk '/^final_name/ {print $2}' config/final.yml)
+              if [ "$NAME" = "" ]; then
+              cat <<-EOF
+              Please set a final_name in config/final.yml.
+
+              config/final.yml files are valid if they don't have a 'final_name' field (it
+              will prompt at the command line for one when running 'bosh create release --final'),
+              but at various places in this job we need to know what the name is.
+              EOF
+              exit 1
+              fi
+
+              VERSION=0.0.$(date +%s)
+              bosh create release \
+                --name $NAME \
+                --version ${VERSION} \
+                --with-tarball \
+                --force
+              cp dev_releases/$NAME/$NAME-*.tgz ../bosh-release-tarballs
+              ls -al ../bosh-release-tarballs
+
+              SHA1=$(openssl sha1 ../bosh-release-tarballs/* | cut -d' ' -f 2)
+              cat <<EOF
+
+              releases:
+                - name: $NAME
+                  version: $VERSION
+                  url: https://s3-${REGION}.amazonaws.com/${BUCKET}/${NAME}-${VERSION}.tgz
+                  sha1: $SHA1
+              EOF
+      on_success:
+        do:
+          - put: bosh-release-tarballs
+            params:
+              file: bosh-release-tarballs/*.tgz
+              acl: public-read
+          - put: bosh-release-pr
+            params:
+              path: bosh-release-pr
+              status: success
+      on_failure:
+        put: bosh-release-pr
+        params:
+          path: bosh-release-pr
+          status: failure
+
+  - name: build-final-release
+    plan:
+      - get: bosh-release-repo
+        trigger: true
+      - task: build
+        config:
+          platform: linux
+          image: docker:///governmentpaas/bosh-cli
+          inputs:
+            - name: bosh-release-repo
+          run:
+            path: sh
+            args:
+              - -e
+              - -c
+              - |
+                sed -i '130 a return true if blobstore["s3"]["credentials_source"] == "env_or_profile"' /usr/local/bundle/gems/bosh_cli-1.3232.0//lib/cli/release.rb
+                cd bosh-release-repo
+
+                cat << EOF > config/private.yml
+                ---
+                blobstore:
+                  s3:
+                    credentials_source: env_or_profile
+                EOF
+
+                echo yes | bosh create release --final
