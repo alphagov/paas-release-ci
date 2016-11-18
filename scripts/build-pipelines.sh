@@ -20,7 +20,7 @@ aws_region: ${AWS_DEFAULT_REGION:-eu-west-1}
 concourse_atc_password: ${CONCOURSE_ATC_PASSWORD}
 system_dns_zone_name: ${SYSTEM_DNS_ZONE_NAME}
 aws_account: ${AWS_ACCOUNT}
-bucket_name: gds-paas-${AWS_ACCOUNT}-boshreleases
+bucket_name: gds-paas-${DEPLOY_ENV}-releases
 # move
 repo_uri: https://github.com/alphagov/paas-rds-broker-boshrelease.git
 access_token: $(pass github.com/release_ci_pr_status_token)
