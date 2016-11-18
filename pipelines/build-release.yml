@@ -127,24 +127,37 @@ jobs:
               - -c
               - |
                 cd bosh-release-repo
+
                 NAME=$(awk '/^final_name/ {print $2}' config/final.yml)
+                if [ "$NAME" = "" ]; then
+                cat <<-EOF
+                Please set a final_name in config/final.yml.
 
-                sed -i '130 a return true if blobstore["s3"]["credentials_source"] == "env_or_profile"' /usr/local/bundle/gems/bosh_cli-1.3232.0//lib/cli/release.rb
-
-                cat << EOF > config/private.yml
-                ---
-                blobstore:
-                  s3:
-                    credentials_source: env_or_profile
+                config/final.yml files are valid if they don't have a 'final_name' field (it
+                will prompt at the command line for one when running 'bosh create release --final'),
+                but at various places in this job we need to know what the name is.
                 EOF
+                exit 1
+                fi
 
                 VERSION=1.0
-
-                echo yes | bosh create release --final --with-tarball \
-                  --version VERSION
-
-                cp releases/$NAME/$NAME-*.tgz ../bosh-release-tarballs
+                bosh create release \
+                  --name $NAME \
+                  --version ${VERSION} \
+                  --with-tarball \
+                  --force
+                cp dev_releases/$NAME/$NAME-*.tgz ../bosh-release-tarballs
                 ls -al ../bosh-release-tarballs
+
+                SHA1=$(openssl sha1 ../bosh-release-tarballs/* | cut -d' ' -f 2)
+                cat <<EOF
+
+                releases:
+                  - name: $NAME
+                    version: $VERSION
+                    url: https://s3-${REGION}.amazonaws.com/${BUCKET}/${NAME}-${VERSION}.tgz
+                    sha1: $SHA1
+                EOF
 
         on_success:
           put: bosh-release-tarballs
