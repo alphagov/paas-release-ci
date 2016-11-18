@@ -21,7 +21,7 @@ resources:
     type: git
     source:
       uri: {{repo_uri}}
-      branch: master
+      branch: 130188061_paas_release
 
   - name: bosh-release-tarballs
     type: s3-iam
@@ -57,7 +57,7 @@ jobs:
         run:
           path: sh
           args:
-            - -e
+            - -eu
             - -c
             - |
               cd bosh-release-pr
@@ -118,14 +118,18 @@ jobs:
           image: docker:///governmentpaas/bosh-cli
           inputs:
             - name: bosh-release-repo
+          outputs:
+            - name: bosh-release-tarballs
           run:
             path: sh
             args:
-              - -e
+              - -eu
               - -c
               - |
-                sed -i '130 a return true if blobstore["s3"]["credentials_source"] == "env_or_profile"' /usr/local/bundle/gems/bosh_cli-1.3232.0//lib/cli/release.rb
                 cd bosh-release-repo
+                NAME=$(awk '/^final_name/ {print $2}' config/final.yml)
+
+                sed -i '130 a return true if blobstore["s3"]["credentials_source"] == "env_or_profile"' /usr/local/bundle/gems/bosh_cli-1.3232.0//lib/cli/release.rb
 
                 cat << EOF > config/private.yml
                 ---
@@ -134,4 +138,16 @@ jobs:
                     credentials_source: env_or_profile
                 EOF
 
-                echo yes | bosh create release --final
+                VERSION=1.0
+
+                echo yes | bosh create release --final --with-tarball \
+                  --version VERSION
+
+                cp releases/$NAME/$NAME-*.tgz ../bosh-release-tarballs
+                ls -al ../bosh-release-tarballs
+
+        on_success:
+          put: bosh-release-tarballs
+          params:
+            file: bosh-release-tarballs/*.tgz
+            acl: public-read
