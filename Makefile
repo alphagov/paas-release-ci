@@ -12,6 +12,7 @@ globals:
 dev: globals check-env-vars ## Work on the dev account
 	$(eval export MAKEFILE_ENV_TARGET=dev)
 	$(eval export AWS_ACCOUNT=dev)
+	$(eval export ENABLE_DESTROY=true)
 	$(eval export SYSTEM_DNS_ZONE_NAME=${DEPLOY_ENV}.dev.cloudpipeline.digital)
 	@true
 
@@ -25,8 +26,8 @@ ci: globals ## Work on the ci account
 	@true
 
 .PHONY: pipelines
-pipelines: ## Upload setup pipeline to concourse
-	@scripts/deploy-setup-pipeline.sh
+pipelines: ## Upload setup pipelines to concourse
+	@scripts/deploy-setup-pipelines.sh
 
 showenv: ## Display environment information
 	@scripts/environment.sh

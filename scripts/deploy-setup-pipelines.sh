@@ -31,11 +31,25 @@ generate_manifest_file() {
     < "${PIPELINES_DIR}/${pipeline_name}.yml"
 }
 
-pipeline_name=setup
+upload_pipeline() {
+  bash "${SCRIPTS_DIR}/deploy-pipeline.sh" \
+        "${pipeline_name}" \
+        <(generate_manifest_file) \
+        <(generate_vars_file)
+}
 
+remove_pipeline() {
+  yes y | ${FLY_CMD} -t "${FLY_TARGET}" destroy-pipeline --pipeline "${pipeline_name}" || true
+}
+
+pipeline_name=setup
 generate_vars_file > /dev/null # Check for missing vars
 
-bash "${SCRIPTS_DIR}/deploy-pipeline.sh" \
-  "${pipeline_name}" \
-  <(generate_manifest_file) \
-  <(generate_vars_file)
+upload_pipeline
+
+pipeline_name=destroy
+if [ "${ENABLE_DESTROY:-}" = "true" ]; then
+  upload_pipeline
+else
+  remove_pipeline
+fi
