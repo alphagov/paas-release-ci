@@ -1,0 +1,62 @@
+---
+resource_types:
+  - name: s3-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/s3-resource
+
+  - name: semver-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/semver-resource
+
+resources:
+  - name: pipeline-trigger
+    type: semver-iam
+    source:
+      bucket: {{state_bucket}}
+      region_name: {{aws_region}}
+      key: {{pipeline_trigger_file}}
+
+  - name: paas-release-ci
+    type: git
+    source:
+      uri: https://github.com/alphagov/paas-release-ci
+      branch: {{branch_name}}
+
+jobs:
+  - name: self-update
+    plan:
+      - get: paas-release-ci
+        trigger: {{auto_trigger}}
+      - task: self-update-pipeline
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/self-update-pipelines
+          inputs:
+            - name: paas-release-ci
+          params:
+            SELF_UPDATE_PIPELINE: {{self_update_pipeline}}
+            DEPLOY_ENV: {{deploy_env}}
+            BRANCH: {{branch_name}}
+            MAKEFILE_ENV_TARGET: {{makefile_env_target}}
+            CONCOURSE_ATC_PASSWORD: {{concourse_atc_password}}
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                if [ "${SELF_UPDATE_PIPELINE}" != "true" ]; then
+                  echo "Self update pipeline is disabled. Skipping. (set SELF_UPDATE_PIPELINE=true to enable)"
+                else
+                  echo "Self update pipeline is enabled. Updating. (set SELF_UPDATE_PIPELINE=false to disable)"
+
+                  make -C ./paas-release-ci "${MAKEFILE_ENV_TARGET}" pipelines
+                fi
+      - put: pipeline-trigger
+        params: {bump: patch}
