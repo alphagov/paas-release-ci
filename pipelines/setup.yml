@@ -24,6 +24,13 @@ resources:
       uri: https://github.com/alphagov/paas-release-ci
       branch: {{branch_name}}
 
+  - name: release-ci-tfstate
+    type: s3-iam
+    source:
+      bucket: {{state_bucket}}
+      region_name: {{aws_region}}
+      versioned_file: release-ci.tfstate
+
 jobs:
   - name: self-update
     plan:
@@ -60,3 +67,66 @@ jobs:
                 fi
       - put: pipeline-trigger
         params: {bump: patch}
+
+  - name: init
+    plan:
+      - aggregate:
+          - get: pipeline-trigger
+            passed: ['self-update']
+            trigger: true
+          - get: paas-release-ci
+            passed: ['self-update']
+      - task: bootstrap-s3-state
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/curl-ssl
+          inputs:
+            - name: paas-release-ci
+          run:
+            path: sh
+            args:
+              - -e
+              - -c
+              - |
+                paas-release-ci/scripts/s3init.sh {{state_bucket}} release-ci.tfstate paas-release-ci/pipelines/init_files/terraform.tfstate.tpl
+
+  - name: terraform
+    plan:
+      - aggregate:
+          - get: pipeline-trigger
+            passed: ['init']
+            trigger: true
+          - get: paas-release-ci
+            passed: ['init']
+          - get: release-ci-tfstate
+      - task: terraform-apply
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/terraform
+          inputs:
+            - name: paas-release-ci
+            - name: release-ci-tfstate
+          outputs:
+            - name: updated-release-ci-tfstate
+          params:
+            TF_VAR_deploy_env: {{deploy_env}}
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                terraform apply \
+                  -state=release-ci-tfstate/release-ci.tfstate -state-out=updated-release-ci-tfstate/release-ci.tfstate \
+                  paas-release-ci/terraform
+        ensure:
+          put: release-ci-tfstate
+          params:
+            file: updated-release-ci-tfstate/release-ci.tfstate

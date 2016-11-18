@@ -10,7 +10,7 @@ variable "account_ids_sha256" {
   }
 }
 
-variable "aws_account" {
+variable "deploy_env" {
 }
 
 variable "region" {
