@@ -29,12 +29,17 @@ if [ -z "${CONCOURSE_ATC_PASSWORD:-}" ]; then
   fi
 fi
 
+if [ -z "${GITHUB_ACCESS_TOKEN:-}" ]; then
+  GITHUB_ACCESS_TOKEN=$(pass github.com/release_ci_pr_status_token)
+fi
+
 cat <<EOF
 export AWS_ACCOUNT=${AWS_ACCOUNT}
 export DEPLOY_ENV=${DEPLOY_ENV}
 export CONCOURSE_ATC_USER=${CONCOURSE_ATC_USER}
 export CONCOURSE_ATC_PASSWORD=${CONCOURSE_ATC_PASSWORD}
 export CONCOURSE_URL=${CONCOURSE_URL}
+export GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
 export FLY_CMD=${FLY_CMD}
 export FLY_TARGET=${FLY_TARGET}
 EOF

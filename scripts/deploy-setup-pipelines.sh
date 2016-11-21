@@ -21,6 +21,7 @@ aws_region: ${AWS_DEFAULT_REGION:-eu-west-1}
 concourse_atc_password: ${CONCOURSE_ATC_PASSWORD}
 system_dns_zone_name: ${SYSTEM_DNS_ZONE_NAME}
 pipeline_trigger_file: ${pipeline_name}.trigger
+github_access_token: ${GITHUB_ACCESS_TOKEN}
 EOF
 }
 

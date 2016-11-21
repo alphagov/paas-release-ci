@@ -51,6 +51,7 @@ jobs:
             BRANCH: {{branch_name}}
             MAKEFILE_ENV_TARGET: {{makefile_env_target}}
             CONCOURSE_ATC_PASSWORD: {{concourse_atc_password}}
+            GITHUB_ACCESS_TOKEN: {{github_access_token}}
           run:
             path: sh
             args:
@@ -130,3 +131,34 @@ jobs:
           put: release-ci-tfstate
           params:
             file: updated-release-ci-tfstate/release-ci.tfstate
+  - name: boshrelease-pipelines
+    plan:
+      - aggregate:
+          - get: pipeline-trigger
+            passed: ['terraform']
+            trigger: true
+          - get: paas-release-ci
+            passed: ['terraform']
+      - task: build-pipelines
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/self-update-pipelines
+          inputs:
+            - name: paas-release-ci
+          params:
+            DEPLOY_ENV: {{deploy_env}}
+            BRANCH: {{branch_name}}
+            MAKEFILE_ENV_TARGET: {{makefile_env_target}}
+            CONCOURSE_ATC_PASSWORD: {{concourse_atc_password}}
+            GITHUB_ACCESS_TOKEN: {{github_access_token}}
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                make -C ./paas-release-ci "${MAKEFILE_ENV_TARGET}" boshrelease-pipelines

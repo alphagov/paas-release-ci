@@ -19,7 +19,7 @@ concourse_atc_password: ${CONCOURSE_ATC_PASSWORD}
 system_dns_zone_name: ${SYSTEM_DNS_ZONE_NAME}
 aws_account: ${AWS_ACCOUNT}
 bucket_name: gds-paas-${DEPLOY_ENV}-releases
-github_access_token: $(pass github.com/release_ci_pr_status_token)
+github_access_token: ${GITHUB_ACCESS_TOKEN}
 # move
 boshrelease_name: ${boshrelease_name}
 github_repo: ${github_repo}
