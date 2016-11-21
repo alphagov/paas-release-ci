@@ -20,6 +20,7 @@ system_dns_zone_name: ${SYSTEM_DNS_ZONE_NAME}
 aws_account: ${AWS_ACCOUNT}
 bucket_name: gds-paas-${DEPLOY_ENV}-releases
 github_access_token: ${GITHUB_ACCESS_TOKEN}
+github_status_context: ${DEPLOY_ENV}/status
 # move
 boshrelease_name: ${boshrelease_name}
 github_repo: ${github_repo}

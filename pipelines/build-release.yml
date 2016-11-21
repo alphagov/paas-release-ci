@@ -38,6 +38,7 @@ jobs:
       - put: bosh-release-pr
         params:
           path: bosh-release-pr
+          context: {{github_status_context}}
           status: pending
       - task: build
         config:
@@ -90,11 +91,13 @@ jobs:
             - put: bosh-release-pr
               params:
                 path: bosh-release-pr
+                context: {{github_status_context}}
                 status: success
         on_failure:
           put: bosh-release-pr
           params:
             path: bosh-release-pr
+            context: {{github_status_context}}
             status: failure
 
   - name: build-final-release
