@@ -55,6 +55,7 @@ resources:
 
 jobs:
   - name: build-dev-release
+    serial: true
     plan:
       - get: bosh-release-pr
         trigger: true
@@ -124,6 +125,7 @@ jobs:
             status: failure
 
   - name: build-final-release
+    serial: true
     plan:
       - get: bosh-release-repo
         trigger: true
