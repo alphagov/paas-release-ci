@@ -10,6 +10,11 @@ resource_types:
     source:
       repository: governmentpaas/s3-resource
 
+  - name: semver-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/semver-resource
+
 resources:
   - name: bosh-release-pr
     type: pull-request
@@ -29,6 +34,14 @@ resources:
       bucket: {{bucket_name}}
       region_name: {{aws_region}}
       regexp: ([a-z0-9]+).tgz
+
+  - name: bosh-release-version
+    type: semver-iam
+    source:
+      bucket: {{bucket_name}}
+      region_name: {{aws_region}}
+      key: {{version_file}}
+      initial_version: 0.1.0
 
 jobs:
   - name: build-dev-release
@@ -104,12 +117,16 @@ jobs:
     plan:
       - get: bosh-release-repo
         trigger: true
+      - get: bosh-release-version
+        params:
+          bump: patch
       - task: build
         config:
           platform: linux
           image: docker:///governmentpaas/bosh-cli
           inputs:
             - name: bosh-release-repo
+            - name: bosh-release-version
           outputs:
             - name: bosh-release-tarballs
           params:
@@ -124,13 +141,14 @@ jobs:
               - |
                 cd bosh-release-repo
 
-                VERSION=1.0
+                VERSION=$(cat ../bosh-release-version/number)
                 bosh create release \
                   --name "${NAME}" \
                   --version "${VERSION}" \
                   --with-tarball \
                   --force
                 cp "dev_releases/${NAME}/${NAME}-${VERSION}.tgz" ../bosh-release-tarballs
+                cp ../bosh-release-version/number ../bosh-release-tarballs/version
                 ls -al ../bosh-release-tarballs
 
                 SHA1=$(openssl sha1 "../bosh-release-tarballs/${NAME}-${VERSION}.tgz" | cut -d' ' -f 2)
@@ -144,7 +162,11 @@ jobs:
                 EOF
 
         on_success:
-          put: bosh-release-tarballs
-          params:
-            file: bosh-release-tarballs/*.tgz
-            acl: public-read
+          do:
+            - put: bosh-release-version
+              params:
+                file: bosh-release-tarballs/version
+            - put: bosh-release-tarballs
+              params:
+                file: bosh-release-tarballs/*.tgz
+                acl: public-read

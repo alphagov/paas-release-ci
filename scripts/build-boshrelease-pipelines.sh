@@ -25,6 +25,7 @@ github_status_context: ${DEPLOY_ENV}/status
 boshrelease_name: ${boshrelease_name}
 github_repo: ${github_repo}
 github_repo_uri: https://github.com/${github_repo}
+version_file: ${boshrelease_name}.version
 EOF
 }
 
