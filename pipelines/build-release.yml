@@ -1,4 +1,14 @@
 ---
+groups:
+  - name: main
+    jobs:
+      - build-dev-release
+      - build-final-release
+  - name: version
+    jobs:
+      - bump-major
+      - bump-minor
+
 resource_types:
   - name: pull-request
     type: docker-image
@@ -170,3 +180,15 @@ jobs:
               params:
                 file: bosh-release-tarballs/*.tgz
                 acl: public-read
+
+  - name: bump-major
+    plan:
+      - put: bosh-release-version
+        params:
+          bump: major
+
+  - name: bump-minor
+    plan:
+      - put: bosh-release-version
+        params:
+          bump: minor
