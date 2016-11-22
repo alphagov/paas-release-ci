@@ -31,6 +31,7 @@ resources:
     source:
       repo: {{github_repo}}
       access_token: {{github_access_token}}
+      every: true
 
   - name: bosh-release-repo
     type: git
@@ -58,6 +59,7 @@ jobs:
     serial: true
     plan:
       - get: bosh-release-pr
+        version: every
         trigger: true
       - put: bosh-release-pr
         params:
