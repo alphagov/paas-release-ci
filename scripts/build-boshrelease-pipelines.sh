@@ -25,12 +25,14 @@ github_status_context: ${DEPLOY_ENV}/status
 boshrelease_name: ${boshrelease_name}
 github_repo: ${github_repo}
 github_repo_uri: https://github.com/${github_repo}
+final_release_branch: ${final_release_branch}
 version_file: ${boshrelease_name}.version
 EOF
 }
 
 boshrelease_name=rds-broker
 github_repo=alphagov/paas-rds-broker-boshrelease
+final_release_branch=master
 
 generate_vars_file > /dev/null # Check for missing vars
 

@@ -38,7 +38,7 @@ resources:
     type: git
     source:
       uri: {{github_repo_uri}}
-      branch: master
+      branch: {{final_release_branch}}
 
   - name: bosh-release-tarballs
     type: s3-iam
