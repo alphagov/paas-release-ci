@@ -40,7 +40,7 @@ showenv: ## Display environment information
 ## Testing tasks
 
 .PHONY: test
-test: lint_shellcheck lint_terraform lint_yaml
+test: lint_shellcheck lint_terraform lint_yaml lint_concourse
 
 .PHONY: lint_shellcheck
 lint_shellcheck:
@@ -59,3 +59,7 @@ lint_terraform:
 .PHONY: lint_yaml
 lint_yaml:
 	find . -name '*.yml' | xargs yamllint -c yamllint.yml
+
+.PHONY: lint_concourse
+lint_concourse:
+	./scripts/pipecleaner.py --fatal-warnings pipelines/*.yml
