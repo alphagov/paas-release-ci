@@ -35,3 +35,27 @@ boshrelease-pipelines: ## Upload boshrelease pipelines to concourse
 
 showenv: ## Display environment information
 	@scripts/environment.sh
+
+
+## Testing tasks
+
+.PHONY: test
+test: lint_shellcheck lint_terraform lint_yaml
+
+.PHONY: lint_shellcheck
+lint_shellcheck:
+	find . -name '*.sh' | xargs shellcheck
+
+.PHONY: lint_terraform
+lint_terraform:
+	$(eval export TF_VAR_deploy_env=test)
+	terraform graph terraform > /dev/null
+	@if [ "$$(terraform fmt -write=false terraform)" != "" ] ; then \
+		echo "Use 'terraform fmt' to fix HCL formatting:"; \
+		terraform fmt -write=false -diff=true terraform ; \
+		exit 1; \
+	fi
+
+.PHONY: lint_yaml
+lint_yaml:
+	find . -name '*.yml' | xargs yamllint -c yamllint.yml
