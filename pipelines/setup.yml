@@ -1,0 +1,164 @@
+---
+resource_types:
+  - name: s3-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/s3-resource
+
+  - name: semver-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/semver-resource
+
+resources:
+  - name: pipeline-trigger
+    type: semver-iam
+    source:
+      bucket: {{state_bucket}}
+      region_name: {{aws_region}}
+      key: {{pipeline_trigger_file}}
+
+  - name: paas-release-ci
+    type: git
+    source:
+      uri: https://github.com/alphagov/paas-release-ci
+      branch: {{branch_name}}
+
+  - name: release-ci-tfstate
+    type: s3-iam
+    source:
+      bucket: {{state_bucket}}
+      region_name: {{aws_region}}
+      versioned_file: release-ci.tfstate
+
+jobs:
+  - name: self-update
+    plan:
+      - get: paas-release-ci
+        trigger: {{auto_trigger}}
+      - task: self-update-pipeline
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/self-update-pipelines
+          inputs:
+            - name: paas-release-ci
+          params:
+            SELF_UPDATE_PIPELINE: {{self_update_pipeline}}
+            DEPLOY_ENV: {{deploy_env}}
+            BRANCH: {{branch_name}}
+            MAKEFILE_ENV_TARGET: {{makefile_env_target}}
+            CONCOURSE_ATC_PASSWORD: {{concourse_atc_password}}
+            GITHUB_ACCESS_TOKEN: {{github_access_token}}
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                if [ "${SELF_UPDATE_PIPELINE}" != "true" ]; then
+                  echo "Self update pipeline is disabled. Skipping. (set SELF_UPDATE_PIPELINE=true to enable)"
+                else
+                  echo "Self update pipeline is enabled. Updating. (set SELF_UPDATE_PIPELINE=false to disable)"
+
+                  make -C ./paas-release-ci "${MAKEFILE_ENV_TARGET}" pipelines
+                fi
+      - put: pipeline-trigger
+        params: {bump: patch}
+
+  - name: init
+    plan:
+      - aggregate:
+          - get: pipeline-trigger
+            passed: ['self-update']
+            trigger: true
+          - get: paas-release-ci
+            passed: ['self-update']
+      - task: bootstrap-s3-state
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/curl-ssl
+          inputs:
+            - name: paas-release-ci
+          run:
+            path: sh
+            args:
+              - -e
+              - -c
+              - |
+                paas-release-ci/scripts/s3init.sh {{state_bucket}} release-ci.tfstate paas-release-ci/pipelines/init_files/terraform.tfstate.tpl
+
+  - name: terraform
+    plan:
+      - aggregate:
+          - get: pipeline-trigger
+            passed: ['init']
+            trigger: true
+          - get: paas-release-ci
+            passed: ['init']
+          - get: release-ci-tfstate
+      - task: terraform-apply
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/terraform
+          inputs:
+            - name: paas-release-ci
+            - name: release-ci-tfstate
+          outputs:
+            - name: updated-release-ci-tfstate
+          params:
+            TF_VAR_deploy_env: {{deploy_env}}
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                terraform apply \
+                  -state=release-ci-tfstate/release-ci.tfstate -state-out=updated-release-ci-tfstate/release-ci.tfstate \
+                  paas-release-ci/terraform
+        ensure:
+          put: release-ci-tfstate
+          params:
+            file: updated-release-ci-tfstate/release-ci.tfstate
+  - name: boshrelease-pipelines
+    plan:
+      - aggregate:
+          - get: pipeline-trigger
+            passed: ['terraform']
+            trigger: true
+          - get: paas-release-ci
+            passed: ['terraform']
+      - task: build-pipelines
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/self-update-pipelines
+          inputs:
+            - name: paas-release-ci
+          params:
+            DEPLOY_ENV: {{deploy_env}}
+            BRANCH: {{branch_name}}
+            MAKEFILE_ENV_TARGET: {{makefile_env_target}}
+            CONCOURSE_ATC_PASSWORD: {{concourse_atc_password}}
+            GITHUB_ACCESS_TOKEN: {{github_access_token}}
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                make -C ./paas-release-ci "${MAKEFILE_ENV_TARGET}" boshrelease-pipelines

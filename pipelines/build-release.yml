@@ -1,0 +1,199 @@
+---
+groups:
+  - name: main
+    jobs:
+      - build-dev-release
+      - build-final-release
+  - name: version
+    jobs:
+      - bump-major
+      - bump-minor
+
+resource_types:
+  - name: pull-request
+    type: docker-image
+    source:
+      repository: governmentpaas/pullrequest-resource
+
+  - name: s3-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/s3-resource
+
+  - name: semver-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/semver-resource
+
+resources:
+  - name: bosh-release-pr
+    type: pull-request
+    source:
+      repo: {{github_repo}}
+      access_token: {{github_access_token}}
+      every: true
+      disallow_forks: true
+
+  - name: bosh-release-repo
+    type: git
+    source:
+      uri: {{github_repo_uri}}
+      branch: {{final_release_branch}}
+
+  - name: bosh-release-tarballs
+    type: s3-iam
+    source:
+      bucket: {{bucket_name}}
+      region_name: {{aws_region}}
+      regexp: ([a-z0-9]+).tgz
+
+  - name: bosh-release-version
+    type: semver-iam
+    source:
+      bucket: {{bucket_name}}
+      region_name: {{aws_region}}
+      key: {{version_file}}
+      initial_version: 0.1.0
+
+jobs:
+  - name: build-dev-release
+    serial: true
+    plan:
+      - get: bosh-release-pr
+        version: every
+        trigger: true
+      - put: bosh-release-pr
+        params:
+          path: bosh-release-pr
+          context: {{github_status_context}}
+          status: pending
+      - task: build
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/bosh-cli
+              tag: 130188061_add_bash_to_boshcli
+          inputs:
+            - name: bosh-release-pr
+          outputs:
+            - name: bosh-release-tarballs
+          params:
+            BUCKET: {{bucket_name}}
+            REGION: {{aws_region}}
+            NAME: {{boshrelease_name}}
+          run:
+            path: bash
+            args:
+              - -e
+              - -c
+              - |
+                cd bosh-release-pr
+
+                VERSION=0.0.$(date +%s)
+                bosh create release \
+                  --name "${NAME}" \
+                  --version "${VERSION}" \
+                  --with-tarball \
+                  --force
+                cp "dev_releases/${NAME}/${NAME}-${VERSION}.tgz" ../bosh-release-tarballs
+                ls -al ../bosh-release-tarballs
+
+                SHA1=$(openssl sha1 "../bosh-release-tarballs/${NAME}-${VERSION}.tgz" | cut -d' ' -f 2)
+                cat <<EOF
+
+                releases:
+                  - name: ${NAME}
+                    version: ${VERSION}
+                    url: https://s3-${REGION}.amazonaws.com/${BUCKET}/${NAME}-${VERSION}.tgz
+                    sha1: ${SHA1}
+                EOF
+        on_success:
+          do:
+            - put: bosh-release-tarballs
+              params:
+                file: bosh-release-tarballs/*.tgz
+                acl: public-read
+            - put: bosh-release-pr
+              params:
+                path: bosh-release-pr
+                context: {{github_status_context}}
+                status: success
+        on_failure:
+          put: bosh-release-pr
+          params:
+            path: bosh-release-pr
+            context: {{github_status_context}}
+            status: failure
+
+  - name: build-final-release
+    serial: true
+    plan:
+      - get: bosh-release-repo
+        trigger: true
+      - get: bosh-release-version
+        params:
+          bump: patch
+      - task: build
+        config:
+          platform: linux
+          image: docker:///governmentpaas/bosh-cli
+          inputs:
+            - name: bosh-release-repo
+            - name: bosh-release-version
+          outputs:
+            - name: bosh-release-tarballs
+          params:
+            BUCKET: {{bucket_name}}
+            REGION: {{aws_region}}
+            NAME: {{boshrelease_name}}
+          run:
+            path: bash
+            args:
+              - -eu
+              - -c
+              - |
+                cd bosh-release-repo
+
+                VERSION=$(cat ../bosh-release-version/number)
+                bosh create release \
+                  --name "${NAME}" \
+                  --version "${VERSION}" \
+                  --with-tarball \
+                  --force
+                cp "dev_releases/${NAME}/${NAME}-${VERSION}.tgz" ../bosh-release-tarballs
+                cp ../bosh-release-version/number ../bosh-release-tarballs/version
+                ls -al ../bosh-release-tarballs
+
+                SHA1=$(openssl sha1 "../bosh-release-tarballs/${NAME}-${VERSION}.tgz" | cut -d' ' -f 2)
+                cat <<EOF
+
+                releases:
+                  - name: ${NAME}
+                    version: ${VERSION}
+                    url: https://s3-${REGION}.amazonaws.com/${BUCKET}/${NAME}-${VERSION}.tgz
+                    sha1: ${SHA1}
+                EOF
+
+        on_success:
+          do:
+            - put: bosh-release-version
+              params:
+                file: bosh-release-tarballs/version
+            - put: bosh-release-tarballs
+              params:
+                file: bosh-release-tarballs/*.tgz
+                acl: public-read
+
+  - name: bump-major
+    plan:
+      - put: bosh-release-version
+        params:
+          bump: major
+
+  - name: bump-minor
+    plan:
+      - put: bosh-release-version
+        params:
+          bump: minor

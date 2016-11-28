@@ -1,0 +1,24 @@
+
+env:
+  global:
+    - TF_VERSION=0.7.10
+
+before_install:
+  - |
+    mkdir ~/bin
+    export PATH=~/bin:$PATH
+  - |
+    echo "Fetching shellcheck"
+    set -e
+    wget -O ~/bin/shellcheck https://github.com/alphagov/paas-cf/releases/download/shellcheck_binary_0.4.4/shellcheck_linux_amd64
+    chmod +x ~/bin/shellcheck
+  - |
+    echo "Fetching Terraform"
+    set -e
+    wget https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
+    unzip -o terraform_${TF_VERSION}_linux_amd64.zip -d ~/bin
+    rm terraform_${TF_VERSION}_linux_amd64.zip
+  - pip install --user yamllint
+
+script:
+  - make test
