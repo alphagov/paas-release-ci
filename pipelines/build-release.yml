@@ -43,14 +43,14 @@ resources:
   - name: bosh-release-tarballs
     type: s3-iam
     source:
-      bucket: {{bucket_name}}
+      bucket: {{releases_bucket_name}}
       region_name: {{aws_region}}
       regexp: ([a-z0-9]+).tgz
 
   - name: bosh-release-version
     type: semver-iam
     source:
-      bucket: {{bucket_name}}
+      bucket: {{releases_bucket_name}}
       region_name: {{aws_region}}
       key: {{version_file}}
       initial_version: 0.1.0
@@ -80,7 +80,7 @@ jobs:
           outputs:
             - name: bosh-release-tarballs
           params:
-            BUCKET: {{bucket_name}}
+            BUCKET: {{releases_bucket_name}}
             REGION: {{aws_region}}
             NAME: {{boshrelease_name}}
           run:
@@ -145,7 +145,7 @@ jobs:
           outputs:
             - name: bosh-release-tarballs
           params:
-            BUCKET: {{bucket_name}}
+            BUCKET: {{releases_bucket_name}}
             REGION: {{aws_region}}
             NAME: {{boshrelease_name}}
           run:
