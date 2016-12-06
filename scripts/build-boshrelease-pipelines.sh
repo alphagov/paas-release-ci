@@ -31,13 +31,17 @@ version_file: ${boshrelease_name}.version
 EOF
 }
 
-boshrelease_name=rds-broker
-github_repo=alphagov/paas-rds-broker-boshrelease
-final_release_branch=master
+setup_release_pipeline() {
+  boshrelease_name="$1"
+  github_repo="$2"
+  final_release_branch="$3"
 
-generate_vars_file > /dev/null # Check for missing vars
+  generate_vars_file > /dev/null # Check for missing vars
 
-bash "${SCRIPTS_DIR}/deploy-pipeline.sh" \
-  "${boshrelease_name}" \
-  "${PIPELINES_DIR}/build-release.yml" \
-  <(generate_vars_file)
+  bash "${SCRIPTS_DIR}/deploy-pipeline.sh" \
+    "${boshrelease_name}" \
+    "${PIPELINES_DIR}/build-release.yml" \
+    <(generate_vars_file)
+}
+
+setup_release_pipeline rds-broker alphagov/paas-rds-broker-boshrelease master
