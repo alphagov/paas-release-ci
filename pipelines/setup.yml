@@ -51,6 +51,7 @@ jobs:
             BRANCH: {{branch_name}}
             MAKEFILE_ENV_TARGET: {{makefile_env_target}}
             CONCOURSE_ATC_PASSWORD: {{concourse_atc_password}}
+            CONCOURSE_URL: {{concourse_url}}
             GITHUB_ACCESS_TOKEN: {{github_access_token}}
           run:
             path: sh
@@ -153,6 +154,7 @@ jobs:
             BRANCH: {{branch_name}}
             MAKEFILE_ENV_TARGET: {{makefile_env_target}}
             CONCOURSE_ATC_PASSWORD: {{concourse_atc_password}}
+            CONCOURSE_URL: {{concourse_url}}
             GITHUB_ACCESS_TOKEN: {{github_access_token}}
           run:
             path: sh
