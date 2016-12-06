@@ -13,3 +13,8 @@ This repository contains the scripts and Terraform configurations required to se
 
 A pipeline should be created for each Bosh release this repository is currently building releases for. The `build-dev-release` jobs should trigger when pull requests are raised against the Bosh release's repository. The `build-final-release` job should trigger when new commits are added to the branch used to build final releases.
 
+You can override some variables to customise the deployment:
+ * `BRANCH` current branch to pull and use. e.g. `BRANCH=$(git rev-parse --abbrev-ref HEAD)`
+ * `CONCOURSE_URL`, `CONCOURSE_ATC_PASSWORD`: to point to a different concourse with the given credentials.
+ * `STATE_BUCKET_NAME`, `RELEASES_BUCKET_NAME`: use alternative state and releases buckets.
+

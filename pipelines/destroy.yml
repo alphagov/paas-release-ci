@@ -14,7 +14,7 @@ resources:
   - name: pipeline-trigger
     type: semver-iam
     source:
-      bucket: {{state_bucket}}
+      bucket: {{state_bucket_name}}
       region_name: {{aws_region}}
       key: {{pipeline_trigger_file}}
 
@@ -27,7 +27,7 @@ resources:
   - name: release-ci-tfstate
     type: s3-iam
     source:
-      bucket: {{state_bucket}}
+      bucket: {{state_bucket_name}}
       region_name: {{aws_region}}
       versioned_file: release-ci.tfstate
 
@@ -59,6 +59,7 @@ jobs:
             - name: updated-release-ci-tfstate
           params:
             TF_VAR_deploy_env: {{deploy_env}}
+            TF_VAR_releases_bucket_name: {{releases_bucket_name}}
           run:
             path: sh
             args:

@@ -16,9 +16,10 @@ deploy_env: ${DEPLOY_ENV}
 branch_name: ${BRANCH:-master}
 aws_region: ${AWS_DEFAULT_REGION:-eu-west-1}
 concourse_atc_password: ${CONCOURSE_ATC_PASSWORD}
+concourse_url: ${CONCOURSE_URL}
 system_dns_zone_name: ${SYSTEM_DNS_ZONE_NAME}
 aws_account: ${AWS_ACCOUNT}
-bucket_name: gds-paas-${DEPLOY_ENV}-releases
+releases_bucket_name: ${RELEASES_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-releases}
 github_access_token: ${GITHUB_ACCESS_TOKEN}
 github_status_context: ${DEPLOY_ENV}/status
 # move

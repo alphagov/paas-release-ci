@@ -15,3 +15,7 @@ variable "deploy_env" {}
 variable "region" {
   default = "eu-west-1"
 }
+
+variable "releases_bucket_name" {
+  description = "Name of the bucket to store the created releases"
+}

@@ -14,7 +14,7 @@ resources:
   - name: pipeline-trigger
     type: semver-iam
     source:
-      bucket: {{state_bucket}}
+      bucket: {{state_bucket_name}}
       region_name: {{aws_region}}
       key: {{pipeline_trigger_file}}
 
@@ -27,7 +27,7 @@ resources:
   - name: release-ci-tfstate
     type: s3-iam
     source:
-      bucket: {{state_bucket}}
+      bucket: {{state_bucket_name}}
       region_name: {{aws_region}}
       versioned_file: release-ci.tfstate
 
@@ -51,7 +51,10 @@ jobs:
             BRANCH: {{branch_name}}
             MAKEFILE_ENV_TARGET: {{makefile_env_target}}
             CONCOURSE_ATC_PASSWORD: {{concourse_atc_password}}
+            CONCOURSE_URL: {{concourse_url}}
             GITHUB_ACCESS_TOKEN: {{github_access_token}}
+            STATE_BUCKET_NAME: {{state_bucket_name}}
+            RELEASES_BUCKET_NAME: {{releases_bucket_name}}
           run:
             path: sh
             args:
@@ -92,7 +95,7 @@ jobs:
               - -e
               - -c
               - |
-                paas-release-ci/scripts/s3init.sh {{state_bucket}} release-ci.tfstate paas-release-ci/pipelines/init_files/terraform.tfstate.tpl
+                paas-release-ci/scripts/s3init.sh {{state_bucket_name}} release-ci.tfstate paas-release-ci/pipelines/init_files/terraform.tfstate.tpl
 
   - name: terraform
     plan:
@@ -117,6 +120,7 @@ jobs:
             - name: updated-release-ci-tfstate
           params:
             TF_VAR_deploy_env: {{deploy_env}}
+            TF_VAR_releases_bucket_name: {{releases_bucket_name}}
           run:
             path: sh
             args:
@@ -153,7 +157,10 @@ jobs:
             BRANCH: {{branch_name}}
             MAKEFILE_ENV_TARGET: {{makefile_env_target}}
             CONCOURSE_ATC_PASSWORD: {{concourse_atc_password}}
+            CONCOURSE_URL: {{concourse_url}}
             GITHUB_ACCESS_TOKEN: {{github_access_token}}
+            STATE_BUCKET_NAME: {{state_bucket_name}}
+            RELEASES_BUCKET_NAME: {{releases_bucket_name}}
           run:
             path: sh
             args:

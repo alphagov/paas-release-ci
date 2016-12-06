@@ -15,10 +15,12 @@ makefile_env_target: ${MAKEFILE_ENV_TARGET}
 self_update_pipeline: ${SELF_UPDATE_PIPELINE:-true}
 aws_account: ${AWS_ACCOUNT}
 deploy_env: ${DEPLOY_ENV}
-state_bucket: gds-paas-${DEPLOY_ENV}-state
+state_bucket_name: ${STATE_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-state}
+releases_bucket_name: ${RELEASES_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-releases}
 branch_name: ${BRANCH:-master}
 aws_region: ${AWS_DEFAULT_REGION:-eu-west-1}
 concourse_atc_password: ${CONCOURSE_ATC_PASSWORD}
+concourse_url: ${CONCOURSE_URL}
 system_dns_zone_name: ${SYSTEM_DNS_ZONE_NAME}
 pipeline_trigger_file: ${pipeline_name}.trigger
 github_access_token: ${GITHUB_ACCESS_TOKEN}
