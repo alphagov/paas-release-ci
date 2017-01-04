@@ -50,3 +50,5 @@ setup_release_pipeline logsearch-for-cloudfoundry alphagov/paas-logsearch-for-cl
 setup_release_pipeline paas-haproxy alphagov/paas-haproxy-release master
 setup_release_pipeline graphite alphagov/paas-graphite-statsd-boshrelease gds_master
 setup_release_pipeline collectd alphagov/paas-collectd-boshrelease gds_master
+setup_release_pipeline datadog-agent alphagov/paas-datadog-agent-boshrelease gds_master
+setup_release_pipeline syslog alphagov/paas-syslog-release gds_master
