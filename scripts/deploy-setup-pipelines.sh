@@ -21,6 +21,7 @@ aws_account: ${AWS_ACCOUNT}
 deploy_env: ${DEPLOY_ENV}
 state_bucket_name: ${STATE_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-state}
 releases_bucket_name: ${RELEASES_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-releases}
+releases_blobs_bucket_name: ${RELEASES_BLOBS_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-releases-blobs}
 branch_name: ${BRANCH:-master}
 aws_region: ${AWS_DEFAULT_REGION:-eu-west-1}
 concourse_atc_password: ${CONCOURSE_ATC_PASSWORD}

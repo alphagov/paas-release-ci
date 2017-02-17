@@ -60,6 +60,7 @@ jobs:
           params:
             TF_VAR_deploy_env: {{deploy_env}}
             TF_VAR_releases_bucket_name: {{releases_bucket_name}}
+            TF_VAR_releases_blobs_bucket_name: {{releases_blobs_bucket_name}}
           run:
             path: sh
             args:
