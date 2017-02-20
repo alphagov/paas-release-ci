@@ -74,7 +74,6 @@ jobs:
             type: docker-image
             source:
               repository: governmentpaas/bosh-cli
-              tag: 130188061_add_bash_to_boshcli
           inputs:
             - name: bosh-release-pr
           outputs:
