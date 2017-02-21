@@ -1,0 +1,111 @@
+---
+resources:
+  - name: {{app_name}}
+    type: git
+    source:
+      uri: {{app_github_repo_uri}}
+      branch: {{app_repository_branch}}
+
+jobs:
+  - name: test
+    plan:
+      - get: {{app_name}}
+        trigger: true
+      - task: test
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: {{app_deployment_docker_image}}
+          inputs:
+            - name: {{app_name}}
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                if [ ! -f {{app_name}}/release/test ]; then
+                  echo No script found at {{app_name}}/release/test, tests disabled
+                  exit 0
+                fi
+                echo Testing with script {{app_name}}/release/test
+                cd {{app_name}} && ./release/test
+
+  - name: deploy
+    plan:
+      - get: {{app_name}}
+        passed: ['test']
+        trigger: true
+      - task: build
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: {{app_deployment_docker_image}}
+          inputs:
+            - name: {{app_name}}
+          outputs:
+            - name: files-to-push
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                if [ ! -f {{app_name}}/release/build ]; then
+                  echo No script found at {{app_name}}/release/build, build disabled
+                  exit 0
+                fi
+                echo Building with script {{app_name}}/release/build...
+                (cd {{app_name}} && ./release/build)
+                echo Copying files to destination...
+                cp -pr {{app_name}}/* files-to-push/
+                ls -l files-to-push
+
+      - task: push
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/cf-cli
+          inputs:
+            - name: files-to-push
+          params:
+            CF_API: {{cf_api}}
+            CF_API_SECURE: {{cf_api_secure}}
+            CF_USER: {{cf_user}}
+            CF_PASSWORD: {{cf_password}}
+            CF_ORG: {{cf_org}}
+            CF_SPACE: {{cf_space}}
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - -x
+              - |
+                echo Logging on to Cloudfoundry...
+                cf login "${CF_API_SECURE:-}" -a "${CF_API}" -u "${CF_USER}" \
+                -p "${CF_PASSWORD}" -o "${CF_ORG}" -s "${CF_SPACE}"
+
+                cd files-to-push
+                if [ -f release/push ]; then
+                  echo Pushing to Cloudfoundry with script {{app_name}}/release/push...
+                  ./release/push
+
+                else
+                  echo No script found at {{app_name}}/release/push, using default push
+
+                  echo Deploy with zero downtime
+                  cf blue-green-deploy {{app_name}}
+
+                  echo Delete left over app
+                  cf delete -f {{app_name}}-old
+                fi

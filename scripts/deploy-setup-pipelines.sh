@@ -1,6 +1,11 @@
 #!/bin/bash
 set -eu
 
+if [ -z "${CF_API:-}" ]; then
+  echo "You must supply \$CF_API, which is the API target of the Cloud Foundry environment apps will be deployed to"
+  exit 1
+fi
+
 SCRIPTS_DIR=$(cd "$(dirname "$0")" && pwd)
 PIPELINES_DIR="${SCRIPTS_DIR}/../pipelines"
 
@@ -9,7 +14,9 @@ $("${SCRIPTS_DIR}/environment.sh")
 "${SCRIPTS_DIR}/fly_sync_and_login.sh"
 
 generate_vars_file() {
-   cat <<EOF
+  cf_user=$(scripts/val_from_yaml.rb secrets.cf_user <(aws s3 cp "s3://gds-paas-${DEPLOY_ENV}-state/cf-cli-secrets.yml" -))
+  cf_password=$(scripts/val_from_yaml.rb secrets.cf_password <(aws s3 cp "s3://gds-paas-${DEPLOY_ENV}-state/cf-cli-secrets.yml" -))
+  cat <<EOF
 ---
 makefile_env_target: ${MAKEFILE_ENV_TARGET}
 self_update_pipeline: ${SELF_UPDATE_PIPELINE:-true}
@@ -24,6 +31,10 @@ concourse_url: ${CONCOURSE_URL}
 system_dns_zone_name: ${SYSTEM_DNS_ZONE_NAME}
 pipeline_trigger_file: ${pipeline_name}.trigger
 github_access_token: ${GITHUB_ACCESS_TOKEN}
+cf_api: ${CF_API}
+cf_api_secure: ${CF_API_SECURE}
+cf_user: ${cf_user}
+cf_password: ${cf_password}
 EOF
 }
 

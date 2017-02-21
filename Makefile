@@ -14,6 +14,7 @@ dev: globals check-env-vars ## Work on the dev account
 	$(eval export AWS_ACCOUNT=dev)
 	$(eval export ENABLE_DESTROY=true)
 	$(eval export SYSTEM_DNS_ZONE_NAME=${DEPLOY_ENV}.dev.cloudpipeline.digital)
+	$(eval export CF_API_SECURE=--skip-ssl-validation)
 	@true
 
 ci: globals ## Work on the ci account
@@ -23,6 +24,7 @@ ci: globals ## Work on the ci account
 	$(eval export ENABLE_AUTO_TRIGGER=true)
 	$(eval export SYSTEM_DNS_ZONE_NAME=${DEPLOY_ENV}.ci.cloudpipeline.digital)
 	$(eval export CONCOURSE_ATC_PASSWORD_PASS_FILE=ci_deployments/build/concourse_password)
+	$(eval export CF_API=https://api.cloud.service.gov.uk)
 	@true
 
 .PHONY: upload-cf-cli-secrets
@@ -41,6 +43,10 @@ pipelines: ## Upload setup pipelines to concourse
 boshrelease-pipelines: ## Upload boshrelease pipelines to concourse
 	@scripts/build-boshrelease-pipelines.sh
 
+.PHONY: app-deployment-pipelines
+app-deployment-pipelines: ## Upload app deployment pipelines to concourse
+	@scripts/build-app-deployment-pipelines.sh
+
 showenv: ## Display environment information
 	@scripts/environment.sh
 
@@ -48,7 +54,11 @@ showenv: ## Display environment information
 ## Testing tasks
 
 .PHONY: test
-test: lint_shellcheck lint_terraform lint_yaml lint_concourse
+test: spec lint_shellcheck lint_terraform lint_yaml lint_concourse
+
+.PHONY: spec
+spec:
+	cd scripts && go test
 
 .PHONY: lint_shellcheck
 lint_shellcheck:
