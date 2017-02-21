@@ -25,6 +25,14 @@ ci: globals ## Work on the ci account
 	$(eval export CONCOURSE_ATC_PASSWORD_PASS_FILE=ci_deployments/build/concourse_password)
 	@true
 
+.PHONY: upload-cf-cli-secrets
+upload-cf-cli-secrets: check-env-vars ## Decrypt and upload CF CLI credentials to S3
+	$(eval export CF_CLI_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
+	$(if ${AWS_ACCOUNT},,$(error Must set environment to dev/ci))
+	$(if ${CF_CLI_PASSWORD_STORE_DIR},,$(error Must pass CF_CLI_PASSWORD_STORE_DIR=<path_to_password_store>))
+	$(if $(wildcard ${CF_CLI_PASSWORD_STORE_DIR}),,$(error Password store ${CF_CLI_PASSWORD_STORE_DIR} does not exist))
+	@scripts/upload-cf-cli-secrets.sh
+
 .PHONY: pipelines
 pipelines: ## Upload setup pipelines to concourse
 	@scripts/deploy-setup-pipelines.sh
