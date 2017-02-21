@@ -22,11 +22,7 @@ FLY_CMD="${FLY_DIR}/fly"
 
 CONCOURSE_ATC_USER=${CONCOURSE_ATC_USER:-admin}
 if [ -z "${CONCOURSE_ATC_PASSWORD:-}" ]; then
-  if [ -n "${CONCOURSE_ATC_PASSWORD_PASS_FILE:-}" ]; then
-    CONCOURSE_ATC_PASSWORD=$(pass "${CONCOURSE_ATC_PASSWORD_PASS_FILE}")
-  else
-    CONCOURSE_ATC_PASSWORD=$(hashed_password "${AWS_SECRET_ACCESS_KEY}:${DEPLOY_ENV}:atc")
-  fi
+  CONCOURSE_ATC_PASSWORD=$(scripts/val_from_yaml.rb secrets.concourse_atc_password <(aws s3 cp "s3://gds-paas-${DEPLOY_ENV}-state/concourse-secrets.yml" -))
 fi
 
 if [ -z "${GITHUB_ACCESS_TOKEN:-}" ]; then
