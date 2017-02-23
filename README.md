@@ -2,23 +2,36 @@
 
 This repository contains the scripts and Terraform configurations required to set up a Concourse pipeline for building Bosh releases. Releases each have their own repository and are stored in an S3 bucket when they are built.
 
+It also includes pipelines for pushing applications to Cloud Foundry.
 
 ## Automatic build
 
-All releases that have a [pipeline defined](scripts/build-boshrelease-pipelines.sh) in this repository, as well as PRs raised from a branch of these releases, are automatically built by `build concourse`. Releases on main branch get final release builds, whereas releases from PRs get development release build.
+There is a generic pipeline template for Bosh releases, and another for applications, which are pushed automatically by the [setup pipeline](pipelines/setup.yml).
 
-The `build concourse` server is deployed in CI account using its own BOSH. You can get information about the server using `make ci showenv` command. This will give you necessary information to log-in to the server.
+For the Bosh releases, pull requests raised on their repository are automatically built by Concourse as dev releases. Merges to the master branch result in automatic building of a release which is semantically versioned in a way that distinguishes them from dev builds.
+
+The `build` Concourse server is deployed in the CI account using its own Bosh. You can get information about the server using `make ci showenv` command. This will give you necessary information to log-in to the server.
 
 ## Requirements
 
 * A running Concourse instance. Currently we use [paas-bootstrap](https://github.com/alphagov/paas-bootstrap) to set up an environment, which contains instructions in its README. But you can use any existing concourse instance by [overriding environment variables](#overriding-variables).
+* CF CLI user credentials. This user is used to push apps to Cloud Foundry. For production apps (pushed from the build Concourse in CI) this user's credentials should already exist in the state bucket. They are persistently stored in `.paas-pass`.
 
 ## Setup
 
-* Run `make <env> pipelines`
-* Visit your running Concourse instance in a browser and trigger the `setup` pipeline.
+The instructions below are for CI, which is our persistent build environment. See the section below on dev environments if you are not deploying to CI.
+
+* If the CF CLI user's credentials are not in the state S3 bucket, run `DEPLOY_ENV=build make ci upload-cf-cli-secrets` to upload them.
+* Run `DEPLOY_ENV=build make ci pipelines`.
+* The `setup` pipeline should auto-trigger and update all the pipelines.
 
 A pipeline should be created for each Bosh release this repository is currently building releases for. The `build-dev-release` jobs should trigger when pull requests are raised against the Bosh release's repository. The `build-final-release` job should trigger when new commits are added to the branch used to build final releases.
+
+### Dev environments
+
+* Run `DEPLOY_ENV=... make dev upload-cf-cli-secrets`. You can override the credentials used by setting `CF_USER` and `CF_PASSWORD`.
+* Run `CF_API=... DEPLOY_ENV=... make dev pipelines`, where `CF_API` is the URL of your dev Cloud Foundry API.
+* The `setup` pipeline doesn't auto-trigger in Dev. Visit your running Concourse instance in a browser and trigger it manually,  or set the environment variable `ENABLE_AUTO_TRIGGER` to `true` at the previous step.
 
 ## Overriding variables
 
