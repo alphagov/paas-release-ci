@@ -55,6 +55,7 @@ jobs:
             GITHUB_ACCESS_TOKEN: {{github_access_token}}
             STATE_BUCKET_NAME: {{state_bucket_name}}
             RELEASES_BUCKET_NAME: {{releases_bucket_name}}
+            CF_API: {{cf_api}}
           run:
             path: sh
             args:
@@ -135,7 +136,7 @@ jobs:
           put: release-ci-tfstate
           params:
             file: updated-release-ci-tfstate/release-ci.tfstate
-  - name: boshrelease-pipelines
+  - name: dynamic-pipelines
     plan:
       - aggregate:
           - get: pipeline-trigger
@@ -161,6 +162,10 @@ jobs:
             GITHUB_ACCESS_TOKEN: {{github_access_token}}
             STATE_BUCKET_NAME: {{state_bucket_name}}
             RELEASES_BUCKET_NAME: {{releases_bucket_name}}
+            CF_API: {{cf_api}}
+            CF_API_SECURE: {{cf_api_secure}}
+            CF_USER: {{cf_user}}
+            CF_PASSWORD: {{cf_password}}
           run:
             path: sh
             args:
@@ -169,3 +174,4 @@ jobs:
               - -c
               - |
                 make -C ./paas-release-ci "${MAKEFILE_ENV_TARGET}" boshrelease-pipelines
+                make -C ./paas-release-ci "${MAKEFILE_ENV_TARGET}" app-deployment-pipelines
