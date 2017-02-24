@@ -2,8 +2,7 @@
 set -eu
 
 if [ -z "${CF_API:-}" ]; then
-  echo "You must supply \$CF_API, which is the API target of the Cloud Foundry environment apps will be deployed to"
-  exit 1
+  echo "WARNING: \$CF_API not set, the app deployment pipelines will fail"
 fi
 
 SCRIPTS_DIR=$(cd "$(dirname "$0")" && pwd)
@@ -29,8 +28,8 @@ concourse_url: ${CONCOURSE_URL}
 system_dns_zone_name: ${SYSTEM_DNS_ZONE_NAME}
 pipeline_trigger_file: ${pipeline_name}.trigger
 github_access_token: ${GITHUB_ACCESS_TOKEN}
-cf_api: ${CF_API}
-cf_api_secure: ${CF_API_SECURE}
+cf_api: ${CF_API:-}
+cf_api_secure: ${CF_API_SECURE:-}
 cf_user: ${CF_USER}
 cf_password: ${CF_PASSWORD}
 EOF

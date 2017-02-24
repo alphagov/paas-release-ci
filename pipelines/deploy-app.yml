@@ -89,8 +89,11 @@ jobs:
               - -e
               - -u
               - -c
-              - -x
               - |
+                if [ -z "${CF_API}" ]; then
+                  echo "\$CF_API is empty, cannot connect to CF API"
+                  exit 1
+                fi
                 echo Logging on to Cloudfoundry...
                 cf login "${CF_API_SECURE:-}" -a "${CF_API}" -u "${CF_USER}" \
                 -p "${CF_PASSWORD}" -o "${CF_ORG}" -s "${CF_SPACE}"
