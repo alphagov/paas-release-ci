@@ -29,7 +29,13 @@ if [ -z "${GITHUB_ACCESS_TOKEN:-}" ]; then
   GITHUB_ACCESS_TOKEN=$(pass github.com/release_ci_pr_status_token)
 fi
 
-CF_USER=${CF_USER:-admin}
+if [ -z "${CF_USER:-}" ]; then
+  if aws s3 ls "s3://gds-paas-${DEPLOY_ENV}-state/cf-cli-secrets.yml" > /dev/null; then
+    CF_USER=$(scripts/val_from_yaml.rb secrets.cf_user <(aws s3 cp "s3://gds-paas-${DEPLOY_ENV}-state/cf-cli-secrets.yml" -))
+  else
+    CF_USER="admin"
+  fi
+fi
 if [ -z "${CF_PASSWORD:-}" ]; then
   if aws s3 ls "s3://gds-paas-${DEPLOY_ENV}-state/cf-cli-secrets.yml" > /dev/null; then
     CF_PASSWORD=$(scripts/val_from_yaml.rb secrets.cf_password <(aws s3 cp "s3://gds-paas-${DEPLOY_ENV}-state/cf-cli-secrets.yml" -))
