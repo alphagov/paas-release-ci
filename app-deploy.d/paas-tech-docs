@@ -1,4 +1,4 @@
-APP_NAME="tech-docs"
+APP_NAME="paas-tech-docs"
 APP_REPOSITORY="https://github.com/alphagov/paas-tech-docs.git"
 APP_BRANCH="master"
 APP_DOCKER_IMAGE="governmentpaas/tech-docs"
