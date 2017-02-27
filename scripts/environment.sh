@@ -31,7 +31,11 @@ fi
 
 CF_USER=${CF_USER:-admin}
 if [ -z "${CF_PASSWORD:-}" ]; then
-  CF_PASSWORD=$(scripts/val_from_yaml.rb secrets.cf_password <(aws s3 cp "s3://gds-paas-${DEPLOY_ENV}-state/cf-cli-secrets.yml" -))
+  if aws s3 ls "s3://gds-paas-${DEPLOY_ENV}-state/cf-cli-secrets.yml" > /dev/null; then
+    CF_PASSWORD=$(scripts/val_from_yaml.rb secrets.cf_password <(aws s3 cp "s3://gds-paas-${DEPLOY_ENV}-state/cf-cli-secrets.yml" -))
+  else
+    CF_PASSWORD=""
+  fi
 fi
 
 cat <<EOF
