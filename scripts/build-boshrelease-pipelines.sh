@@ -54,4 +54,4 @@ setup_release_pipeline datadog-agent alphagov/paas-datadog-agent-boshrelease gds
 setup_release_pipeline syslog alphagov/paas-syslog-release gds_master
 setup_release_pipeline ipsec alphagov/paas-ipsec-release gds_master
 setup_release_pipeline grafana alphagov/paas-grafana-boshrelease gds_master
-setup_release_pipeline cdn_broker alphagov/paas-cdn-broker master
+setup_release_pipeline cdn-broker alphagov/paas-cdn-broker master
