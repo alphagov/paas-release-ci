@@ -13,12 +13,12 @@ echo "Downloading fly command..."
 if [ -f "$FLY_CMD" ]; then
   timestamp_flag=1
 fi
-curl "$FLY_CMD_URL" -# -L -f -k ${timestamp_flag:+-z "$FLY_CMD"} -o "$FLY_CMD" -u "${CONCOURSE_ATC_USER}:${CONCOURSE_ATC_PASSWORD}"
+curl "$FLY_CMD_URL" -# -L -f ${timestamp_flag:+-z "$FLY_CMD"} -o "$FLY_CMD" -u "${CONCOURSE_ATC_USER}:${CONCOURSE_ATC_PASSWORD}"
 chmod +x "$FLY_CMD"
 
 echo "Doing fly login"
 echo -e "${CONCOURSE_ATC_USER}\n${CONCOURSE_ATC_PASSWORD}" | \
-  $FLY_CMD -t "${FLY_TARGET}" login -k --concourse-url "${CONCOURSE_URL}"
+  $FLY_CMD -t "${FLY_TARGET}" login --concourse-url "${CONCOURSE_URL}"
 
 echo "Doing fly sync"
   $FLY_CMD -t "${FLY_TARGET}" sync
