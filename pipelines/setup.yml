@@ -37,7 +37,7 @@ jobs:
   - name: self-update
     plan:
       - get: paas-release-ci
-        trigger: {{auto_trigger}}
+        trigger: true
       - task: self-update-pipeline
         config:
           platform: linux
