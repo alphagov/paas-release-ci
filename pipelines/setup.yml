@@ -180,4 +180,5 @@ jobs:
               - -c
               - |
                 make -C ./paas-release-ci "${MAKEFILE_ENV_TARGET}" boshrelease-pipelines
+                make -C ./paas-release-ci "${MAKEFILE_ENV_TARGET}" integration-test-pipelines
                 make -C ./paas-release-ci "${MAKEFILE_ENV_TARGET}" app-deployment-pipelines
