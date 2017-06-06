@@ -11,23 +11,23 @@ $("${SCRIPTS_DIR}/environment.sh")
 generate_vars_file() {
    cat <<EOF
 ---
-aws_account: ${AWS_ACCOUNT:-dev}
-deploy_env: ${DEPLOY_ENV}
-branch_name: ${BRANCH:-master}
-aws_region: ${AWS_DEFAULT_REGION:-eu-west-1}
-concourse_atc_password: ${CONCOURSE_ATC_PASSWORD}
-concourse_url: ${CONCOURSE_URL}
-system_dns_zone_name: ${SYSTEM_DNS_ZONE_NAME}
-aws_account: ${AWS_ACCOUNT}
-releases_bucket_name: ${RELEASES_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-releases}
-releases_blobs_bucket_name: ${RELEASES_BLOBS_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-releases-blobs}
-github_access_token: ${GITHUB_ACCESS_TOKEN}
-github_status_context: ${DEPLOY_ENV}/status
-boshrelease_name: ${boshrelease_name}
-github_repo: ${github_repo}
-github_repo_uri: https://github.com/${github_repo}
-final_release_branch: ${final_release_branch}
-version_file: ${boshrelease_name}.version
+aws_account: "${AWS_ACCOUNT:-dev}"
+deploy_env: "${DEPLOY_ENV}"
+branch_name: "${BRANCH:-master}"
+aws_region: "${AWS_DEFAULT_REGION:-eu-west-1}"
+concourse_atc_password: "${CONCOURSE_ATC_PASSWORD}"
+concourse_url: "${CONCOURSE_URL}"
+system_dns_zone_name: "${SYSTEM_DNS_ZONE_NAME}"
+aws_account: "${AWS_ACCOUNT}"
+releases_bucket_name: "${RELEASES_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-releases}"
+releases_blobs_bucket_name: "${RELEASES_BLOBS_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-releases-blobs}"
+github_access_token: "${GITHUB_ACCESS_TOKEN}"
+github_status_context: "${DEPLOY_ENV}/status"
+boshrelease_name: "${boshrelease_name}"
+github_repo: "${github_repo}"
+github_repo_uri: "https://github.com/${github_repo}"
+final_release_branch: "${final_release_branch}"
+version_file: "${boshrelease_name}.version"
 EOF
 }
 

@@ -21,8 +21,8 @@ trap 'rm  "${SECRETS}"' EXIT
 cat > "${SECRETS}" << EOF
 ---
 secrets:
-  cf_user: ${cf_user}
-  cf_password: ${cf_password}
+  cf_user: "${cf_user}"
+  cf_password: "${cf_password}"
 EOF
 
 aws s3 cp "${SECRETS}" "s3://gds-paas-${DEPLOY_ENV}-state/cf-cli-secrets.yml"
