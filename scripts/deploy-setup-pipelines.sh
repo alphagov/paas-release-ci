@@ -36,17 +36,10 @@ cf_password: ${CF_PASSWORD}
 EOF
 }
 
-generate_manifest_file() {
-  # This exists because concourse does not support boolean value interpolation by design
-  enable_auto_trigger=$([ "${ENABLE_AUTO_TRIGGER:-}" ] && echo "true" || echo "false")
-  sed -e "s/{{auto_trigger}}/${enable_auto_trigger}/" \
-    < "${PIPELINES_DIR}/${pipeline_name}.yml"
-}
-
 upload_pipeline() {
-  bash "${SCRIPTS_DIR}/deploy-pipeline.sh" \
+  UNPAUSE_PIPELINES=true bash "${SCRIPTS_DIR}/deploy-pipeline.sh" \
         "${pipeline_name}" \
-        <(generate_manifest_file) \
+        "${PIPELINES_DIR}/${pipeline_name}.yml" \
         <(generate_vars_file)
 }
 

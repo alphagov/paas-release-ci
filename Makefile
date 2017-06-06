@@ -13,6 +13,7 @@ dev: globals check-env-vars ## Work on the dev account
 	$(eval export MAKEFILE_ENV_TARGET=dev)
 	$(eval export AWS_ACCOUNT=dev)
 	$(eval export ENABLE_DESTROY=true)
+	$(eval export UNPAUSE_PIPELINES=false)
 	$(eval export SYSTEM_DNS_ZONE_NAME=${DEPLOY_ENV}.dev.cloudpipeline.digital)
 	$(eval export CF_API_SECURE=--skip-ssl-validation)
 	@true
@@ -21,7 +22,6 @@ ci: globals ## Work on the ci account
 	$(eval export MAKEFILE_ENV_TARGET=ci)
 	$(eval export DEPLOY_ENV=build)
 	$(eval export AWS_ACCOUNT=ci)
-	$(eval export ENABLE_AUTO_TRIGGER=true)
 	$(eval export SYSTEM_DNS_ZONE_NAME=${DEPLOY_ENV}.ci.cloudpipeline.digital)
 	$(eval export CONCOURSE_ATC_PASSWORD_PASS_FILE=ci_deployments/build/concourse_password)
 	$(eval export CF_API=https://api.cloud.service.gov.uk)

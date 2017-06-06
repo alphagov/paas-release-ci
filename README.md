@@ -31,7 +31,7 @@ A pipeline should be created for each Bosh release this repository is currently 
 
 * Run `DEPLOY_ENV=... make dev upload-cf-cli-secrets`. You can override the credentials used by setting `CF_USER` and `CF_PASSWORD`.
 * Run `CF_API=... DEPLOY_ENV=... make dev pipelines`, where `CF_API` is the URL of your dev Cloud Foundry API.
-* The `setup` pipeline doesn't auto-trigger in Dev. Visit your running Concourse instance in a browser and trigger it manually,  or set the environment variable `ENABLE_AUTO_TRIGGER` to `true` at the previous step.
+* The individual build and test pipelines are paused in Dev. You can manaully unpause the ones that you need to work on, but be aware that they will submit their results to GitHub pull requests.
 
 ## Overriding variables
 

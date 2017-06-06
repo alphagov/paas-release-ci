@@ -38,9 +38,11 @@ yes y | \
    --pipeline "${pipeline}" \
    --load-vars-from "${varsfile}"
 
-$FLY_CMD -t "${FLY_TARGET}" \
-  unpause-pipeline \
-  --pipeline "${pipeline}"
+if [ "${UNPAUSE_PIPELINES:-true}" != "false" ]; then
+  $FLY_CMD -t "${FLY_TARGET}" \
+    unpause-pipeline \
+    --pipeline "${pipeline}"
+fi
 
 $FLY_CMD -t "${FLY_TARGET}" \
   expose-pipeline \
