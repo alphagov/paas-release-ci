@@ -35,6 +35,7 @@ jobs:
                 cd {{app_name}} && ./release/test
 
   - name: deploy
+    serial: true
     plan:
       - get: {{app_name}}
         passed: ['test']
