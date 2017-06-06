@@ -39,14 +39,6 @@ setup_release_pipeline() {
 
   generate_vars_file > /dev/null # Check for missing vars
 
-  # FIXME: Remove when deployed.
-  if $FLY_CMD -t "${FLY_TARGET}" pipelines | grep -qE "^${boshrelease_name}\s"; then
-    $FLY_CMD -t "${FLY_TARGET}" \
-      rename-pipeline \
-      -o "${boshrelease_name}" \
-      -n "${pipeline_name}"
-  fi
-
   bash "${SCRIPTS_DIR}/deploy-pipeline.sh" \
     "${pipeline_name}" \
     "${PIPELINES_DIR}/build-release.yml" \
