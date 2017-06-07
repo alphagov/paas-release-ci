@@ -47,6 +47,10 @@ boshrelease-pipelines: ## Upload boshrelease pipelines to concourse
 app-deployment-pipelines: ## Upload app deployment pipelines to concourse
 	@scripts/build-app-deployment-pipelines.sh
 
+.PHONY: integration-test-pipelines
+integration-test-pipelines: ## Upload integration test pipelines to concourse
+	@scripts/integration-test-pipelines.sh
+
 showenv: ## Display environment information
 	@scripts/environment.sh
 

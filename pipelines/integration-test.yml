@@ -1,0 +1,42 @@
+---
+resource_types:
+  - name: pull-request
+    type: docker-image
+    source:
+      repository: jtarchie/pr
+
+resources:
+  - name: pr
+    type: pull-request
+    source:
+      repo: {{github_repo}}
+      access_token: {{github_access_token}}
+      every: true
+      disable_forks: true
+
+jobs:
+  - name: integration-test
+    serial: true
+    plan:
+      - get: pr
+        version: every
+        trigger: true
+      - put: pr
+        params:
+          path: pr
+          context: {{github_status_context}}
+          status: pending
+      - task: run-tests
+        file: pr/ci/integration.yml
+    on_success:
+      put: pr
+      params:
+        path: pr
+        context: {{github_status_context}}
+        status: success
+    on_failure:
+      put: pr
+      params:
+        path: pr
+        context: {{github_status_context}}
+        status: failure
