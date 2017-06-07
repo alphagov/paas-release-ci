@@ -40,8 +40,13 @@ class Pipecleaner(object):
         data = self.load_pipeline(filename)
         return self.check_pipeline(data)
 
-    def load_pipeline(self, filename):
-        raw = open(filename).read()
+    def load_pipeline(self, filename, ignore_missing=False):
+        try:
+          raw = open(filename).read()
+        except IOError:
+          if not ignore_missing: raise
+          raw = "{}"
+
         raw = re.sub('\{\{.*?\}\}', 'DUMMY', raw)
         return yaml.load(raw)
 
@@ -149,7 +154,7 @@ class Pipecleaner(object):
 
                 if 'task' in item:
                     if 'file' in item:
-                        item['config'] = self.load_pipeline(item['file'])
+                        item['config'] = self.load_pipeline(item['file'], ignore_missing=True)
 
                     if 'inputs' in item['config']:
                         for i in item['config']['inputs']:
