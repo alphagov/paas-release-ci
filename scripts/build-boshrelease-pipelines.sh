@@ -45,7 +45,7 @@ setup_release_pipeline() {
     <(generate_vars_file)
 }
 
-setup_release_pipeline rds-broker alphagov/paas-rds-broker-boshrelease master
+setup_release_pipeline rds-broker alphagov/paas-rds-broker-boshrelease add_createdUser_connection_test
 setup_release_pipeline datadog-for-cloudfoundry alphagov/paas-datadog-for-cloudfoundry-boshrelease master
 setup_release_pipeline logsearch-for-cloudfoundry alphagov/paas-logsearch-for-cloudfoundry gds_master
 setup_release_pipeline paas-haproxy alphagov/paas-haproxy-release master
