@@ -16,7 +16,6 @@ resources:
 
 jobs:
   - name: integration-test
-    serial: true
     plan:
       - get: pr
         version: every
