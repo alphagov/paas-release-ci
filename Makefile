@@ -35,6 +35,14 @@ upload-cf-cli-secrets: check-env-vars ## Decrypt and upload CF CLI credentials t
 	$(if $(wildcard ${CF_CLI_PASSWORD_STORE_DIR}),,$(error Password store ${CF_CLI_PASSWORD_STORE_DIR} does not exist))
 	@scripts/upload-cf-cli-secrets.sh
 
+.PHONY: upload-compose-secrets
+upload-compose-secrets: check-env-vars ## Decrypt and upload Compose credentials to S3
+	$(eval export COMPOSE_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
+	$(if ${AWS_ACCOUNT},,$(error Must set environment to dev/ci))
+	$(if ${COMPOSE_PASSWORD_STORE_DIR},,$(error Must pass COMPOSE_PASSWORD_STORE_DIR=<path_to_password_store>))
+	$(if $(wildcard ${COMPOSE_PASSWORD_STORE_DIR}),,$(error Password store ${COMPOSE_PASSWORD_STORE_DIR} does not exist))
+	@scripts/upload-compose-secrets.sh
+
 .PHONY: pipelines
 pipelines: ## Upload setup pipelines to concourse
 	@scripts/deploy-setup-pipelines.sh
@@ -53,7 +61,6 @@ integration-test-pipelines: ## Upload integration test pipelines to concourse
 
 showenv: ## Display environment information
 	@scripts/environment.sh
-
 
 ## Testing tasks
 
