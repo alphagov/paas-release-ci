@@ -33,6 +33,20 @@ resources:
       region_name: {{aws_region}}
       versioned_file: release-ci.tfstate
 
+  - name: ssh-private-key
+    type: s3-iam
+    source:
+      bucket: {{state_bucket_name}}
+      versioned_file: ci_build_tag_key
+      region_name: {{aws_region}}
+
+  - name: ssh-public-key
+    type: s3-iam
+    source:
+      bucket: {{state_bucket_name}}
+      versioned_file: ci_build_tag_key.pub
+      region_name: {{aws_region}}
+
 jobs:
   - name: self-update
     plan:
@@ -100,6 +114,9 @@ jobs:
               - -c
               - |
                 paas-release-ci/scripts/s3init.sh {{state_bucket_name}} release-ci.tfstate paas-release-ci/pipelines/init_files/terraform.tfstate.tpl
+                paas-release-ci/scripts/s3init.sh {{state_bucket_name}} ci_build_tag_key paas-release-ci/pipelines/init_files/zero_bytes
+                paas-release-ci/scripts/s3init.sh {{state_bucket_name}} ci_build_tag_key.pub paas-release-ci/pipelines/init_files/zero_bytes
+                paas-release-ci/scripts/s3init.sh {{state_bucket_name}} no-secrets-needed paas-release-ci/pipelines/init_files/zero_bytes
 
   - name: terraform
     plan:
@@ -141,11 +158,65 @@ jobs:
           put: release-ci-tfstate
           params:
             file: updated-release-ci-tfstate/release-ci.tfstate
+
+  - name: generate-ssh-keys
+    serial: true
+    plan:
+      - aggregate:
+         - get: ssh-private-key
+         - get: ssh-public-key
+         - get: pipeline-trigger
+           passed: ['terraform']
+           trigger: true
+      - task: generate-deployments-ssh-keypair
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/git-ssh
+              tag: 895cf6752c8ec64af05a3a735186b90acd3db65a
+          inputs:
+            - name: ssh-private-key
+            - name: ssh-public-key
+          outputs:
+            - name: generated-ssh-private-key
+            - name: generated-ssh-public-key
+          run:
+            path: sh
+            args:
+              - -e
+              - -c
+              - |
+                if [ -s ssh-private-key/ci_build_tag_key ] ; then
+                  echo "Deployments private key non-zero size, skipping generation..."
+                  echo "Key uploads will fail and this is OK as no new keys have been generated."
+                  echo "Existing ssh key is ..."
+                  cat ssh-public-key/ci_build_tag_key.pub
+                  exit 0
+                fi
+
+                echo "Generating new ssh key pair for deployments..."
+                ssh-keygen -t rsa -b 4096 -f ci_build_tag_key -N ''
+                echo "New ssh key is ..."
+                cat ci_build_tag_key.pub
+                cp ci_build_tag_key generated-ssh-private-key
+                cp ci_build_tag_key.pub generated-ssh-public-key
+        on_success:
+          try:
+            aggregate:
+              - put: ssh-private-key
+                params:
+                  file: generated-ssh-private-key/ci_build_tag_key
+              - put: ssh-public-key
+                params:
+                  file: generated-ssh-public-key/ci_build_tag_key.pub
+
   - name: dynamic-pipelines
     plan:
       - aggregate:
           - get: pipeline-trigger
-            passed: ['terraform']
+            passed: ['generate-ssh-keys']
             trigger: true
           - get: paas-release-ci
             passed: ['terraform']
@@ -180,5 +251,5 @@ jobs:
               - -c
               - |
                 make -C ./paas-release-ci "${MAKEFILE_ENV_TARGET}" boshrelease-pipelines
-                make -C ./paas-release-ci "${MAKEFILE_ENV_TARGET}" integration-test-pipelines
                 make -C ./paas-release-ci "${MAKEFILE_ENV_TARGET}" app-deployment-pipelines
+                make -C ./paas-release-ci "${MAKEFILE_ENV_TARGET}" integration-test-pipelines

@@ -40,13 +40,8 @@ class Pipecleaner(object):
         data = self.load_pipeline(filename)
         return self.check_pipeline(data)
 
-    def load_pipeline(self, filename, ignore_missing=False):
-        try:
-          raw = open(filename).read()
-        except IOError:
-          if not ignore_missing: raise
-          raw = "{}"
-
+    def load_pipeline(self, filename):
+        raw = open(filename).read()
         raw = re.sub('\{\{.*?\}\}', 'DUMMY', raw)
         return yaml.load(raw)
 
@@ -92,6 +87,7 @@ class Pipecleaner(object):
         for job in data['jobs']:
             plan = job['plan']
 
+            external_tasks = set()
             get_resources = set()
             used_resources = set()
             output_resources = set()
@@ -117,6 +113,10 @@ class Pipecleaner(object):
                     plan = [item] + discovered_blocks + plan
                     continue
 
+                # resources can be imported using a different name
+                if 'resource' in item:
+                    item['get'] = item['resource']
+
                 if 'get' in item:
                     get_resources.add(item['get'])
                     if 'trigger' in item:
@@ -136,6 +136,9 @@ class Pipecleaner(object):
                     output_resources.add(item['put'])
                     used_resources.add(item['put'])
 
+                    if 'resource' in item:
+                        item['put'] = item['resource']
+
                     # It is a common pattern to define an output that is then
                     # used in an ensure block that does not need explicit
                     # inputs
@@ -154,7 +157,12 @@ class Pipecleaner(object):
 
                 if 'task' in item:
                     if 'file' in item:
-                        item['config'] = self.load_pipeline(item['file'], ignore_missing=True)
+                        task_resource, task_file = item['file'].split('/', 1)
+                        if os.path.isfile(task_file):
+                            item['config'] = self.load_pipeline(item['file'])
+                        else:
+                            item['config'] = {}
+                            external_tasks.add(task_file)
 
                     if 'inputs' in item['config']:
                         for i in item['config']['inputs']:
@@ -200,7 +208,7 @@ class Pipecleaner(object):
             # We ignore triggered resources as they are often only used to
             # trigger and not used in the tasks
             get_remainder = get_resources - used_resources - triggered_resources
-            if get_remainder:
+            if get_remainder and not external_tasks:
                 for resource in get_remainder:
                     errors['unused_fetch'].append({
                         'job': job['name'],

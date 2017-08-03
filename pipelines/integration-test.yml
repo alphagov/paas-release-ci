@@ -5,6 +5,12 @@ resource_types:
     source:
       repository: jtarchie/pr
 
+  - name: s3-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/s3-resource
+      tag: 9e7cf1dd32699c091e22e46b349e050443d9ac1a
+
 resources:
   - name: pr
     type: pull-request
@@ -14,29 +20,89 @@ resources:
       every: true
       disable_forks: true
 
+  - name: release-repository
+    type: git
+    source:
+      branch: {{tag_branch}}
+      ignore_paths:
+        - {{version_file}}
+      private_key: {{tagging_key}}
+      uri: {{github_repo_uri}}
+
+  - name: resource-version
+    type: semver
+    source:
+      branch: {{tag_branch}}
+      driver: git
+      file: {{version_file}}
+      git_user: "GovUK-PaaS-CI-User <the-multi-cloud-paas-team+ci-github-user@digital.cabinet-office.gov.uk>"
+      initial_version: 0.0.1
+      private_key: {{tagging_key}}
+      uri: {{github_repo_uri}}
+
+  - name: secrets
+    type: s3-iam
+    source:
+      bucket: {{state_bucket}}
+      region_name: {{aws_region}}
+      versioned_file: {{secrets_file}}
+
 jobs:
   - name: integration-test
     serial: true
     plan:
-      - get: pr
+      - get: secrets
+      - get: repo
+        resource: pr
         version: every
         trigger: true
-      - put: pr
+      - put: repo
+        resource: pr
         params:
-          path: pr
+          path: repo
           context: {{github_status_context}}
           status: pending
       - task: run-tests
-        file: pr/ci/integration.yml
+        params:
+          STATE_BUCKET: {{state_bucket}}
+          AWS_REGION: {{aws_region}}
+          SECRETS_FILE: {{secrets_file}}
+        file: repo/ci/integration.yml
     on_success:
-      put: pr
+      put: repo
+      resource: pr
       params:
-        path: pr
+        path: repo
         context: {{github_status_context}}
         status: success
     on_failure:
-      put: pr
+      put: repo
+      resource: pr
       params:
-        path: pr
+        path: repo
         context: {{github_status_context}}
         status: failure
+
+  - name: tag-releases
+    serial: true
+    plan:
+    - get: repo
+      resource: release-repository
+      trigger: true
+    - get: secrets
+    - get: resource-version
+      params:
+        bump: minor
+    - task: run-tests
+      file: repo/ci/integration.yml
+      on_success:
+        put: resource-version
+        params:
+          file: resource-version/number
+    on_success:
+      put: release-repository
+      params:
+        only_tag: true
+        repository: repo
+        tag: resource-version/number
+        tag_prefix: "v"
