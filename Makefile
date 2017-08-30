@@ -3,6 +3,7 @@ help:
 
 check-env-vars:
 	$(if ${DEPLOY_ENV},,$(error Must pass DEPLOY_ENV=<name>))
+	@./scripts/validate_aws_credentials.sh
 
 PASSWORD_STORE_DIR?=${HOME}/.paas-pass
 globals:
@@ -61,6 +62,9 @@ integration-test-pipelines: ## Upload integration test pipelines to concourse
 
 showenv: ## Display environment information
 	@scripts/environment.sh
+	@echo export CONCOURSE_IP=$$(aws ec2 describe-instances \
+		--filters 'Name=tag:Name,Values=concourse/*' "Name=key-name,Values=${DEPLOY_ENV}_concourse_key_pair" \
+		--query 'Reservations[].Instances[].PublicIpAddress' --output text)
 
 ## Testing tasks
 
@@ -92,3 +96,7 @@ lint_yaml:
 .PHONY: lint_concourse
 lint_concourse:
 	./scripts/pipecleaner.py --fatal-warnings pipelines/*.yml
+
+shake_concourse_volumes: check-env-vars ## Restarts concourse services and workers and clears the volumes
+	@./scripts/ssh.sh scp scripts/shake_concourse_volumes.sh /tmp/
+	@./scripts/ssh.sh ssh bash -i /tmp/shake_concourse_volumes.sh
