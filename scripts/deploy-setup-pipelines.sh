@@ -44,7 +44,7 @@ upload_pipeline() {
 }
 
 remove_pipeline() {
-  yes y | ${FLY_CMD} -t "${FLY_TARGET}" destroy-pipeline --pipeline "${pipeline_name}" || true
+  ${FLY_CMD} -t "${FLY_TARGET}" destroy-pipeline --pipeline "${pipeline_name}" --non-interactive || true
 }
 
 pipeline_name=setup
