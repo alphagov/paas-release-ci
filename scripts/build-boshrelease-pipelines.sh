@@ -47,7 +47,7 @@ setup_release_pipeline() {
 
 setup_release_pipeline rds-broker alphagov/paas-rds-broker-boshrelease master
 setup_release_pipeline datadog-for-cloudfoundry alphagov/paas-datadog-for-cloudfoundry-boshrelease master
-setup_release_pipeline logsearch-for-cloudfoundry alphagov/paas-logsearch-for-cloudfoundry gds_master
+setup_release_pipeline logsearch-for-cloudfoundry alphagov/paas-logsearch-for-cloudfoundry master
 setup_release_pipeline paas-haproxy alphagov/paas-haproxy-release master
 setup_release_pipeline graphite alphagov/paas-graphite-statsd-boshrelease gds_master
 setup_release_pipeline collectd alphagov/paas-collectd-boshrelease gds_master
