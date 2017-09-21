@@ -43,6 +43,13 @@ upload-compose-secrets: check-env-vars ## Decrypt and upload Compose credentials
 	$(if $(wildcard ${COMPOSE_PASSWORD_STORE_DIR}),,$(error Password store ${COMPOSE_PASSWORD_STORE_DIR} does not exist))
 	@scripts/upload-compose-secrets.sh
 
+.PHONY: upload-deskpro-secrets
+upload-deskpro-secrets: check-env-vars ## Decrypt and upload DeskPro credentials to S3
+	$(eval export DESKPRO_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
+	$(if ${DESKPRO_PASSWORD_STORE_DIR},,$(error Must pass DESKPRO_PASSWORD_STORE_DIR=<path_to_password_store>))
+	$(if $(wildcard ${DESKPRO_PASSWORD_STORE_DIR}),,$(error Password store ${DESKPRO_PASSWORD_STORE_DIR} does not exist))
+	@scripts/upload-deskpro-secrets.sh
+
 .PHONY: pipelines
 pipelines: ## Upload setup pipelines to concourse
 	@scripts/deploy-setup-pipelines.sh
