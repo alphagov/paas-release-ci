@@ -73,15 +73,20 @@ jobs:
               - -u
               - -c
               - |
+                copy_files() {
+                  echo Copying files to destination...
+                  cp -pr {{app_name}}/* files-to-push/
+                  ls -l files-to-push
+                }
+
                 if [ ! -f {{app_name}}/release/build ]; then
                   echo No script found at {{app_name}}/release/build, build disabled
+                  copy_files
                   exit 0
                 fi
                 echo Building with script {{app_name}}/release/build...
                 (cd {{app_name}} && ./release/build)
-                echo Copying files to destination...
-                cp -pr {{app_name}}/* files-to-push/
-                ls -l files-to-push
+                copy_files
 
       - task: push
         config:
