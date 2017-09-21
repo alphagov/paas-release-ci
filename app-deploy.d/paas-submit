@@ -1,0 +1,6 @@
+APP_NAME="paas-submit"
+APP_REPOSITORY="https://github.com/alphagov/paas-submit.git"
+APP_BRANCH="master"
+APP_DOCKER_IMAGE="governmentpaas/paas-product-page"
+APP_CF_ORG="govuk-paas"
+APP_CF_SPACE="docs"
