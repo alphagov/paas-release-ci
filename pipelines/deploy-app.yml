@@ -1,10 +1,24 @@
 ---
+resource_types:
+  - name: s3-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/s3-resource
+      tag: 594eaa9f4d93b2ed32a7e5e1cdea5b380e2f6682
+
 resources:
   - name: {{app_name}}
     type: git
     source:
       uri: {{app_github_repo_uri}}
       branch: {{app_repository_branch}}
+
+  - name: secrets
+    type: s3-iam
+    source:
+      bucket: {{state_bucket}}
+      region_name: {{aws_region}}
+      versioned_file: {{secrets_file}}
 
 jobs:
   - name: test
@@ -40,6 +54,7 @@ jobs:
       - get: {{app_name}}
         passed: ['test']
         trigger: true
+      - get: secrets
       - task: build
         config:
           platform: linux
@@ -78,6 +93,7 @@ jobs:
               tag: 895cf6752c8ec64af05a3a735186b90acd3db65a
           inputs:
             - name: files-to-push
+            - name: secrets
           params:
             CF_API: {{cf_api}}
             CF_API_SECURE: {{cf_api_secure}}
@@ -85,6 +101,7 @@ jobs:
             CF_PASSWORD: {{cf_password}}
             CF_ORG: {{cf_org}}
             CF_SPACE: {{cf_space}}
+            SECRETS_FILE: {{secrets_file}}
           run:
             path: sh
             args:
