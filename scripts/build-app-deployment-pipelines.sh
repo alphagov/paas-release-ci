@@ -21,6 +21,9 @@ cf_user: ${CF_USER}
 cf_password: ${CF_PASSWORD}
 cf_org: ${CF_ORG:-${APP_CF_ORG}}
 cf_space: ${CF_SPACE:-${APP_CF_SPACE}}
+state_bucket: ${STATE_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-state}
+aws_region: ${AWS_DEFAULT_REGION:-eu-west-1}
+secrets_file: ${SECRETS_FILE:-no-secrets-needed}
 EOF
 }
 
