@@ -31,30 +31,30 @@ resources:
   - name: bosh-release-pr
     type: pull-request
     source:
-      repo: {{github_repo}}
-      access_token: {{github_access_token}}
+      repo: ((github_repo))
+      access_token: ((github_access_token))
       every: true
       disable_forks: true
 
   - name: bosh-release-repo
     type: git
     source:
-      uri: {{github_repo_uri}}
-      branch: {{final_release_branch}}
+      uri: ((github_repo_uri))
+      branch: ((final_release_branch))
 
   - name: bosh-release-tarballs
     type: s3-iam
     source:
-      bucket: {{releases_bucket_name}}
-      region_name: {{aws_region}}
+      bucket: ((releases_bucket_name))
+      region_name: ((aws_region))
       regexp: ([a-z0-9]+).tgz
 
   - name: bosh-release-version
     type: semver-iam
     source:
-      bucket: {{releases_bucket_name}}
-      region_name: {{aws_region}}
-      key: {{version_file}}
+      bucket: ((releases_bucket_name))
+      region_name: ((aws_region))
+      key: ((version_file))
       initial_version: 0.1.0
 
 jobs:
@@ -67,7 +67,7 @@ jobs:
       - put: bosh-release-pr
         params:
           path: bosh-release-pr
-          context: {{github_status_context}}
+          context: ((github_status_context))
           status: pending
       - task: build
         config:
@@ -82,9 +82,9 @@ jobs:
           outputs:
             - name: bosh-release-tarballs
           params:
-            BUCKET: {{releases_bucket_name}}
-            REGION: {{aws_region}}
-            NAME: {{boshrelease_name}}
+            BUCKET: ((releases_bucket_name))
+            REGION: ((aws_region))
+            NAME: ((boshrelease_name))
           run:
             path: bash
             args:
@@ -120,13 +120,13 @@ jobs:
             - put: bosh-release-pr
               params:
                 path: bosh-release-pr
-                context: {{github_status_context}}
+                context: ((github_status_context))
                 status: success
         on_failure:
           put: bosh-release-pr
           params:
             path: bosh-release-pr
-            context: {{github_status_context}}
+            context: ((github_status_context))
             status: failure
 
   - name: build-final-release
@@ -151,9 +151,9 @@ jobs:
           outputs:
             - name: bosh-release-tarballs
           params:
-            BUCKET: {{releases_bucket_name}}
-            REGION: {{aws_region}}
-            NAME: {{boshrelease_name}}
+            BUCKET: ((releases_bucket_name))
+            REGION: ((aws_region))
+            NAME: ((boshrelease_name))
           run:
             path: bash
             args:

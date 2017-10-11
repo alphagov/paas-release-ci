@@ -7,23 +7,23 @@ resource_types:
       tag: 594eaa9f4d93b2ed32a7e5e1cdea5b380e2f6682
 
 resources:
-  - name: {{app_name}}
+  - name: ((app_name))
     type: git
     source:
-      uri: {{app_github_repo_uri}}
-      branch: {{app_repository_branch}}
+      uri: ((app_github_repo_uri))
+      branch: ((app_repository_branch))
 
   - name: secrets
     type: s3-iam
     source:
-      bucket: {{state_bucket}}
-      region_name: {{aws_region}}
-      versioned_file: {{secrets_file}}
+      bucket: ((state_bucket))
+      region_name: ((aws_region))
+      versioned_file: ((secrets_file))
 
 jobs:
   - name: test
     plan:
-      - get: {{app_name}}
+      - get: ((app_name))
         trigger: true
       - task: test
         config:
@@ -31,9 +31,9 @@ jobs:
           image_resource:
             type: docker-image
             source:
-              repository: {{app_deployment_docker_image}}
+              repository: ((app_deployment_docker_image))
           inputs:
-            - name: {{app_name}}
+            - name: ((app_name))
           run:
             path: sh
             args:
@@ -41,17 +41,17 @@ jobs:
               - -u
               - -c
               - |
-                if [ ! -f {{app_name}}/release/test ]; then
-                  echo No script found at {{app_name}}/release/test, tests disabled
+                if [ ! -f ((app_name))/release/test ]; then
+                  echo "No script found at ((app_name))/release/test, tests disabled"
                   exit 0
                 fi
-                echo Testing with script {{app_name}}/release/test
-                cd {{app_name}} && ./release/test
+                echo "Testing with script ((app_name))/release/test"
+                cd ((app_name)) && ./release/test
 
   - name: deploy
     serial: true
     plan:
-      - get: {{app_name}}
+      - get: ((app_name))
         passed: ['test']
         trigger: true
       - get: secrets
@@ -61,9 +61,9 @@ jobs:
           image_resource:
             type: docker-image
             source:
-              repository: {{app_deployment_docker_image}}
+              repository: ((app_deployment_docker_image))
           inputs:
-            - name: {{app_name}}
+            - name: ((app_name))
           outputs:
             - name: files-to-push
           run:
@@ -74,18 +74,18 @@ jobs:
               - -c
               - |
                 copy_files() {
-                  echo Copying files to destination...
-                  cp -pr {{app_name}}/* files-to-push/
+                  echo "Copying files to destination..."
+                  cp -pr ((app_name))/* files-to-push/
                   ls -l files-to-push
                 }
 
-                if [ ! -f {{app_name}}/release/build ]; then
-                  echo No script found at {{app_name}}/release/build, build disabled
+                if [ ! -f ((app_name))/release/build ]; then
+                  echo "No script found at ((app_name))/release/build, build disabled"
                   copy_files
                   exit 0
                 fi
-                echo Building with script {{app_name}}/release/build...
-                (cd {{app_name}} && ./release/build)
+                echo "Building with script ((app_name))/release/build..."
+                (cd ((app_name)) && ./release/build)
                 copy_files
 
       - task: push
@@ -100,13 +100,13 @@ jobs:
             - name: files-to-push
             - name: secrets
           params:
-            CF_API: {{cf_api}}
-            CF_API_SECURE: {{cf_api_secure}}
-            CF_USER: {{cf_user}}
-            CF_PASSWORD: {{cf_password}}
-            CF_ORG: {{cf_org}}
-            CF_SPACE: {{cf_space}}
-            SECRETS_FILE: {{secrets_file}}
+            CF_API: ((cf_api))
+            CF_API_SECURE: ((cf_api_secure))
+            CF_USER: ((cf_user))
+            CF_PASSWORD: ((cf_password))
+            CF_ORG: ((cf_org))
+            CF_SPACE: ((cf_space))
+            SECRETS_FILE: ((secrets_file))
           run:
             path: sh
             args:
@@ -118,21 +118,21 @@ jobs:
                   echo "\$CF_API is empty, cannot connect to CF API"
                   exit 1
                 fi
-                echo Logging on to Cloudfoundry...
+                echo "Logging on to Cloudfoundry..."
                 cf login "${CF_API_SECURE:-}" -a "${CF_API}" -u "${CF_USER}" \
                 -p "${CF_PASSWORD}" -o "${CF_ORG}" -s "${CF_SPACE}"
 
                 cd files-to-push
                 if [ -f release/push ]; then
-                  echo Pushing to Cloudfoundry with script {{app_name}}/release/push...
+                  echo "Pushing to Cloudfoundry with script ((app_name))/release/push..."
                   ./release/push
 
                 else
-                  echo No script found at {{app_name}}/release/push, using default push
+                  echo "No script found at ((app_name))/release/push, using default push"
 
-                  echo Deploy with zero downtime
-                  cf blue-green-deploy {{app_name}}
+                  echo "Deploy with zero downtime"
+                  cf blue-green-deploy ((app_name))
 
-                  echo Delete left over app
-                  cf delete -f {{app_name}}-old
+                  echo "Delete left over app"
+                  cf delete -f ((app_name))-old
                 fi

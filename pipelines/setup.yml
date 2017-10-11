@@ -16,36 +16,36 @@ resources:
   - name: pipeline-trigger
     type: semver-iam
     source:
-      bucket: {{state_bucket_name}}
-      region_name: {{aws_region}}
-      key: {{pipeline_trigger_file}}
+      bucket: ((state_bucket_name))
+      region_name: ((aws_region))
+      key: ((pipeline_trigger_file))
 
   - name: paas-release-ci
     type: git
     source:
       uri: https://github.com/alphagov/paas-release-ci
-      branch: {{branch_name}}
+      branch: ((branch_name))
 
   - name: release-ci-tfstate
     type: s3-iam
     source:
-      bucket: {{state_bucket_name}}
-      region_name: {{aws_region}}
+      bucket: ((state_bucket_name))
+      region_name: ((aws_region))
       versioned_file: release-ci.tfstate
 
   - name: ssh-private-key
     type: s3-iam
     source:
-      bucket: {{state_bucket_name}}
+      bucket: ((state_bucket_name))
       versioned_file: ci_build_tag_key
-      region_name: {{aws_region}}
+      region_name: ((aws_region))
 
   - name: ssh-public-key
     type: s3-iam
     source:
-      bucket: {{state_bucket_name}}
+      bucket: ((state_bucket_name))
       versioned_file: ci_build_tag_key.pub
-      region_name: {{aws_region}}
+      region_name: ((aws_region))
 
 jobs:
   - name: self-update
@@ -63,15 +63,15 @@ jobs:
           inputs:
             - name: paas-release-ci
           params:
-            SELF_UPDATE_PIPELINE: {{self_update_pipeline}}
-            DEPLOY_ENV: {{deploy_env}}
-            BRANCH: {{branch_name}}
-            MAKEFILE_ENV_TARGET: {{makefile_env_target}}
-            CONCOURSE_URL: {{concourse_url}}
-            GITHUB_ACCESS_TOKEN: {{github_access_token}}
-            STATE_BUCKET_NAME: {{state_bucket_name}}
-            RELEASES_BUCKET_NAME: {{releases_bucket_name}}
-            CF_API: {{cf_api}}
+            SELF_UPDATE_PIPELINE: ((self_update_pipeline))
+            DEPLOY_ENV: ((deploy_env))
+            BRANCH: ((branch_name))
+            MAKEFILE_ENV_TARGET: ((makefile_env_target))
+            CONCOURSE_URL: ((concourse_url))
+            GITHUB_ACCESS_TOKEN: ((github_access_token))
+            STATE_BUCKET_NAME: ((state_bucket_name))
+            RELEASES_BUCKET_NAME: ((releases_bucket_name))
+            CF_API: ((cf_api))
           run:
             path: sh
             args:
@@ -113,10 +113,10 @@ jobs:
               - -e
               - -c
               - |
-                paas-release-ci/scripts/s3init.sh {{state_bucket_name}} release-ci.tfstate paas-release-ci/pipelines/init_files/terraform.tfstate.tpl
-                paas-release-ci/scripts/s3init.sh {{state_bucket_name}} ci_build_tag_key paas-release-ci/pipelines/init_files/zero_bytes
-                paas-release-ci/scripts/s3init.sh {{state_bucket_name}} ci_build_tag_key.pub paas-release-ci/pipelines/init_files/zero_bytes
-                paas-release-ci/scripts/s3init.sh {{state_bucket_name}} no-secrets-needed paas-release-ci/pipelines/init_files/zero_bytes
+                paas-release-ci/scripts/s3init.sh "((state_bucket_name))" release-ci.tfstate paas-release-ci/pipelines/init_files/terraform.tfstate.tpl
+                paas-release-ci/scripts/s3init.sh "((state_bucket_name))" ci_build_tag_key paas-release-ci/pipelines/init_files/zero_bytes
+                paas-release-ci/scripts/s3init.sh "((state_bucket_name))" ci_build_tag_key.pub paas-release-ci/pipelines/init_files/zero_bytes
+                paas-release-ci/scripts/s3init.sh "((state_bucket_name))" no-secrets-needed paas-release-ci/pipelines/init_files/zero_bytes
 
   - name: terraform
     plan:
@@ -141,9 +141,9 @@ jobs:
           outputs:
             - name: updated-release-ci-tfstate
           params:
-            TF_VAR_deploy_env: {{deploy_env}}
-            TF_VAR_releases_bucket_name: {{releases_bucket_name}}
-            TF_VAR_releases_blobs_bucket_name: {{releases_blobs_bucket_name}}
+            TF_VAR_deploy_env: ((deploy_env))
+            TF_VAR_releases_bucket_name: ((releases_bucket_name))
+            TF_VAR_releases_blobs_bucket_name: ((releases_blobs_bucket_name))
           run:
             path: sh
             args:
@@ -231,18 +231,18 @@ jobs:
           inputs:
             - name: paas-release-ci
           params:
-            DEPLOY_ENV: {{deploy_env}}
-            BRANCH: {{branch_name}}
-            MAKEFILE_ENV_TARGET: {{makefile_env_target}}
-            CONCOURSE_ATC_PASSWORD: {{concourse_atc_password}}
-            CONCOURSE_URL: {{concourse_url}}
-            GITHUB_ACCESS_TOKEN: {{github_access_token}}
-            STATE_BUCKET_NAME: {{state_bucket_name}}
-            RELEASES_BUCKET_NAME: {{releases_bucket_name}}
-            CF_API: {{cf_api}}
-            CF_API_SECURE: {{cf_api_secure}}
-            CF_USER: {{cf_user}}
-            CF_PASSWORD: {{cf_password}}
+            DEPLOY_ENV: ((deploy_env))
+            BRANCH: ((branch_name))
+            MAKEFILE_ENV_TARGET: ((makefile_env_target))
+            CONCOURSE_ATC_PASSWORD: ((concourse_atc_password))
+            CONCOURSE_URL: ((concourse_url))
+            GITHUB_ACCESS_TOKEN: ((github_access_token))
+            STATE_BUCKET_NAME: ((state_bucket_name))
+            RELEASES_BUCKET_NAME: ((releases_bucket_name))
+            CF_API: ((cf_api))
+            CF_API_SECURE: ((cf_api_secure))
+            CF_USER: ((cf_user))
+            CF_PASSWORD: ((cf_password))
           run:
             path: sh
             args:
