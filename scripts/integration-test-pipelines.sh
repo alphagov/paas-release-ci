@@ -49,4 +49,4 @@ setup_test_pipeline() {
 
 setup_test_pipeline rds-broker alphagov paas-rds-broker master
 setup_test_pipeline compose-broker alphagov paas-compose-broker master compose-broker-secrets.yml
-
+setup_test_pipeline usage-events-collector alphagov paas-usage-events-collector master
