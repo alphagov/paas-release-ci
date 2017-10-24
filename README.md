@@ -35,7 +35,7 @@ This repository defines `make` targets for uploading three types of credentials 
   DEPLOY_ENV=build make ci upload-compose-secrets
   ```
 
-* DeskPro API key: this is to enable the paas-submit app to create tickets via the DeskPro API.
+* DeskPro API key: this is to enable the paas-product-page app to create tickets via the DeskPro API.
 
   ```
   DEPLOY_ENV=build make ci upload-deskpro-secrets
