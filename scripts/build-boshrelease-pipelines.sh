@@ -56,4 +56,4 @@ setup_release_pipeline syslog alphagov/paas-syslog-release gds_master
 setup_release_pipeline ipsec alphagov/paas-ipsec-release gds_master
 setup_release_pipeline grafana alphagov/paas-grafana-boshrelease gds_master
 setup_release_pipeline cdn-broker alphagov/paas-cdn-broker-boshrelease master
-setup_release_pipeline route-registrar alphagov/paas-route-registrar gds_master
+setup_release_pipeline routing alphagov/paas-routing-release gds_master
