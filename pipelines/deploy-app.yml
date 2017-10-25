@@ -75,7 +75,7 @@ jobs:
               - |
                 copy_files() {
                   echo "Copying files to destination..."
-                  cp -pr ((app_name))/* files-to-push/
+                  cp -pr ((app_name))/. files-to-push
                   ls -l files-to-push
                 }
 
