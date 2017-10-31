@@ -41,12 +41,12 @@ jobs:
               - -u
               - -c
               - |
-                if [ ! -f ((app_name))/release/test ]; then
+                if [ ! -f "((app_name))/release/test" ]; then
                   echo "No script found at ((app_name))/release/test, tests disabled"
                   exit 0
                 fi
                 echo "Testing with script ((app_name))/release/test"
-                cd ((app_name)) && ./release/test
+                cd "((app_name))" && ./release/test
 
   - name: deploy
     serial: true
@@ -75,17 +75,17 @@ jobs:
               - |
                 copy_files() {
                   echo "Copying files to destination..."
-                  cp -pr ((app_name))/. files-to-push
+                  cp -pr "((app_name))/." files-to-push
                   ls -l files-to-push
                 }
 
-                if [ ! -f ((app_name))/release/build ]; then
+                if [ ! -f "((app_name))/release/build" ]; then
                   echo "No script found at ((app_name))/release/build, build disabled"
                   copy_files
                   exit 0
                 fi
                 echo "Building with script ((app_name))/release/build..."
-                (cd ((app_name)) && ./release/build)
+                (cd "((app_name))" && ./release/build)
                 copy_files
 
       - task: push
@@ -131,8 +131,8 @@ jobs:
                   echo "No script found at ((app_name))/release/push, using default push"
 
                   echo "Deploy with zero downtime"
-                  cf blue-green-deploy ((app_name))
+                  cf blue-green-deploy "((app_name))"
 
                   echo "Delete left over app"
-                  cf delete -f ((app_name))-old
+                  cf delete -f "((app_name))-old"
                 fi
