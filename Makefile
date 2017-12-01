@@ -50,6 +50,13 @@ upload-deskpro-secrets: check-env-vars ## Decrypt and upload DeskPro credentials
 	$(if $(wildcard ${DESKPRO_PASSWORD_STORE_DIR}),,$(error Password store ${DESKPRO_PASSWORD_STORE_DIR} does not exist))
 	@scripts/upload-deskpro-secrets.sh
 
+.PHONY: upload-rubbernecker-secrets
+upload-rubbernecker-secrets: check-env-vars ## Decrypt and upload DeskPro credentials to S3
+	$(eval export RUBBERNECKER_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
+	$(if ${RUBBERNECKER_PASSWORD_STORE_DIR},,$(error Must pass RUBBERNECKER_PASSWORD_STORE_DIR=<path_to_password_store>))
+	$(if $(wildcard ${RUBBERNECKER_PASSWORD_STORE_DIR}),,$(error Password store ${RUBBERNECKER_PASSWORD_STORE_DIR} does not exist))
+	@scripts/upload-rubbernecker-secrets.sh
+
 .PHONY: pipelines
 pipelines: ## Upload setup pipelines to concourse
 	@scripts/deploy-setup-pipelines.sh
