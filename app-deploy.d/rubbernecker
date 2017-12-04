@@ -1,0 +1,9 @@
+APP_NAME="rubbernecker"
+APP_REPOSITORY="https://github.com/alphagov/paas-rubbernecker.git"
+APP_BRANCH="master"
+# Rubbernecker doesn't currently have a test script, so use alpine as it's
+# small and has enough to allow the pipeline script to work.
+APP_DOCKER_IMAGE="alpine"
+APP_CF_ORG="govuk-paas"
+APP_CF_SPACE="tools"
+SECRETS_FILE="rubbernecker-secrets.yml"
