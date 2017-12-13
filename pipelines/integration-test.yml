@@ -64,8 +64,6 @@ jobs:
           status: pending
       - task: run-tests
         params:
-          STATE_BUCKET: ((state_bucket))
-          AWS_REGION: ((aws_region))
           SECRETS_FILE: ((secrets_file))
         file: repo/ci/integration.yml
     on_success:
@@ -95,6 +93,8 @@ jobs:
         bump: minor
     - task: run-tests
       file: repo/ci/integration.yml
+      params:
+        SECRETS_FILE: ((secrets_file))
       on_success:
         put: resource-version
         params:
