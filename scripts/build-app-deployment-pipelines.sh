@@ -15,6 +15,7 @@ app_name: ${APP_NAME}
 app_github_repo_uri: ${APP_REPOSITORY}
 app_repository_branch: ${APP_BRANCH}
 app_deployment_docker_image: ${APP_DOCKER_IMAGE}
+app_deployment_docker_image_tag: ${APP_DOCKER_IMAGE_TAG:-latest}
 cf_api: ${CF_API}
 cf_api_secure: ${CF_API_SECURE:-}
 cf_user: ${CF_USER}

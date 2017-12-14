@@ -32,6 +32,7 @@ jobs:
             type: docker-image
             source:
               repository: ((app_deployment_docker_image))
+              tag: ((app_deployment_docker_image_tag))
           inputs:
             - name: ((app_name))
           run:
@@ -62,6 +63,7 @@ jobs:
             type: docker-image
             source:
               repository: ((app_deployment_docker_image))
+              tag: ((app_deployment_docker_image_tag))
           inputs:
             - name: ((app_name))
           outputs:
