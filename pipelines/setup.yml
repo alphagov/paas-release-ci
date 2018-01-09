@@ -151,10 +151,11 @@ jobs:
               - -u
               - -c
               - |
+                cp release-ci-tfstate/release-ci.tfstate updated-release-ci-tfstate/release-ci.tfstate
                 terraform init paas-release-ci/terraform
                 terraform apply \
                   -auto-approve=true \
-                  -state=release-ci-tfstate/release-ci.tfstate -state-out=updated-release-ci-tfstate/release-ci.tfstate \
+                  -state=updated-release-ci-tfstate/release-ci.tfstate \
                   paas-release-ci/terraform
         ensure:
           put: release-ci-tfstate
