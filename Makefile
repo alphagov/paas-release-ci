@@ -91,13 +91,7 @@ lint_shellcheck:
 
 .PHONY: lint_terraform
 lint_terraform:
-	$(eval export TF_VAR_deploy_env=test)
-	terraform graph terraform > /dev/null
-	@if [ "$$(terraform fmt -write=false terraform)" != "" ] ; then \
-		echo "Use 'terraform fmt' to fix HCL formatting:"; \
-		terraform fmt -write=false -diff=true terraform ; \
-		exit 1; \
-	fi
+	@scripts/lint_terraform.sh
 
 .PHONY: lint_yaml
 lint_yaml:
