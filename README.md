@@ -57,7 +57,7 @@ A pipeline should be created for each Bosh release this repository is currently 
 When you setup the pipelines in a dev environment they will be paused by default. You can manaully unpause the ones that you need to work on, but be aware that they will submit their results to GitHub pull requests.
 
 * Run `DEPLOY_ENV=... make dev upload-cf-cli-secrets`. You can override the credentials used by setting `CF_USER` and `CF_PASSWORD`.
-* Run `CF_API=... DEPLOY_ENV=... make dev pipelines`, where `CF_API` is the URL of your dev Cloud Foundry API.
+* Run `CF_API=... CF_APPS_DOMAIN=... DEPLOY_ENV=... make dev pipelines`, where `CF_API` is the URL of your dev Cloud Foundry API and `CF_APPS_DOMAIN` is the applications domain in your dev Cloud Foundry.
 * Run the setup pipeline.
 * Based on our current configuration your dev build CI will not be allowed to access your dev CloudFoundry API. This means you will have to manually allow the traffic in the AWS console.
 

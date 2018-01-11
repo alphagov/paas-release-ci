@@ -72,6 +72,7 @@ jobs:
             STATE_BUCKET_NAME: ((state_bucket_name))
             RELEASES_BUCKET_NAME: ((releases_bucket_name))
             CF_API: ((cf_api))
+            CF_APPS_DOMAIN: ((cf_apps_domain))
           run:
             path: sh
             args:
@@ -246,6 +247,7 @@ jobs:
             CF_API_SECURE: ((cf_api_secure))
             CF_USER: ((cf_user))
             CF_PASSWORD: ((cf_password))
+            CF_APPS_DOMAIN: ((cf_apps_domain))
           run:
             path: sh
             args:

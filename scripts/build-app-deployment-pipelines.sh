@@ -25,6 +25,7 @@ cf_space: ${CF_SPACE:-${APP_CF_SPACE}}
 state_bucket: ${STATE_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-state}
 aws_region: ${AWS_DEFAULT_REGION:-eu-west-1}
 secrets_file: ${SECRETS_FILE:-no-secrets-needed}
+cf_apps_domain: ${CF_APPS_DOMAIN}
 EOF
 }
 
