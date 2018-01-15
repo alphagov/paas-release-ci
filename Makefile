@@ -25,6 +25,7 @@ ci: globals ## Work on the ci account
 	$(eval export SYSTEM_DNS_ZONE_NAME=${DEPLOY_ENV}.ci.cloudpipeline.digital)
 	$(eval export CONCOURSE_ATC_PASSWORD_PASS_FILE=ci_deployments/build/concourse_password)
 	$(eval export CF_API=https://api.cloud.service.gov.uk)
+	$(eval export CF_APPS_DOMAIN=cloudapps.digital)
 	@true
 
 .PHONY: upload-cf-cli-secrets
