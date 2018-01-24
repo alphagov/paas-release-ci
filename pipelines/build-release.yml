@@ -75,8 +75,8 @@ jobs:
           image_resource:
             type: docker-image
             source:
-              repository: governmentpaas/bosh-cli
-              tag: 895cf6752c8ec64af05a3a735186b90acd3db65a
+              repository: governmentpaas/bosh-cli-v2
+              tag: 2b4604fe69274908af304c15f28ca8dd657b0221
           inputs:
             - name: bosh-release-pr
           outputs:
@@ -94,12 +94,10 @@ jobs:
                 cd bosh-release-pr
 
                 VERSION=0.0.$(date +%s)
-                bosh create release \
-                  --name "${NAME}" \
+                bosh create-release \
                   --version "${VERSION}" \
-                  --with-tarball \
+                  --tarball "../bosh-release-tarballs/${NAME}-${VERSION}.tgz" \
                   --force
-                cp "dev_releases/${NAME}/${NAME}-${VERSION}.tgz" ../bosh-release-tarballs
                 ls -al ../bosh-release-tarballs
 
                 SHA1=$(openssl sha1 "../bosh-release-tarballs/${NAME}-${VERSION}.tgz" | cut -d' ' -f 2)
@@ -143,8 +141,8 @@ jobs:
           image_resource:
             type: docker-image
             source:
-              repository: governmentpaas/bosh-cli
-              tag: 895cf6752c8ec64af05a3a735186b90acd3db65a
+              repository: governmentpaas/bosh-cli-v2
+              tag: 2b4604fe69274908af304c15f28ca8dd657b0221
           inputs:
             - name: bosh-release-repo
             - name: bosh-release-version
@@ -163,12 +161,10 @@ jobs:
                 cd bosh-release-repo
 
                 VERSION=$(cat ../bosh-release-version/number)
-                bosh create release \
-                  --name "${NAME}" \
+                bosh create-release \
                   --version "${VERSION}" \
-                  --with-tarball \
+                  --tarball "../bosh-release-tarballs/${NAME}-${VERSION}.tgz" \
                   --force
-                cp "dev_releases/${NAME}/${NAME}-${VERSION}.tgz" ../bosh-release-tarballs
                 cp ../bosh-release-version/number ../bosh-release-tarballs/version
                 ls -al ../bosh-release-tarballs
 
