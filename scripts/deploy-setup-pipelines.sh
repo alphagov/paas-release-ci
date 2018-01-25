@@ -37,7 +37,7 @@ cf_api: ${CF_API:-}
 cf_api_secure: ${CF_API_SECURE:-}
 cf_user: ${CF_USER}
 cf_password: ${CF_PASSWORD}
-cf_apps_domain: ${CF_APPS_DOMAIN}
+cf_apps_domain: ${CF_APPS_DOMAIN:-}
 EOF
 }
 
