@@ -47,13 +47,6 @@ setup_test_pipeline() {
 
 }
 
-# FIXME: Remove when deployed.
-if $FLY_CMD -t "${FLY_TARGET}" pipelines | grep -qE "^usage-events-collector\s"; then
-  $FLY_CMD -t "${FLY_TARGET}" rename-pipeline \
-    -o usage-events-collector \
-    -n paas-billing
-fi
-
 setup_test_pipeline rds-broker alphagov paas-rds-broker master
 setup_test_pipeline compose-broker alphagov paas-compose-broker master compose-broker-secrets.yml
 setup_test_pipeline paas-billing alphagov paas-billing master
