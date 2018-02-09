@@ -34,7 +34,6 @@ system_dns_zone_name: ${SYSTEM_DNS_ZONE_NAME}
 pipeline_trigger_file: ${pipeline_name}.trigger
 github_access_token: ${GITHUB_ACCESS_TOKEN}
 cf_api: ${CF_API:-}
-cf_api_secure: ${CF_API_SECURE:-}
 cf_user: ${CF_USER}
 cf_password: ${CF_PASSWORD}
 cf_apps_domain: ${CF_APPS_DOMAIN:-}

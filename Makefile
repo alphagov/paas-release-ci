@@ -15,7 +15,6 @@ dev: globals check-env-vars ## Work on the dev account
 	$(eval export ENABLE_DESTROY=true)
 	$(eval export UNPAUSE_PIPELINES=false)
 	$(eval export SYSTEM_DNS_ZONE_NAME=${DEPLOY_ENV}.dev.cloudpipeline.digital)
-	$(eval export CF_API_SECURE=--skip-ssl-validation)
 	@true
 
 ci: globals ## Work on the ci account
