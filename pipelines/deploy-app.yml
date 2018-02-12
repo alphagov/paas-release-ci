@@ -103,7 +103,6 @@ jobs:
             - name: secrets
           params:
             CF_API: ((cf_api))
-            CF_API_SECURE: ((cf_api_secure))
             CF_USER: ((cf_user))
             CF_PASSWORD: ((cf_password))
             CF_ORG: ((cf_org))
@@ -126,8 +125,8 @@ jobs:
                   exit 1
                 fi
                 echo "Logging on to Cloudfoundry..."
-                cf login "${CF_API_SECURE:-}" -a "${CF_API}" -u "${CF_USER}" \
-                -p "${CF_PASSWORD}" -o "${CF_ORG}" -s "${CF_SPACE}"
+                cf login -a "${CF_API}" -u "${CF_USER}" \
+                  -p "${CF_PASSWORD}" -o "${CF_ORG}" -s "${CF_SPACE}"
 
                 cd files-to-push
                 if [ -f release/push ]; then
