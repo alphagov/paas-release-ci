@@ -95,6 +95,7 @@ jobs:
 
                 VERSION=0.0.$(date +%s)
                 bosh create-release \
+                  --name "${NAME}" \
                   --version "${VERSION}" \
                   --tarball "../bosh-release-tarballs/${NAME}-${VERSION}.tgz" \
                   --force
