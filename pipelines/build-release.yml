@@ -163,6 +163,7 @@ jobs:
 
                 VERSION=$(cat ../bosh-release-version/number)
                 bosh create-release \
+                  --name "${NAME}" \
                   --version "${VERSION}" \
                   --tarball "../bosh-release-tarballs/${NAME}-${VERSION}.tgz" \
                   --force
