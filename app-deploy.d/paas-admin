@@ -1,0 +1,8 @@
+APP_NAME="admin"
+APP_REPOSITORY="https://github.com/alphagov/paas-admin.git"
+APP_BRANCH="master"
+APP_DOCKER_IMAGE="node"
+APP_DOCKER_IMAGE_TAG="carbon-alpine"
+APP_CF_ORG="govuk-paas"
+APP_CF_SPACE="tools"
+SECRETS_FILE="paas-admin-secrets.yml"
