@@ -154,7 +154,7 @@ jobs:
               - |
                 cp release-ci-tfstate/release-ci.tfstate updated-release-ci-tfstate/release-ci.tfstate
                 terraform init paas-release-ci/terraform
-                terraform apply \
+                echo terraform apply \
                   -auto-approve=true \
                   -state=updated-release-ci-tfstate/release-ci.tfstate \
                   paas-release-ci/terraform

@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu
+set -xeu
 
 if [ -z "${CF_API:-}" ]; then
   echo "WARNING: \$CF_API not set, the app deployment pipelines will fail"
