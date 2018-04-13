@@ -5,6 +5,7 @@ This repository contains the scripts and Terraform configurations required to se
 * building Bosh releases
 * running integration tests
 * deploying apps to Cloud Foundry
+* running plain pipelines
 
 Apps that are part of running or operating Cloud Foundry itself should be deployed via [paas-cf](https://github.com/alphagov/paas-cf/).
 
@@ -35,10 +36,9 @@ This repository defines `make` targets for uploading three types of credentials 
   DEPLOY_ENV=build make ci upload-compose-secrets
   ```
 
-* DeskPro API key and ZenDesk token: this is to enable the paas-product-page app to create tickets via the DeskPro API and in ZenDesk.
+* ZenDesk token: this is to enable the paas-product-page app to create tickets via the ZenDesk API.
 
   ```
-  DEPLOY_ENV=build make ci upload-deskpro-secrets
   DEPLOY_ENV=build make ci upload-zendesk-secrets
   ```
 

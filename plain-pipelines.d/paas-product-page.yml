@@ -13,12 +13,12 @@ resources:
       uri: https://github.com/alphagov/paas-product-page.git
       branch: master
 
-  - name: deskpro-secrets
+  - name: zendesk-secrets
     type: s3-iam
     source:
       bucket: ((state_bucket))
       region_name: ((aws_region))
-      versioned_file: deskpro-secrets.yml
+      versioned_file: zendesk-secrets.yml
 
 jobs:
   - name: deploy
@@ -26,7 +26,7 @@ jobs:
     plan:
       - get: paas-product-page
         trigger: true
-      - get: deskpro-secrets
+      - get: zendesk-secrets
       - task: push
         config:
           platform: linux
@@ -37,7 +37,7 @@ jobs:
               tag: c6f8be180c0c98cc5ee7bd75d224e4b677faf74d
           inputs:
             - name: paas-product-page
-            - name: deskpro-secrets
+            - name: zendesk-secrets
           params:
             CF_API: ((cf_api))
             CF_USER: ((cf_user))
@@ -74,9 +74,9 @@ jobs:
                   - route: "www.${CF_SYSTEM_DOMAIN}"
                   env:
                     APP_ENV: production
-                    DESKPRO_API_KEY: (( grab deskpro_api_key ))
-                    DESKPRO_TEAM_ID: 1
-                    DESKPRO_ENDPOINT: 'https://gaap.deskpro.com'
+                    ZENDESK_USER: (( grab zendesk_user ))
+                    ZENDESK_TOKEN: (( grab zendesk_token ))
+                    ZENDESK_URL: 'https://govuk.zendesk.com/api/v2'
 
                 - name: paas-product-page-redirect
                   buildpack: staticfile_buildpack
@@ -92,7 +92,7 @@ jobs:
 
                 spruce merge \
                   ./manifest-template.yml \
-                  ./deskpro-secrets/deskpro-secrets.yml |
+                  ./zendesk-secrets/zendesk-secrets.yml |
                   spruce merge --cherry-pick applications > manifest.yml
 
                 cf zero-downtime-push paas-product-page -f ./manifest.yml
