@@ -1,0 +1,123 @@
+---
+resources:
+  - name: paas-tech-docs
+    type: git
+    source:
+      uri: https://github.com/alphagov/paas-tech-docs.git
+      branch: master
+
+jobs:
+
+  - name: test
+    plan:
+      - get: paas-tech-docs
+        trigger: true
+      - task: test
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/tech-docs
+              tag: latest
+          inputs:
+            - name: paas-tech-docs
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                cd "paas-tech-docs" && ./release/test
+
+  - name: deploy
+    serial: true
+    plan:
+      - get: paas-tech-docs
+        trigger: true
+        passed: [test]
+
+      - task: build
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/tech-docs
+              tag: latest
+          inputs:
+            - name: paas-tech-docs
+          outputs:
+            - name: files-to-push
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                (cd "paas-tech-docs" && ./release/build)
+                cp -pr \
+                  paas-tech-docs/build \
+                  paas-tech-docs/redirect \
+                  files-to-push/
+
+      - task: push
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: keymon/government-paas-cf-cli
+              # tag: b70af5321b8c80994add887c94827aa583f95541 # FIXME
+          inputs:
+            - name: files-to-push
+          params:
+            CF_API: ((cf_api))
+            CF_USER: ((cf_user))
+            CF_PASSWORD: ((cf_password))
+            CF_APPS_DOMAIN: ((cf_apps_domain))
+            CF_SYSTEM_DOMAIN: ((cf_system_domain))
+            CF_ORG: govuk-paas
+            CF_SPACE: docs
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                echo "Generating manifest template"
+                cat <<EOF | tee manifest.yml
+                ---
+                applications:
+                - name: paas-tech-docs
+                  buildpack: staticfile_buildpack
+                  path: ./files-to-push/build
+                  memory: 64M
+                  instances: 2
+                  routes:
+                  - route: "docs.${CF_SYSTEM_DOMAIN}"
+
+                - name: paas-tech-docs-redirect
+                  buildpack: staticfile_buildpack
+                  path: ./files-to-push/redirect
+                  memory: 32M
+                  instances: 2
+                  routes:
+                  - route: "paas-tech-docs.${CF_APPS_DOMAIN}"
+                  env:
+                    REDIRECT_DOMAIN: "docs.${CF_SYSTEM_DOMAIN}"
+                EOF
+
+                echo "Logging on to Cloudfoundry..."
+                cf login \
+                  -a "${CF_API}" \
+                  -u "${CF_USER}" \
+                  -p "${CF_PASSWORD}" \
+                  -o "${CF_ORG}" \
+                  -s "${CF_SPACE}"
+
+                cf zero-downtime-push paas-tech-docs -f ./manifest.yml
+                cf zero-downtime-push paas-tech-docs-redirect -f ./manifest.yml

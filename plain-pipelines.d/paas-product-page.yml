@@ -53,14 +53,6 @@ jobs:
               - -u
               - -c
               - |
-                echo "Logging on to Cloudfoundry..."
-                cf login \
-                  -a "${CF_API}" \
-                  -u "${CF_USER}" \
-                  -p "${CF_PASSWORD}" \
-                  -o "${CF_ORG}" \
-                  -s "${CF_SPACE}"
-
                 echo "Generating manifest template"
                 cat <<EOF | tee manifest-template.yml
                 ---
@@ -95,5 +87,14 @@ jobs:
                   ./deskpro-secrets/deskpro-secrets.yml |
                   spruce merge --cherry-pick applications > manifest.yml
 
+                echo "Logging on to Cloudfoundry..."
+                cf login \
+                  -a "${CF_API}" \
+                  -u "${CF_USER}" \
+                  -p "${CF_PASSWORD}" \
+                  -o "${CF_ORG}" \
+                  -s "${CF_SPACE}"
+
                 cf zero-downtime-push paas-product-page -f ./manifest.yml
                 cf zero-downtime-push paas-product-page-redirect -f ./manifest.yml
+
