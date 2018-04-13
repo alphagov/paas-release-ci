@@ -1,8 +1,0 @@
-APP_NAME="rubbernecker"
-APP_REPOSITORY="https://github.com/alphagov/paas-rubbernecker.git"
-APP_BRANCH="master"
-APP_DOCKER_IMAGE="governmentpaas/rubbernecker-tools"
-APP_DOCKER_IMAGE_TAG="latest"
-APP_CF_ORG="govuk-paas"
-APP_CF_SPACE="tools"
-SECRETS_FILE="rubbernecker-secrets.yml"

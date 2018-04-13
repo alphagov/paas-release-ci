@@ -1,0 +1,133 @@
+---
+resource_types:
+  - name: s3-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/s3-resource
+      tag: 594eaa9f4d93b2ed32a7e5e1cdea5b380e2f6682
+
+resources:
+  - name: rubbernecker
+    type: git
+    source:
+      uri: https://github.com/alphagov/rubbernecker.git
+      branch: master
+
+  - name: rubbernecker-secrets
+    type: s3-iam
+    source:
+      bucket: ((state_bucket))
+      region_name: ((aws_region))
+      versioned_file: rubbernecker-secrets.yml
+
+jobs:
+
+  - name: test
+    plan:
+      - get: rubbernecker
+        trigger: true
+      - task: test
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/rubbernecker-tools
+              tag: latest
+          inputs:
+            - name: rubbernecker
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                cd "rubbernecker" && ./release/test
+
+  - name: deploy
+    serial: true
+    plan:
+      - get: rubbernecker
+        trigger: true
+        passed: [test]
+      - get: rubbernecker-secrets
+
+      - task: build
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/rubbernecker-tools
+              tag: latest
+          inputs:
+            - name: rubbernecker
+          outputs:
+            - name: files-to-push
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                (cd "rubbernecker" && ./release/build)
+                cp -pr rubbernecker/. files-to-push
+
+      - task: push
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: keymon/government-paas-cf-cli
+              # tag: b70af5321b8c80994add887c94827aa583f95541 # FIXME
+          inputs:
+            - name: files-to-push
+            - name: rubbernecker-secrets
+          params:
+            CF_API: ((cf_api))
+            CF_USER: ((cf_user))
+            CF_PASSWORD: ((cf_password))
+            CF_APPS_DOMAIN: ((cf_apps_domain))
+            CF_SYSTEM_DOMAIN: ((cf_system_domain))
+            CF_ORG: govuk-paas
+            CF_SPACE: tools
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                echo "Generating manifest template"
+                cat <<EOF > manifest-updates.yml
+                ---
+                applications:
+                - name: rubbernecker
+                  instances: 2
+                  env:
+                    PIVOTAL_TRACKER_PROJECT_ID: (( grab pivotal_tracker_project_id ))
+                    PIVOTAL_TRACKER_API_TOKEN: (( grab pivotal_tracker_api_token ))
+                    PAGERDUTY_AUTHTOKEN: (( grab pagerduty_authtoken ))
+                EOF
+
+                cd files-to-push
+
+                spruce merge \
+                  ./manifest.yml \
+                  ../manifest-updates.yml \
+                  ../rubbernecker-secrets/rubbernecker-secrets.yml \
+                  | spruce merge --cherry-pick applications > updated-manifest.yml
+
+                echo "Logging on to Cloudfoundry..."
+                cf login \
+                  -a "${CF_API}" \
+                  -u "${CF_USER}" \
+                  -p "${CF_PASSWORD}" \
+                  -o "${CF_ORG}" \
+                  -s "${CF_SPACE}"
+
+                echo "Deploying"
+                cf zero-downtime-push rubbernecker -f ./updated-manifest.yml
