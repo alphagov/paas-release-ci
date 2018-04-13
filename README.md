@@ -35,10 +35,11 @@ This repository defines `make` targets for uploading three types of credentials 
   DEPLOY_ENV=build make ci upload-compose-secrets
   ```
 
-* DeskPro API key: this is to enable the paas-product-page app to create tickets via the DeskPro API.
+* DeskPro API key and ZenDesk token: this is to enable the paas-product-page app to create tickets via the DeskPro API and in ZenDesk.
 
   ```
   DEPLOY_ENV=build make ci upload-deskpro-secrets
+  DEPLOY_ENV=build make ci upload-zendesk-secrets
   ```
 
 All three sets of credentials are stored in [paas-credentials](https://github.com/alphagov/paas-credentials).

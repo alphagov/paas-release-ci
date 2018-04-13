@@ -1,0 +1,99 @@
+---
+resource_types:
+  - name: s3-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/s3-resource
+      tag: 594eaa9f4d93b2ed32a7e5e1cdea5b380e2f6682
+
+resources:
+  - name: paas-product-page
+    type: git
+    source:
+      uri: https://github.com/alphagov/paas-product-page.git
+      branch: master
+
+  - name: deskpro-secrets
+    type: s3-iam
+    source:
+      bucket: ((state_bucket))
+      region_name: ((aws_region))
+      versioned_file: deskpro-secrets.yml
+
+jobs:
+  - name: deploy
+    serial: true
+    plan:
+      - get: paas-product-page
+        trigger: true
+      - get: deskpro-secrets
+      - task: push
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/cf-cli
+              tag: c6f8be180c0c98cc5ee7bd75d224e4b677faf74d
+          inputs:
+            - name: paas-product-page
+            - name: deskpro-secrets
+          params:
+            CF_API: ((cf_api))
+            CF_USER: ((cf_user))
+            CF_PASSWORD: ((cf_password))
+            CF_APPS_DOMAIN: ((cf_apps_domain))
+            CF_SYSTEM_DOMAIN: ((cf_system_domain))
+            CF_ORG: govuk-paas
+            CF_SPACE: docs
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                echo "Logging on to Cloudfoundry..."
+                cf login \
+                  -a "${CF_API}" \
+                  -u "${CF_USER}" \
+                  -p "${CF_PASSWORD}" \
+                  -o "${CF_ORG}" \
+                  -s "${CF_SPACE}"
+
+                echo "Generating manifest template"
+                cat <<EOF | tee manifest-template.yml
+                ---
+                applications:
+                - name: paas-product-page
+                  buildpack: ruby_buildpack
+                  path: ./paas-product-page/
+                  memory: 256M
+                  instances: 2
+                  routes:
+                  - route: "www.${CF_SYSTEM_DOMAIN}"
+                  env:
+                    APP_ENV: production
+                    DESKPRO_API_KEY: (( grab deskpro_api_key ))
+                    DESKPRO_TEAM_ID: 1
+                    DESKPRO_ENDPOINT: 'https://gaap.deskpro.com'
+
+                - name: paas-product-page-redirect
+                  buildpack: staticfile_buildpack
+                  path: ./paas-product-page/redirect
+                  memory: 32M
+                  instances: 2
+                  routes:
+                  - route: "paas-product-page.${CF_APPS_DOMAIN}"
+                  - route: "${CF_SYSTEM_DOMAIN}"
+                  env:
+                    REDIRECT_DOMAIN: "www.${CF_SYSTEM_DOMAIN}"
+                EOF
+
+                spruce merge \
+                  ./manifest-template.yml \
+                  ./deskpro-secrets/deskpro-secrets.yml |
+                  spruce merge --cherry-pick applications > manifest.yml
+
+                cf zero-downtime-push paas-product-page -f ./manifest.yml
+                cf zero-downtime-push paas-product-page-redirect -f ./manifest.yml
