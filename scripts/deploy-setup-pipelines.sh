@@ -6,7 +6,11 @@ if [ -z "${CF_API:-}" ]; then
 fi
 
 if [ -z "${CF_APPS_DOMAIN:-}" ]; then
-  echo "WARNING: \$CF_APPS_DOMAIN not set, the app deployment pipelines will fail"
+  echo "WARNING: \$CF_APPS_DOMAIN not set, the app deployment pipelines might fail"
+fi
+
+if [ -z "${CF_SYSTEM_DOMAIN:-}" ]; then
+  echo "WARNING: \$CF_SYSTEM_DOMAIN not set, the app deployment pipelines might fail"
 fi
 
 SCRIPTS_DIR=$(cd "$(dirname "$0")" && pwd)
@@ -37,6 +41,7 @@ cf_api: ${CF_API:-}
 cf_user: ${CF_USER}
 cf_password: ${CF_PASSWORD}
 cf_apps_domain: ${CF_APPS_DOMAIN:-}
+cf_system_domain: ${CF_SYSTEM_DOMAIN:-}
 EOF
 }
 

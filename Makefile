@@ -20,6 +20,7 @@ dev: globals check-env-vars ## Work on the dev account
 	$(eval export SYSTEM_DNS_ZONE_NAME=${DEPLOY_ENV}.dev.cloudpipeline.digital)
 	$(eval export CF_API=$(or $(CF_API),https://api.${CF_DEPLOY_ENV}.dev.cloudpipeline.digital))
 	$(eval export CF_APPS_DOMAIN=$(or $(CF_APPS_DOMAIN),${CF_DEPLOY_ENV}.dev.cloudpipelineapps.digital))
+	$(eval export CF_SYSTEM_DOMAIN=$(or $(CF_SYSTEM_DOMAIN),${CF_DEPLOY_ENV}.dev.cloudpipeline.digital))
 	@true
 
 ci: globals ## Work on the ci account
@@ -30,6 +31,7 @@ ci: globals ## Work on the ci account
 	$(eval export CONCOURSE_ATC_PASSWORD_PASS_FILE=ci_deployments/build/concourse_password)
 	$(eval export CF_API=https://api.cloud.service.gov.uk)
 	$(eval export CF_APPS_DOMAIN=cloudapps.digital)
+	$(eval export CF_SYSTEM_DOMAIN=cloud.service.gov.uk)
 	@true
 
 .PHONY: upload-cf-cli-secrets

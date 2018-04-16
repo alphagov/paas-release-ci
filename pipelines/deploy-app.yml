@@ -108,6 +108,7 @@ jobs:
             CF_ORG: ((cf_org))
             CF_SPACE: ((cf_space))
             CF_APPS_DOMAIN: ((cf_apps_domain))
+            CF_SYSTEM_DOMAIN: ((cf_system_domain))
             SECRETS_FILE: ((secrets_file))
           run:
             path: sh
@@ -122,6 +123,10 @@ jobs:
                 fi
                 if [ -z "${CF_APPS_DOMAIN}" ]; then
                   echo "\$CF_APPS_DOMAIN is empty, cannot push to CF"
+                  exit 1
+                fi
+                if [ -z "${CF_SYSTEM_DOMAIN}" ]; then
+                  echo "\$CF_SYSTEM_DOMAIN is empty, cannot push to CF"
                   exit 1
                 fi
                 echo "Logging on to Cloudfoundry..."
