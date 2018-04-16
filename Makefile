@@ -77,7 +77,7 @@ integration-test-pipelines: ## Upload integration test pipelines to concourse
 
 .PHONY: plain-pipelines
 plain-pipelines: ## Upload plain pipelines to concourse
-	@scripts/build-plain-pipelines.sh
+	@scripts/plain-pipelines.sh
 
 showenv: ## Display environment information
 	@scripts/environment.sh

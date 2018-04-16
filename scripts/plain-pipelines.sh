@@ -20,7 +20,7 @@ cf_system_domain: ${SYSTEM_DNS_ZONE_NAME}
 EOF
 }
 
-for pipeline_path in ${SCRIPTS_DIR}/../plain-pipelines.d/* ; do
+for pipeline_path in ${SCRIPTS_DIR}/../plain-pipelines/* ; do
   (
     pipeline_name=${pipeline_path##*/}
     pipeline_name=${pipeline_name%%.yml}
