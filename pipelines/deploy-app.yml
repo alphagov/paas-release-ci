@@ -102,7 +102,7 @@ jobs:
             - name: files-to-push
             - name: secrets
           params:
-            CF_API: ((cf_api))
+            CF_API: https://api.((cf_system_domain))
             CF_USER: ((cf_user))
             CF_PASSWORD: ((cf_password))
             CF_ORG: ((cf_org))
@@ -117,10 +117,6 @@ jobs:
               - -u
               - -c
               - |
-                if [ -z "${CF_API}" ]; then
-                  echo "\$CF_API is empty, cannot connect to CF API"
-                  exit 1
-                fi
                 if [ -z "${CF_APPS_DOMAIN}" ]; then
                   echo "\$CF_APPS_DOMAIN is empty, cannot push to CF"
                   exit 1

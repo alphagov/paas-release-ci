@@ -1,10 +1,6 @@
 #!/bin/bash
 set -eu
 
-if [ -z "${CF_API:-}" ]; then
-  echo "WARNING: \$CF_API not set, the app deployment pipelines will fail"
-fi
-
 if [ -z "${CF_APPS_DOMAIN:-}" ]; then
   echo "WARNING: \$CF_APPS_DOMAIN not set, the app deployment pipelines might fail"
 fi
@@ -37,7 +33,6 @@ concourse_url: ${CONCOURSE_URL}
 system_dns_zone_name: ${SYSTEM_DNS_ZONE_NAME}
 pipeline_trigger_file: ${pipeline_name}.trigger
 github_access_token: ${GITHUB_ACCESS_TOKEN}
-cf_api: ${CF_API:-}
 cf_user: ${CF_USER}
 cf_password: ${CF_PASSWORD}
 cf_apps_domain: ${CF_APPS_DOMAIN:-}

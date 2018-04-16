@@ -71,7 +71,6 @@ jobs:
             GITHUB_ACCESS_TOKEN: ((github_access_token))
             STATE_BUCKET_NAME: ((state_bucket_name))
             RELEASES_BUCKET_NAME: ((releases_bucket_name))
-            CF_API: ((cf_api))
             CF_APPS_DOMAIN: ((cf_apps_domain))
             CF_SYSTEM_DOMAIN: ((cf_system_domain))
           run:
@@ -244,7 +243,6 @@ jobs:
             GITHUB_ACCESS_TOKEN: ((github_access_token))
             STATE_BUCKET_NAME: ((state_bucket_name))
             RELEASES_BUCKET_NAME: ((releases_bucket_name))
-            CF_API: ((cf_api))
             CF_USER: ((cf_user))
             CF_PASSWORD: ((cf_password))
             CF_APPS_DOMAIN: ((cf_apps_domain))

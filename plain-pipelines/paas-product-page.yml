@@ -39,7 +39,7 @@ jobs:
             - name: paas-product-page
             - name: zendesk-secrets
           params:
-            CF_API: ((cf_api))
+            CF_API: https://api.((cf_system_domain))
             CF_USER: ((cf_user))
             CF_PASSWORD: ((cf_password))
             CF_APPS_DOMAIN: ((cf_apps_domain))
