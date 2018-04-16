@@ -5,8 +5,11 @@ check-env-vars:
 	$(if ${DEPLOY_ENV},,$(error Must pass DEPLOY_ENV=<name>))
 
 PASSWORD_STORE_DIR?=${HOME}/.paas-pass
+CF_DEPLOY_ENV?=${DEPLOY_ENV}
+
 globals:
 	$(eval export PASSWORD_STORE_DIR=${PASSWORD_STORE_DIR})
+	$(eval export CF_DEPLOY_ENV=${CF_DEPLOY_ENV})
 	@true
 
 dev: globals check-env-vars ## Work on the dev account
@@ -15,8 +18,8 @@ dev: globals check-env-vars ## Work on the dev account
 	$(eval export ENABLE_DESTROY=true)
 	$(eval export UNPAUSE_PIPELINES=false)
 	$(eval export SYSTEM_DNS_ZONE_NAME=${DEPLOY_ENV}.dev.cloudpipeline.digital)
-	$(eval export CF_API=https://api.${SYSTEM_DNS_ZONE_NAME})
-	$(eval export CF_APPS_DOMAIN=${DEPLOY_ENV}.dev.cloudpipelineapps.digital)
+	$(eval export CF_API=$(or $(CF_API),https://api.${CF_DEPLOY_ENV}.dev.cloudpipeline.digital))
+	$(eval export CF_APPS_DOMAIN=$(or $(CF_APPS_DOMAIN),${CF_DEPLOY_ENV}.dev.cloudpipelineapps.digital))
 	@true
 
 ci: globals ## Work on the ci account
