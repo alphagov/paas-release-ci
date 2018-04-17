@@ -5,6 +5,7 @@ This repository contains the scripts and Terraform configurations required to se
 * building Bosh releases
 * running integration tests
 * deploying apps to Cloud Foundry
+* running plain pipelines
 
 Apps that are part of running or operating Cloud Foundry itself should be deployed via [paas-cf](https://github.com/alphagov/paas-cf/).
 
@@ -35,10 +36,10 @@ This repository defines `make` targets for uploading three types of credentials 
   DEPLOY_ENV=build make ci upload-compose-secrets
   ```
 
-* DeskPro API key: this is to enable the paas-product-page app to create tickets via the DeskPro API.
+* ZenDesk token: this is to enable the paas-product-page app to create tickets via the ZenDesk API.
 
   ```
-  DEPLOY_ENV=build make ci upload-deskpro-secrets
+  DEPLOY_ENV=build make ci upload-zendesk-secrets
   ```
 
 All three sets of credentials are stored in [paas-credentials](https://github.com/alphagov/paas-credentials).
@@ -57,7 +58,7 @@ A pipeline should be created for each Bosh release this repository is currently 
 When you setup the pipelines in a dev environment they will be paused by default. You can manaully unpause the ones that you need to work on, but be aware that they will submit their results to GitHub pull requests.
 
 * Run `DEPLOY_ENV=... make dev upload-cf-cli-secrets`. You can override the credentials used by setting `CF_USER` and `CF_PASSWORD`.
-* Run `CF_API=... CF_APPS_DOMAIN=... DEPLOY_ENV=... make dev pipelines`, where `CF_API` is the URL of your dev Cloud Foundry API and `CF_APPS_DOMAIN` is the applications domain in your dev Cloud Foundry.
+* Run `CF_DEPLOY_ENV=... DEPLOY_ENV=... make dev pipelines`, where `CF_DEPLOY_ENV` is the environment name of your Cloud Foundry installation. CF_DEPLOY_ENV defaults to the DEPLOY_ENV.
 * Run the setup pipeline.
 * Based on our current configuration your dev build CI will not be allowed to access your dev CloudFoundry API. This means you will have to manually allow the traffic in the AWS console.
 

@@ -5,8 +5,11 @@ check-env-vars:
 	$(if ${DEPLOY_ENV},,$(error Must pass DEPLOY_ENV=<name>))
 
 PASSWORD_STORE_DIR?=${HOME}/.paas-pass
+CF_DEPLOY_ENV?=${DEPLOY_ENV}
+
 globals:
 	$(eval export PASSWORD_STORE_DIR=${PASSWORD_STORE_DIR})
+	$(eval export CF_DEPLOY_ENV=${CF_DEPLOY_ENV})
 	@true
 
 dev: globals check-env-vars ## Work on the dev account
@@ -15,6 +18,8 @@ dev: globals check-env-vars ## Work on the dev account
 	$(eval export ENABLE_DESTROY=true)
 	$(eval export UNPAUSE_PIPELINES=false)
 	$(eval export SYSTEM_DNS_ZONE_NAME=${DEPLOY_ENV}.dev.cloudpipeline.digital)
+	$(eval export CF_APPS_DOMAIN=$(or $(CF_APPS_DOMAIN),${CF_DEPLOY_ENV}.dev.cloudpipelineapps.digital))
+	$(eval export CF_SYSTEM_DOMAIN=$(or $(CF_SYSTEM_DOMAIN),${CF_DEPLOY_ENV}.dev.cloudpipeline.digital))
 	@true
 
 ci: globals ## Work on the ci account
@@ -23,8 +28,8 @@ ci: globals ## Work on the ci account
 	$(eval export AWS_ACCOUNT=ci)
 	$(eval export SYSTEM_DNS_ZONE_NAME=${DEPLOY_ENV}.ci.cloudpipeline.digital)
 	$(eval export CONCOURSE_ATC_PASSWORD_PASS_FILE=ci_deployments/build/concourse_password)
-	$(eval export CF_API=https://api.cloud.service.gov.uk)
 	$(eval export CF_APPS_DOMAIN=cloudapps.digital)
+	$(eval export CF_SYSTEM_DOMAIN=cloud.service.gov.uk)
 	@true
 
 .PHONY: upload-cf-cli-secrets
@@ -43,15 +48,15 @@ upload-compose-secrets: check-env-vars ## Decrypt and upload Compose credentials
 	$(if $(wildcard ${COMPOSE_PASSWORD_STORE_DIR}),,$(error Password store ${COMPOSE_PASSWORD_STORE_DIR} does not exist))
 	@scripts/upload-compose-secrets.sh
 
-.PHONY: upload-deskpro-secrets
-upload-deskpro-secrets: check-env-vars ## Decrypt and upload DeskPro credentials to S3
-	$(eval export DESKPRO_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
-	$(if ${DESKPRO_PASSWORD_STORE_DIR},,$(error Must pass DESKPRO_PASSWORD_STORE_DIR=<path_to_password_store>))
-	$(if $(wildcard ${DESKPRO_PASSWORD_STORE_DIR}),,$(error Password store ${DESKPRO_PASSWORD_STORE_DIR} does not exist))
-	@scripts/upload-deskpro-secrets.sh
+.PHONY: upload-zendesk-secrets
+upload-zendesk-secrets: check-env-vars ## Decrypt and upload Zendesk credentials to S3
+	$(eval export ZENDESK_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
+	$(if ${ZENDESK_PASSWORD_STORE_DIR},,$(error Must pass ZENDESK_PASSWORD_STORE_DIR=<path_to_password_store>))
+	$(if $(wildcard ${ZENDESK_PASSWORD_STORE_DIR}),,$(error Password store ${ZENDESK_PASSWORD_STORE_DIR} does not exist))
+	@scripts/upload-zendesk-secrets.sh
 
 .PHONY: upload-rubbernecker-secrets
-upload-rubbernecker-secrets: check-env-vars ## Decrypt and upload DeskPro credentials to S3
+upload-rubbernecker-secrets: check-env-vars ## Decrypt and upload Rubbernecker credentials to S3
 	$(eval export RUBBERNECKER_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
 	$(if ${RUBBERNECKER_PASSWORD_STORE_DIR},,$(error Must pass RUBBERNECKER_PASSWORD_STORE_DIR=<path_to_password_store>))
 	$(if $(wildcard ${RUBBERNECKER_PASSWORD_STORE_DIR}),,$(error Password store ${RUBBERNECKER_PASSWORD_STORE_DIR} does not exist))
@@ -72,6 +77,10 @@ app-deployment-pipelines: ## Upload app deployment pipelines to concourse
 .PHONY: integration-test-pipelines
 integration-test-pipelines: ## Upload integration test pipelines to concourse
 	@scripts/integration-test-pipelines.sh
+
+.PHONY: plain-pipelines
+plain-pipelines: ## Upload plain pipelines to concourse
+	@scripts/plain-pipelines.sh
 
 showenv: ## Display environment information
 	@scripts/environment.sh
