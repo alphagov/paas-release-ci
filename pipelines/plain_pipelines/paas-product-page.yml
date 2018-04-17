@@ -11,7 +11,7 @@ resources:
     type: git
     source:
       uri: https://github.com/alphagov/paas-product-page.git
-      branch: master
+      branch: security_updates
 
   - name: zendesk-secrets
     type: s3-iam
