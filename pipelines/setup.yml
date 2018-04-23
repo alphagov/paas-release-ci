@@ -4,7 +4,7 @@ resource_types:
     type: docker-image
     source:
       repository: governmentpaas/s3-resource
-      tag: 594eaa9f4d93b2ed32a7e5e1cdea5b380e2f6682
+      tag: fda60bf4c5f85e96c16f704e128e5ead9e84d30d
 
   - name: semver-iam
     type: docker-image
@@ -32,6 +32,21 @@ resources:
       bucket: ((state_bucket_name))
       region_name: ((aws_region))
       versioned_file: release-ci.tfstate
+      initial_version: "-"
+      initial_content_text: |
+        {
+            "version": 1,
+            "serial": 0,
+            "modules": [
+                {
+                    "path": [
+                        "root"
+                    ],
+                    "outputs": {},
+                    "resources": {}
+                }
+            ]
+        }
 
   - name: ssh-private-key
     type: s3-iam
@@ -39,6 +54,7 @@ resources:
       bucket: ((state_bucket_name))
       versioned_file: ci_build_tag_key
       region_name: ((aws_region))
+      initial_version: "-"
 
   - name: ssh-public-key
     type: s3-iam
@@ -46,6 +62,7 @@ resources:
       bucket: ((state_bucket_name))
       versioned_file: ci_build_tag_key.pub
       region_name: ((aws_region))
+      initial_version: "-"
 
 jobs:
   - name: self-update
@@ -90,43 +107,14 @@ jobs:
       - put: pipeline-trigger
         params: {bump: patch}
 
-  - name: init
-    plan:
-      - aggregate:
-          - get: pipeline-trigger
-            passed: ['self-update']
-            trigger: true
-          - get: paas-release-ci
-            passed: ['self-update']
-      - task: bootstrap-s3-state
-        config:
-          platform: linux
-          image_resource:
-            type: docker-image
-            source:
-              repository: governmentpaas/curl-ssl
-              tag: 895cf6752c8ec64af05a3a735186b90acd3db65a
-          inputs:
-            - name: paas-release-ci
-          run:
-            path: sh
-            args:
-              - -e
-              - -c
-              - |
-                paas-release-ci/scripts/s3init.sh "((state_bucket_name))" release-ci.tfstate paas-release-ci/pipelines/init_files/terraform.tfstate.tpl
-                paas-release-ci/scripts/s3init.sh "((state_bucket_name))" ci_build_tag_key paas-release-ci/pipelines/init_files/zero_bytes
-                paas-release-ci/scripts/s3init.sh "((state_bucket_name))" ci_build_tag_key.pub paas-release-ci/pipelines/init_files/zero_bytes
-                paas-release-ci/scripts/s3init.sh "((state_bucket_name))" no-secrets-needed paas-release-ci/pipelines/init_files/zero_bytes
-
   - name: terraform
     plan:
       - aggregate:
           - get: pipeline-trigger
-            passed: ['init']
+            passed: ['self-update']
             trigger: true
           - get: paas-release-ci
-            passed: ['init']
+            passed: ['self-update']
           - get: release-ci-tfstate
       - task: terraform-apply
         config:
