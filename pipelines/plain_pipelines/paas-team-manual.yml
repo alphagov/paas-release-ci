@@ -17,7 +17,7 @@ resources:
   - name: ssh-private-key
     type: s3-iam
     source:
-      bucket: ((state_bucket_name))
+      bucket: ((state_bucket))
       versioned_file: ci_build_tag_key
       region_name: ((aws_region))
 
