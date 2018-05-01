@@ -12,7 +12,7 @@ resources:
     type: git
     source:
       uri: https://github.com/alphagov/paas-team-manual.git
-      branch: tech-docs-template
+      branch: master
 
   - name: ssh-private-key
     type: s3-iam
