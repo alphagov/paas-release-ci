@@ -10,6 +10,8 @@ $("${SCRIPTS_DIR}/environment.sh")
 generate_vars_file() {
    cat <<EOF
 ---
+aws_account: ${AWS_ACCOUNT}
+deploy_env: ${DEPLOY_ENV}
 cf_user: ${CF_USER}
 cf_password: ${CF_PASSWORD}
 state_bucket: ${STATE_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-state}
