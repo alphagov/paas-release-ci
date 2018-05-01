@@ -1,0 +1,71 @@
+---
+
+resource_types:
+  - name: s3-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/s3-resource
+      tag: fda60bf4c5f85e96c16f704e128e5ead9e84d30d
+
+resources:
+  - name: paas-team-manual
+    type: git
+    source:
+      uri: https://github.com/alphagov/paas-team-manual.git
+      branch: tech-docs-template
+
+  - name: ssh-private-key
+    type: s3-iam
+    source:
+      bucket: ((state_bucket_name))
+      versioned_file: ci_build_tag_key
+      region_name: ((aws_region))
+
+jobs:
+  - name: publish
+    serial: true
+    plan:
+      - get: paas-team-manual
+        trigger: true
+      - get: ssh-private-key
+      - task: publish
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ruby
+              tag: 2.5-slim
+          inputs:
+            - name: paas-team-manual
+            - name: ssh-private-key
+          params:
+            DEPLOY_ENV: ((deploy_env))
+            AWS_ACCOUNT: ((aws_account))
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                #apk add --no-progress --update build-base libffi-dev git
+                apt-get update
+                apt-get install -y build-essential libffi-dev git libcurl4-openssl-dev
+
+                chmod 600 ssh-private-key/ci_build_tag_key
+                mkdir -p /root/.ssh
+                cp ssh-private-key/ci_build_tag_key /root/.ssh/id_rsa
+
+                git config --global push.default simple
+                git config --global user.email "paas-release-ci@${DEPLOY_ENV}.${AWS_ACCOUNT}"
+                git config --global user.name "PaaS Release CI server ${DEPLOY_ENV} in ${AWS_ACCOUNT}"
+                export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
+                cd paas-team-manual
+
+                new_remote="$(git remote -v | sed -n 's|origin.*https://\([^/]*\)/\([^ ]*\).*fetch.*|git@\1:\2|p')"
+                git remote set-url origin "$new_remote"
+
+                bundle install
+                bundle exec rake publish
