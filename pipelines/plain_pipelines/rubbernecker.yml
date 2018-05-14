@@ -13,7 +13,7 @@ resources:
       uri: https://github.com/alphagov/paas-rubbernecker.git
       branch: master
 
-  - name: secrets
+  - name: rubbernecker-secrets
     type: s3-iam
     source:
       bucket: ((state_bucket))
@@ -36,6 +36,8 @@ jobs:
               tag: latest
           inputs:
             - name: rubbernecker
+          params:
+            PROJECT_DIR: /go/src/github.com/alphagov/paas-rubbernecker
           run:
             path: sh
             args:
@@ -43,8 +45,11 @@ jobs:
               - -u
               - -c
               - |
-                echo "Testing with script rubbernecker/release/test"
-                cd "rubbernecker" && ./release/test
+                mkdir -p /go/src/github.com/alphagov
+                ln -s "$(pwd)/rubbernecker" "${PROJECT_DIR}"
+                cd ${PROJECT_DIR}
+
+                make dependencies test
 
   - name: deploy
     serial: true
@@ -52,7 +57,7 @@ jobs:
       - get: rubbernecker
         passed: ['test']
         trigger: true
-      - get: secrets
+      - get: rubbernecker-secrets
       - task: build
         config:
           platform: linux
@@ -65,6 +70,8 @@ jobs:
             - name: rubbernecker
           outputs:
             - name: files-to-push
+          params:
+            PROJECT_DIR: /go/src/github.com/alphagov/paas-rubbernecker
           run:
             path: sh
             args:
@@ -72,12 +79,17 @@ jobs:
               - -u
               - -c
               - |
-                echo "Building with script rubbernecker/release/build..."
-                (cd "rubbernecker" && ./release/build)
+                WORKDIR=$(pwd)
+
+                mkdir -p /go/src/github.com/alphagov
+                ln -s "$(pwd)/rubbernecker" "${PROJECT_DIR}"
+                cd ${PROJECT_DIR}
+
+                make dependencies build
 
                 echo "Copying files to destination..."
-                cp -pr "rubbernecker/." files-to-push
-                ls -l files-to-push
+                cp -pr . "${WORKDIR}/files-to-push"
+                ls -l "${WORKDIR}/files-to-push"
 
       - task: push
         config:
@@ -86,10 +98,10 @@ jobs:
             type: docker-image
             source:
               repository: governmentpaas/cf-cli
-              tag: b70af5321b8c80994add887c94827aa583f95541
+              tag: c6f8be180c0c98cc5ee7bd75d224e4b677faf74d
           inputs:
             - name: files-to-push
-            - name: secrets
+            - name: rubbernecker-secrets
           params:
             CF_API: https://api.((cf_system_domain))
             CF_USER: ((cf_user))
@@ -98,7 +110,6 @@ jobs:
             CF_SPACE: tools
             CF_APPS_DOMAIN: ((cf_apps_domain))
             CF_SYSTEM_DOMAIN: ((cf_system_domain))
-            SECRETS_FILE: rubbernecker-secrets.yml
           run:
             path: sh
             args:
@@ -106,18 +117,36 @@ jobs:
               - -u
               - -c
               - |
-                if [ -z "${CF_APPS_DOMAIN}" ]; then
-                  echo "\$CF_APPS_DOMAIN is empty, cannot push to CF"
-                  exit 1
-                fi
-                if [ -z "${CF_SYSTEM_DOMAIN}" ]; then
-                  echo "\$CF_SYSTEM_DOMAIN is empty, cannot push to CF"
-                  exit 1
-                fi
+                WORKDIR=$(pwd)
+
                 echo "Logging on to Cloudfoundry..."
-                cf login -a "${CF_API}" -u "${CF_USER}" \
-                  -p "${CF_PASSWORD}" -o "${CF_ORG}" -s "${CF_SPACE}"
+                cf login \
+                  -a "${CF_API}" \
+                  -u "${CF_USER}" \
+                  -p "${CF_PASSWORD}" \
+                  -o "${CF_ORG}" \
+                  -s "${CF_SPACE}"
 
                 cd files-to-push
-                echo "Pushing to Cloudfoundry with script rubbernecker/release/push..."
-                ./release/push
+
+                echo "Generating manifest template"
+                cat <<EOF | tee manifest-template.yml
+                ---
+                applications:
+                - name: rubbernecker
+                  memory: 128M
+                  instances: 1
+                  buildpack: go_buildpack
+                  env:
+                    GOPACKAGENAME: github.com/alphagov/paas-rubbernecker
+                    PIVOTAL_TRACKER_PROJECT_ID: (( grab pivotal_tracker_project_id ))
+                    PIVOTAL_TRACKER_API_TOKEN: (( grab pivotal_tracker_api_token ))
+                    PAGERDUTY_AUTHTOKEN: (( grab pagerduty_authtoken ))
+                EOF
+
+                spruce merge \
+                  manifest-template.yml \
+                  "${WORKDIR}/rubbernecker-secrets/rubbernecker-secrets.yml" |
+                  spruce merge --cherry-pick applications > manifest.yml
+
+                cf zero-downtime-push rubbernecker -f manifest.yml
