@@ -36,8 +36,7 @@ jobs:
               - -u
               - -c
               - |
-                echo "Testing with script paas-tech-docs/release/test"
-                cd "paas-tech-docs" && ./release/test
+                make -C paas-tech-docs test
 
   - name: deploy
     serial: true
@@ -64,8 +63,7 @@ jobs:
               - -u
               - -c
               - |
-                echo "Building with script paas-tech-docs/release/build..."
-                (cd "paas-tech-docs" && ./release/build)
+                make -C paas-tech-docs build
 
                 echo "Copying files to destination..."
                 cp -pr "paas-tech-docs/." files-to-push
@@ -96,18 +94,38 @@ jobs:
               - -u
               - -c
               - |
-                if [ -z "${CF_APPS_DOMAIN}" ]; then
-                  echo "\$CF_APPS_DOMAIN is empty, cannot push to CF"
-                  exit 1
-                fi
-                if [ -z "${CF_SYSTEM_DOMAIN}" ]; then
-                  echo "\$CF_SYSTEM_DOMAIN is empty, cannot push to CF"
-                  exit 1
-                fi
                 echo "Logging on to Cloudfoundry..."
-                cf login -a "${CF_API}" -u "${CF_USER}" \
-                  -p "${CF_PASSWORD}" -o "${CF_ORG}" -s "${CF_SPACE}"
+                cf login \
+                  -a "${CF_API}" \
+                  -u "${CF_USER}" \
+                  -p "${CF_PASSWORD}" \
+                  -o "${CF_ORG}" \
+                  -s "${CF_SPACE}"
 
                 cd files-to-push
-                echo "Pushing to Cloudfoundry with script paas-tech-docs/release/push..."
-                ./release/push
+
+                echo "Generating manifest template"
+                cat <<EOF | tee manifest.yml
+                ---
+                applications:
+                - name: paas-tech-docs
+                  memory: 64M
+                  path: build
+                  buildpack: staticfile_buildpack
+                  instances: 2
+                  routes:
+                  - route: "docs.${CF_SYSTEM_DOMAIN}"
+
+                - name: paas-tech-docs-redirect
+                  buildpack: staticfile_buildpack
+                  path: redirect
+                  memory: 32M
+                  instances: 2
+                  routes:
+                  - route: "paas-tech-docs.${CF_APPS_DOMAIN}"
+                  env:
+                    REDIRECT_DOMAIN: "docs.${CF_SYSTEM_DOMAIN}"
+                EOF
+
+                cf zero-downtime-push paas-tech-docs -f manifest.yml
+                cf zero-downtime-push paas-tech-docs-redirect -f manifest.yml
