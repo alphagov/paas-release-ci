@@ -1,0 +1,123 @@
+---
+resource_types:
+  - name: s3-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/s3-resource
+      tag: fda60bf4c5f85e96c16f704e128e5ead9e84d30d
+
+resources:
+  - name: rubbernecker
+    type: git
+    source:
+      uri: https://github.com/alphagov/paas-rubbernecker.git
+      branch: master
+
+  - name: secrets
+    type: s3-iam
+    source:
+      bucket: ((state_bucket))
+      region_name: ((aws_region))
+      versioned_file: rubbernecker-secrets.yml
+      initial_version: "-"
+
+jobs:
+  - name: test
+    plan:
+      - get: rubbernecker
+        trigger: true
+      - task: test
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/rubbernecker-tools
+              tag: latest
+          inputs:
+            - name: rubbernecker
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                echo "Testing with script rubbernecker/release/test"
+                cd "rubbernecker" && ./release/test
+
+  - name: deploy
+    serial: true
+    plan:
+      - get: rubbernecker
+        passed: ['test']
+        trigger: true
+      - get: secrets
+      - task: build
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/rubbernecker-tools
+              tag: latest
+          inputs:
+            - name: rubbernecker
+          outputs:
+            - name: files-to-push
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                echo "Building with script rubbernecker/release/build..."
+                (cd "rubbernecker" && ./release/build)
+
+                echo "Copying files to destination..."
+                cp -pr "rubbernecker/." files-to-push
+                ls -l files-to-push
+
+      - task: push
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/cf-cli
+              tag: b70af5321b8c80994add887c94827aa583f95541
+          inputs:
+            - name: files-to-push
+            - name: secrets
+          params:
+            CF_API: https://api.((cf_system_domain))
+            CF_USER: ((cf_user))
+            CF_PASSWORD: ((cf_password))
+            CF_ORG: govuk-paas
+            CF_SPACE: tools
+            CF_APPS_DOMAIN: ((cf_apps_domain))
+            CF_SYSTEM_DOMAIN: ((cf_system_domain))
+            SECRETS_FILE: rubbernecker-secrets.yml
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                if [ -z "${CF_APPS_DOMAIN}" ]; then
+                  echo "\$CF_APPS_DOMAIN is empty, cannot push to CF"
+                  exit 1
+                fi
+                if [ -z "${CF_SYSTEM_DOMAIN}" ]; then
+                  echo "\$CF_SYSTEM_DOMAIN is empty, cannot push to CF"
+                  exit 1
+                fi
+                echo "Logging on to Cloudfoundry..."
+                cf login -a "${CF_API}" -u "${CF_USER}" \
+                  -p "${CF_PASSWORD}" -o "${CF_ORG}" -s "${CF_SPACE}"
+
+                cd files-to-push
+                echo "Pushing to Cloudfoundry with script rubbernecker/release/push..."
+                ./release/push

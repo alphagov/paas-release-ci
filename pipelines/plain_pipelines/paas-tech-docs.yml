@@ -1,4 +1,5 @@
 ---
+
 resource_types:
   - name: s3-iam
     type: docker-image
@@ -7,24 +8,16 @@ resource_types:
       tag: fda60bf4c5f85e96c16f704e128e5ead9e84d30d
 
 resources:
-  - name: ((app_name))
+  - name: paas-tech-docs
     type: git
     source:
-      uri: ((app_github_repo_uri))
-      branch: ((app_repository_branch))
-
-  - name: secrets
-    type: s3-iam
-    source:
-      bucket: ((state_bucket))
-      region_name: ((aws_region))
-      versioned_file: ((secrets_file))
-      initial_version: "-"
+      uri: https://github.com/alphagov/paas-tech-docs.git
+      branch: master
 
 jobs:
   - name: test
     plan:
-      - get: ((app_name))
+      - get: paas-tech-docs
         trigger: true
       - task: test
         config:
@@ -32,10 +25,10 @@ jobs:
           image_resource:
             type: docker-image
             source:
-              repository: ((app_deployment_docker_image))
-              tag: ((app_deployment_docker_image_tag))
+              repository: governmentpaas/tech-docs
+              tag: latest
           inputs:
-            - name: ((app_name))
+            - name: paas-tech-docs
           run:
             path: sh
             args:
@@ -43,30 +36,25 @@ jobs:
               - -u
               - -c
               - |
-                if [ ! -f "((app_name))/release/test" ]; then
-                  echo "No script found at ((app_name))/release/test, tests disabled"
-                  exit 0
-                fi
-                echo "Testing with script ((app_name))/release/test"
-                cd "((app_name))" && ./release/test
+                echo "Testing with script paas-tech-docs/release/test"
+                cd "paas-tech-docs" && ./release/test
 
   - name: deploy
     serial: true
     plan:
-      - get: ((app_name))
+      - get: paas-tech-docs
         passed: ['test']
         trigger: true
-      - get: secrets
       - task: build
         config:
           platform: linux
           image_resource:
             type: docker-image
             source:
-              repository: ((app_deployment_docker_image))
-              tag: ((app_deployment_docker_image_tag))
+              repository: governmentpaas/tech-docs
+              tag: latest
           inputs:
-            - name: ((app_name))
+            - name: paas-tech-docs
           outputs:
             - name: files-to-push
           run:
@@ -76,20 +64,12 @@ jobs:
               - -u
               - -c
               - |
-                copy_files() {
-                  echo "Copying files to destination..."
-                  cp -pr "((app_name))/." files-to-push
-                  ls -l files-to-push
-                }
+                echo "Building with script paas-tech-docs/release/build..."
+                (cd "paas-tech-docs" && ./release/build)
 
-                if [ ! -f "((app_name))/release/build" ]; then
-                  echo "No script found at ((app_name))/release/build, build disabled"
-                  copy_files
-                  exit 0
-                fi
-                echo "Building with script ((app_name))/release/build..."
-                (cd "((app_name))" && ./release/build)
-                copy_files
+                echo "Copying files to destination..."
+                cp -pr "paas-tech-docs/." files-to-push
+                ls -l files-to-push
 
       - task: push
         config:
@@ -101,16 +81,14 @@ jobs:
               tag: b70af5321b8c80994add887c94827aa583f95541
           inputs:
             - name: files-to-push
-            - name: secrets
           params:
             CF_API: https://api.((cf_system_domain))
             CF_USER: ((cf_user))
             CF_PASSWORD: ((cf_password))
-            CF_ORG: ((cf_org))
-            CF_SPACE: ((cf_space))
+            CF_ORG: govuk-paas
+            CF_SPACE: docs
             CF_APPS_DOMAIN: ((cf_apps_domain))
             CF_SYSTEM_DOMAIN: ((cf_system_domain))
-            SECRETS_FILE: ((secrets_file))
           run:
             path: sh
             args:
@@ -131,16 +109,5 @@ jobs:
                   -p "${CF_PASSWORD}" -o "${CF_ORG}" -s "${CF_SPACE}"
 
                 cd files-to-push
-                if [ -f release/push ]; then
-                  echo "Pushing to Cloudfoundry with script ((app_name))/release/push..."
-                  ./release/push
-
-                else
-                  echo "No script found at ((app_name))/release/push, using default push"
-
-                  echo "Deploy with zero downtime"
-                  cf blue-green-deploy "((app_name))"
-
-                  echo "Delete left over app"
-                  cf delete -f "((app_name))-old"
-                fi
+                echo "Pushing to Cloudfoundry with script paas-tech-docs/release/push..."
+                ./release/push
