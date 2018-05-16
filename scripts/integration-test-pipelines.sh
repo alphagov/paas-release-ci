@@ -51,3 +51,4 @@ setup_test_pipeline rds-broker alphagov paas-rds-broker master
 setup_test_pipeline compose-broker alphagov paas-compose-broker master compose-broker-secrets.yml
 setup_test_pipeline paas-billing alphagov paas-billing master
 setup_test_pipeline elasticache-broker alphagov paas-elasticache-broker master
+setup_test_pipeline paas-accounts alphagov paas-accounts master
