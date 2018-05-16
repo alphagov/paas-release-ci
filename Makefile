@@ -70,10 +70,6 @@ pipelines: ## Upload setup pipelines to concourse
 boshrelease-pipelines: ## Upload boshrelease pipelines to concourse
 	@scripts/build-boshrelease-pipelines.sh
 
-.PHONY: app-deployment-pipelines
-app-deployment-pipelines: ## Upload app deployment pipelines to concourse
-	@scripts/build-app-deployment-pipelines.sh
-
 .PHONY: integration-test-pipelines
 integration-test-pipelines: ## Upload integration test pipelines to concourse
 	@scripts/integration-test-pipelines.sh

@@ -1,0 +1,152 @@
+---
+resource_types:
+  - name: s3-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/s3-resource
+      tag: fda60bf4c5f85e96c16f704e128e5ead9e84d30d
+
+resources:
+  - name: rubbernecker
+    type: git
+    source:
+      uri: https://github.com/alphagov/paas-rubbernecker.git
+      branch: master
+
+  - name: rubbernecker-secrets
+    type: s3-iam
+    source:
+      bucket: ((state_bucket))
+      region_name: ((aws_region))
+      versioned_file: rubbernecker-secrets.yml
+      initial_version: "-"
+
+jobs:
+  - name: test
+    plan:
+      - get: rubbernecker
+        trigger: true
+      - task: test
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/rubbernecker-tools
+              tag: latest
+          inputs:
+            - name: rubbernecker
+          params:
+            PROJECT_DIR: /go/src/github.com/alphagov/paas-rubbernecker
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                mkdir -p /go/src/github.com/alphagov
+                ln -s "$(pwd)/rubbernecker" "${PROJECT_DIR}"
+                cd ${PROJECT_DIR}
+
+                make dependencies test
+
+  - name: deploy
+    serial: true
+    plan:
+      - get: rubbernecker
+        passed: ['test']
+        trigger: true
+      - get: rubbernecker-secrets
+      - task: build
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/rubbernecker-tools
+              tag: latest
+          inputs:
+            - name: rubbernecker
+          outputs:
+            - name: files-to-push
+          params:
+            PROJECT_DIR: /go/src/github.com/alphagov/paas-rubbernecker
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                WORKDIR=$(pwd)
+
+                mkdir -p /go/src/github.com/alphagov
+                ln -s "$(pwd)/rubbernecker" "${PROJECT_DIR}"
+                cd ${PROJECT_DIR}
+
+                make dependencies build
+
+                echo "Copying files to destination..."
+                cp -pr . "${WORKDIR}/files-to-push"
+                ls -l "${WORKDIR}/files-to-push"
+
+      - task: push
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/cf-cli
+              tag: c6f8be180c0c98cc5ee7bd75d224e4b677faf74d
+          inputs:
+            - name: files-to-push
+            - name: rubbernecker-secrets
+          params:
+            CF_API: https://api.((cf_system_domain))
+            CF_USER: ((cf_user))
+            CF_PASSWORD: ((cf_password))
+            CF_ORG: govuk-paas
+            CF_SPACE: tools
+            CF_APPS_DOMAIN: ((cf_apps_domain))
+            CF_SYSTEM_DOMAIN: ((cf_system_domain))
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                WORKDIR=$(pwd)
+
+                echo "Logging on to Cloudfoundry..."
+                cf login \
+                  -a "${CF_API}" \
+                  -u "${CF_USER}" \
+                  -p "${CF_PASSWORD}" \
+                  -o "${CF_ORG}" \
+                  -s "${CF_SPACE}"
+
+                cd files-to-push
+
+                echo "Generating manifest template"
+                cat <<EOF | tee manifest-template.yml
+                ---
+                applications:
+                - name: rubbernecker
+                  memory: 128M
+                  instances: 1
+                  buildpack: go_buildpack
+                  env:
+                    GOPACKAGENAME: github.com/alphagov/paas-rubbernecker
+                    PIVOTAL_TRACKER_PROJECT_ID: (( grab pivotal_tracker_project_id ))
+                    PIVOTAL_TRACKER_API_TOKEN: (( grab pivotal_tracker_api_token ))
+                    PAGERDUTY_AUTHTOKEN: (( grab pagerduty_authtoken ))
+                EOF
+
+                spruce merge \
+                  manifest-template.yml \
+                  "${WORKDIR}/rubbernecker-secrets/rubbernecker-secrets.yml" |
+                  spruce merge --cherry-pick applications > manifest.yml
+
+                cf zero-downtime-push rubbernecker -f manifest.yml

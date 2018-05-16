@@ -1,6 +1,0 @@
-APP_NAME="paas-tech-docs"
-APP_REPOSITORY="https://github.com/alphagov/paas-tech-docs.git"
-APP_BRANCH="master"
-APP_DOCKER_IMAGE="governmentpaas/tech-docs"
-APP_CF_ORG="govuk-paas"
-APP_CF_SPACE="docs"
