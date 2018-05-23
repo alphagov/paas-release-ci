@@ -98,7 +98,7 @@ jobs:
             type: docker-image
             source:
               repository: governmentpaas/cf-cli
-              tag: c6f8be180c0c98cc5ee7bd75d224e4b677faf74d
+              tag: 0eff5b6a9c092f865a2b19cc4e75a3b539b82fa2
           inputs:
             - name: files-to-push
             - name: rubbernecker-secrets
