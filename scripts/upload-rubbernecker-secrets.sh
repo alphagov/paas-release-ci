@@ -4,7 +4,7 @@ set -eu
 
 export PASSWORD_STORE_DIR=${RUBBERNECKER_PASSWORD_STORE_DIR}
 
-PIVOTAL_TRACKER_API_TOKEN=$(pass "pivotal/tracker_token")
+PIVOTAL_TRACKER_API_TOKEN=$(pass "pivotal/rubbernecker_api_token")
 PAGERDUTY_AUTHTOKEN=$(pass "pagerduty/rubbernecker_api_token")
 
 SECRETS=$(mktemp secrets.yml.XXXXXX)
