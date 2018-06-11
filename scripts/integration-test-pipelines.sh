@@ -53,3 +53,4 @@ setup_test_pipeline paas-billing alphagov paas-billing master
 setup_test_pipeline elasticache-broker alphagov paas-elasticache-broker master
 setup_test_pipeline paas-accounts alphagov paas-accounts master
 setup_test_pipeline rds-metric-collector alphagov paas-rds-metric-collector master
+setup_test_pipeline paas-admin alphagov paas-admin master
