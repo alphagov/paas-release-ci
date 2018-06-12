@@ -45,17 +45,24 @@ setup_release_pipeline() {
     <(generate_vars_file)
 }
 
+remove_release_pipeline() {
+  pipeline_name="${1}-release"
+  ${FLY_CMD} -t "${FLY_TARGET}" destroy-pipeline --pipeline "${pipeline_name}" --non-interactive || true
+}
+
 setup_release_pipeline rds-broker alphagov/paas-rds-broker-boshrelease master
 setup_release_pipeline datadog-for-cloudfoundry alphagov/paas-datadog-for-cloudfoundry-boshrelease master
 setup_release_pipeline logsearch-for-cloudfoundry alphagov/paas-logsearch-for-cloudfoundry gds_master
 setup_release_pipeline paas-haproxy alphagov/paas-haproxy-release master
-setup_release_pipeline graphite alphagov/paas-graphite-statsd-boshrelease gds_master
 setup_release_pipeline collectd alphagov/paas-collectd-boshrelease gds_master
 setup_release_pipeline datadog-agent alphagov/paas-datadog-agent-boshrelease gds_master
 setup_release_pipeline syslog alphagov/paas-syslog-release gds_master
 setup_release_pipeline ipsec alphagov/paas-ipsec-release gds_master
-setup_release_pipeline grafana alphagov/paas-grafana-boshrelease gds_master
 setup_release_pipeline cdn-broker alphagov/paas-cdn-broker-boshrelease master
 setup_release_pipeline routing alphagov/paas-routing-release gds_master
 setup_release_pipeline elasticache-broker alphagov/paas-elasticache-broker-boshrelease master
 setup_release_pipeline loggregator alphagov/paas-loggregator-release gds_master
+
+## TODO: remove after the pipelines were deleted
+remove_release_pipeline graphite
+remove_release_pipeline grafana
