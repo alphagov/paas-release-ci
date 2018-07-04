@@ -1,0 +1,64 @@
+---
+resources:
+  - name: paas-codimd
+    type: git
+    source:
+      uri: https://github.com/alphagov/paas-codimd
+      branch: gds_master
+
+jobs:
+  - name: deploy
+    serial: true
+    plan:
+      - get: paas-codimd
+        trigger: true
+      - task: push
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: governmentpaas/cf-cli
+              tag: 0eff5b6a9c092f865a2b19cc4e75a3b539b82fa2
+          inputs:
+            - name: paas-codimd
+          params:
+            CF_API: https://api.((cf_system_domain))
+            CF_USER: ((cf_user))
+            CF_PASSWORD: ((cf_password))
+            CF_APPS_DOMAIN: ((cf_apps_domain))
+            CF_SYSTEM_DOMAIN: ((cf_system_domain))
+            CF_ORG: govuk-paas
+            CF_SPACE: tools
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                echo "Logging on to Cloudfoundry..."
+                cf login \
+                  -a "${CF_API}" \
+                  -u "${CF_USER}" \
+                  -p "${CF_PASSWORD}" \
+                  -o "${CF_ORG}" \
+                  -s "${CF_SPACE}"
+
+                cd paas-codimd/
+
+                cf create-service postgres tiny-unencrypted-9.5 hackmd-db
+                while ! cf service hackmd-db | grep -q 'create succeeded'; do
+                  echo "Waiting for creation of service to complete..."
+                  sleep 30
+                done
+
+                ruby -ryaml -e '
+                  manifest = YAML.load_file("manifest.yml")
+                  manifest["applications"].each { |app| app["services"] = ["hackmd-db"] }
+                  manifest["applications"].each { |app| app["env"]["CF_DB"] = "hackmd-db" }
+                  File.write("manifest.yml", manifest.to_yaml)
+                '
+
+                cf blue-green-deploy hackmd
+                cf delete -f hackmd-old
