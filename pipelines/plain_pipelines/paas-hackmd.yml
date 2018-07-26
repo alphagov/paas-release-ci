@@ -1,4 +1,11 @@
 ---
+resource_types:
+  - name: s3-iam
+    type: docker-image
+    source:
+      repository: governmentpaas/s3-resource
+      tag: fda60bf4c5f85e96c16f704e128e5ead9e84d30d
+
 resources:
   - name: paas-codimd
     type: git
@@ -6,12 +13,19 @@ resources:
       uri: https://github.com/alphagov/paas-codimd
       branch: gds_master
 
+  - name: hackmd-secrets
+    type: s3-iam
+    source:
+      bucket: ((state_bucket))
+      region_name: ((aws_region))
+      versioned_file: hackmd-secrets.yml
 jobs:
   - name: deploy
     serial: true
     plan:
       - get: paas-codimd
         trigger: true
+      - get: hackmd-secrets
       - task: push
         config:
           platform: linux
@@ -22,6 +36,7 @@ jobs:
               tag: 0eff5b6a9c092f865a2b19cc4e75a3b539b82fa2
           inputs:
             - name: paas-codimd
+            - name: hackmd-secrets
           params:
             CF_API: https://api.((cf_system_domain))
             CF_USER: ((cf_user))
@@ -53,12 +68,29 @@ jobs:
                   sleep 30
                 done
 
-                ruby -ryaml -e '
-                  manifest = YAML.load_file("manifest.yml")
-                  manifest["applications"].each { |app| app["services"] = ["hackmd-db"] }
-                  manifest["applications"].each { |app| app["env"]["CF_DB"] = "hackmd-db" }
-                  File.write("manifest.yml", manifest.to_yaml)
-                '
+                echo "Generating manifest template"
+                cat <<EOF | tee manifest-template.yml
+                ---
+                applications:
+                - name: hackmd
+                  buildpack: nodejs_buildpack
+                  path: ./paas-codimd/
+                  memory: 6G
+                  instances: 1
+                  env:
+                    PGSSLMODE: require
+                    UV_THREADPOOL_SIZE: 100
+                    CMD_PORT: 8080
+                    CMD_GITHUB_CLIENTSECRET: (( grab hackmd_client_id  ))
+                    CMD_GITHUB_CLIENTID: (( grab hackmd_client_secret ))
+                    CMD_DOMAIN: 'hackmd.${CF_APPS_DOMAIN}'
+                    CMD_PROTOCOL_USESSL: 'true'
+                    CMD_ALLOW_ORIGIN: 'localhost,hackmd.${CF_APPS_DOMAIN},cdnjs.cloudflare.com,fonts.googleapis.com,fonts.gstatic.com'
+                EOF
 
-                cf blue-green-deploy hackmd
-                cf delete -f hackmd-old
+                spruce merge \
+                  ./manifest-template.yml \
+                  ./hackmd-secrets/hackmd-secrets.yml |
+                  spruce merge --cherry-pick applications > manifest-prod.yml
+
+                cf zero-downtime-push hackmd -f ./manifest-prod.yml

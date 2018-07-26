@@ -70,6 +70,13 @@ upload-rubbernecker-secrets: check-env-vars ## Decrypt and upload Rubbernecker c
 	$(if $(wildcard ${RUBBERNECKER_PASSWORD_STORE_DIR}),,$(error Password store ${RUBBERNECKER_PASSWORD_STORE_DIR} does not exist))
 	@scripts/upload-rubbernecker-secrets.sh
 
+.PHONY: upload-hackmd-secrets
+upload-hackmd-secrets: check-env-vars ## Decrypt and upload Hackmd credentials to S3
+	$(eval export HACKMD_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
+	$(if ${HACKMD_PASSWORD_STORE_DIR},,$(error Must pass HACKMD_PASSWORD_STORE_DIR=<path_to_password_store>))
+	$(if $(wildcard ${HACKMD_PASSWORD_STORE_DIR}),,$(error Password store ${HACKMD_PASSWORD_STORE_DIR} does not exist))
+	@scripts/upload-hackmd-secrets.sh
+
 .PHONY: pipelines
 pipelines: ## Upload setup pipelines to concourse
 	@scripts/deploy-setup-pipelines.sh
