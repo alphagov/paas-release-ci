@@ -49,7 +49,7 @@ upload-compose-secrets: check-env-vars ## Decrypt and upload Compose credentials
 	@scripts/upload-compose-secrets.sh
 
 .PHONY: upload-aiven-secrets
-upload-aiven-secrets: check-env-vars ## Decrypt and upload Compose credentials to S3
+upload-aiven-secrets: check-env-vars ## Decrypt and upload Aiven credentials to S3
 	$(eval export AIVEN_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
 	$(if ${AWS_ACCOUNT},,$(error Must set environment to dev/ci))
 	$(if ${AIVEN_PASSWORD_STORE_DIR},,$(error Must pass _PASSWORD_STORE_DIR=<path_to_password_store>))
