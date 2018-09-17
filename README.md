@@ -30,12 +30,6 @@ This repository defines `make` targets for uploading three types of credentials 
   DEPLOY_ENV=build make ci upload-cf-cli-secrets
   ```
 
-* Compose API key: this is for the integration tests to use the real Compose API.
-
-  ```
-  DEPLOY_ENV=build make ci upload-compose-secrets
-  ```
-
 * ZenDesk token: this is to enable the paas-product-page app to create tickets via the ZenDesk API.
 
   ```

@@ -47,8 +47,13 @@ setup_test_pipeline() {
 
 }
 
+remove_test_pipeline() {
+  pipeline_name="${1}"
+  ${FLY_CMD} -t "${FLY_TARGET}" destroy-pipeline --pipeline "${pipeline_name}" --non-interactive || true
+}
+
+
 setup_test_pipeline rds-broker alphagov paas-rds-broker master
-setup_test_pipeline compose-broker alphagov paas-compose-broker master compose-broker-secrets.yml
 setup_test_pipeline paas-billing alphagov paas-billing master
 setup_test_pipeline elasticache-broker alphagov paas-elasticache-broker master
 setup_test_pipeline paas-accounts alphagov paas-accounts master
@@ -56,3 +61,6 @@ setup_test_pipeline rds-metric-collector alphagov paas-rds-metric-collector mast
 setup_test_pipeline paas-admin alphagov paas-admin master
 setup_test_pipeline paas-log-cache-adapter alphagov paas-log-cache-adapter master
 setup_test_pipeline aiven-broker alphagov paas-aiven-broker master aiven-broker-secrets.yml
+
+# FIXME: Remove this once it has run everywhere.
+remove_test_pipeline compose-broker
