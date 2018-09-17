@@ -62,7 +62,3 @@ setup_release_pipeline cdn-broker alphagov/paas-cdn-broker-boshrelease master
 setup_release_pipeline routing alphagov/paas-routing-release gds_master
 setup_release_pipeline elasticache-broker alphagov/paas-elasticache-broker-boshrelease master
 setup_release_pipeline loggregator alphagov/paas-loggregator-release gds_master
-
-## TODO: remove after the pipelines were deleted
-remove_release_pipeline graphite
-remove_release_pipeline grafana
