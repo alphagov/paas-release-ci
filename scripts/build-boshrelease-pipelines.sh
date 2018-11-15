@@ -63,3 +63,4 @@ setup_release_pipeline routing alphagov/paas-routing-release gds_master
 setup_release_pipeline elasticache-broker alphagov/paas-elasticache-broker-boshrelease master
 setup_release_pipeline loggregator alphagov/paas-loggregator-release gds_master
 setup_release_pipeline metric-exporter alphagov/paas-metric-exporter-boshrelease master
+setup_release_pipeline capi alphagov/paas-capi-release gds_master
