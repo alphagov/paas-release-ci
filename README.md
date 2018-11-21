@@ -67,3 +67,12 @@ You can override some variables to customise the deployment:
 ## Accessing Concourse
 
 The `build` Concourse server is deployed in the CI account using its own Bosh. You can get information about the server using `make ci showenv` command. This will give you necessary information to log-in to the server.
+
+## Pausing Pipelines
+
+If you want to pause all pipelines when redeploying Concourse you can use:
+
+```bash
+DEPLOY_ENV=build make ci pause-all-pipelines
+DEPLOY_ENV=build make ci unpause-all-pipelines
+```

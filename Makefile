@@ -112,3 +112,11 @@ lint_yaml:
 .PHONY: lint_concourse
 lint_concourse:
 	./scripts/pipecleaner.py --fatal-warnings pipelines/*.yml
+
+.PHONY: pause-all-pipelines
+pause-all-pipelines:
+	./scripts/pause-pipelines.sh pause
+
+.PHONY: unpause-all-pipelines
+unpause-all-pipelines:
+	./scripts/pause-pipelines.sh unpause
