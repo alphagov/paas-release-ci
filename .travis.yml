@@ -19,7 +19,7 @@ before_install:
     unzip -o terraform_${TF_VERSION}_linux_amd64.zip -d ~/bin
     rm terraform_${TF_VERSION}_linux_amd64.zip
   - pip install --user yamllint
-  - eval "$(gimme 1.8)"
+  - eval "$(gimme 1.11)"
   - export GOPATH=$HOME/gopath
   - export PATH=$HOME/gopath/bin:$PATH
   - go get github.com/onsi/ginkgo/ginkgo
