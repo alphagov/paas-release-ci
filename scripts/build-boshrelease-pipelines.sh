@@ -65,4 +65,4 @@ setup_release_pipeline loggregator alphagov/paas-loggregator-release gds_master
 setup_release_pipeline metric-exporter alphagov/paas-metric-exporter-boshrelease master
 setup_release_pipeline capi alphagov/paas-capi-release gds_master
 setup_release_pipeline bosh alphagov/paas-bosh gds_master
-setup_release_pipeline networking-release alphagov/cf-networking-release gds_master
+setup_release_pipeline cf-networking alphagov/cf-networking-release gds_master
