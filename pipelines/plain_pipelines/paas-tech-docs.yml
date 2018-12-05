@@ -3,6 +3,7 @@
 resource_types:
   - name: s3-iam
     type: docker-image
+    check_every: 24h
     source:
       repository: governmentpaas/s3-resource
       tag: fda60bf4c5f85e96c16f704e128e5ead9e84d30d
@@ -10,6 +11,7 @@ resource_types:
 resources:
   - name: paas-tech-docs
     type: git
+    check_every: 1m
     source:
       uri: https://github.com/alphagov/paas-tech-docs.git
       branch: master

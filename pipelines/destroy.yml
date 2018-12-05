@@ -2,12 +2,14 @@
 resource_types:
   - name: s3-iam
     type: docker-image
+    check_every: 24h
     source:
       repository: governmentpaas/s3-resource
       tag: fda60bf4c5f85e96c16f704e128e5ead9e84d30d
 
   - name: semver-iam
     type: docker-image
+    check_every: 24h
     source:
       repository: governmentpaas/semver-resource
       tag: ecbdd201e122b44de99a40ac9f24407c1a43b9a2
@@ -15,6 +17,7 @@ resource_types:
 resources:
   - name: pipeline-trigger
     type: semver-iam
+    check_every: 24h
     source:
       bucket: ((state_bucket_name))
       region_name: ((aws_region))
@@ -22,12 +25,14 @@ resources:
 
   - name: paas-release-ci
     type: git
+    check_every: 1m
     source:
       uri: https://github.com/alphagov/paas-release-ci
       branch: ((branch_name))
 
   - name: release-ci-tfstate
     type: s3-iam
+    check_every: 24h
     source:
       bucket: ((state_bucket_name))
       region_name: ((aws_region))

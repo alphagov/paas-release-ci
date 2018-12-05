@@ -2,6 +2,7 @@
 resource_types:
   - name: s3-iam
     type: docker-image
+    check_every: 24h
     source:
       repository: governmentpaas/s3-resource
       tag: fda60bf4c5f85e96c16f704e128e5ead9e84d30d
@@ -9,12 +10,14 @@ resource_types:
 resources:
   - name: paas-product-page
     type: git
+    check_every: 1m
     source:
       uri: https://github.com/alphagov/paas-product-page.git
       branch: master
 
   - name: zendesk-secrets
     type: s3-iam
+    check_every: 24h
     source:
       bucket: ((state_bucket))
       region_name: ((aws_region))

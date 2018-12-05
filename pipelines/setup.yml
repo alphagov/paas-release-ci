@@ -15,6 +15,7 @@ resource_types:
 resources:
   - name: pipeline-trigger
     type: semver-iam
+    check_every: 24h
     source:
       bucket: ((state_bucket_name))
       region_name: ((aws_region))
@@ -22,12 +23,14 @@ resources:
 
   - name: paas-release-ci
     type: git
+    check_every: 1m
     source:
       uri: https://github.com/alphagov/paas-release-ci
       branch: ((branch_name))
 
   - name: release-ci-tfstate
     type: s3-iam
+    check_every: 24h
     source:
       bucket: ((state_bucket_name))
       region_name: ((aws_region))
@@ -50,6 +53,7 @@ resources:
 
   - name: ssh-private-key
     type: s3-iam
+    check_every: 24h
     source:
       bucket: ((state_bucket_name))
       versioned_file: ci_build_tag_key
@@ -58,6 +62,7 @@ resources:
 
   - name: ssh-public-key
     type: s3-iam
+    check_every: 24h
     source:
       bucket: ((state_bucket_name))
       versioned_file: ci_build_tag_key.pub
