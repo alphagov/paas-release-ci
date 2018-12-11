@@ -66,3 +66,4 @@ setup_release_pipeline metric-exporter alphagov/paas-metric-exporter-boshrelease
 setup_release_pipeline capi alphagov/paas-capi-release gds_master
 setup_release_pipeline bosh alphagov/paas-bosh gds_master
 setup_release_pipeline cf-networking alphagov/cf-networking-release gds_master
+setup_release_pipeline concourse alphagov/paas-concourse-bosh-release gds_master
