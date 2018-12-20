@@ -65,7 +65,3 @@ setup_release_pipeline capi alphagov/paas-capi-release gds_master
 setup_release_pipeline bosh alphagov/paas-bosh gds_master
 setup_release_pipeline cf-networking alphagov/cf-networking-release gds_master
 setup_release_pipeline concourse alphagov/paas-concourse-bosh-release gds_master
-
-# FIXME: remove when this has been run everywhere.
-remove_release_pipeline datadog-for-cloudfoundry
-remove_release_pipeline datadog-agent
