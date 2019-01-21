@@ -66,3 +66,4 @@ setup_release_pipeline bosh alphagov/paas-bosh gds_master
 setup_release_pipeline cf-networking alphagov/cf-networking-release gds_master
 setup_release_pipeline concourse alphagov/paas-concourse-bosh-release gds_master
 setup_release_pipeline drone-agent-broker alphagov/paas-drone-agent-broker-boshrelease initial
+setup_release_pipeline prometheus alphagov/paas-prometheus-boshrelease gds_master
