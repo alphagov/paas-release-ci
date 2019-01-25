@@ -73,6 +73,7 @@ jobs:
                   path: ./paas-product-page/
                   memory: 256M
                   instances: 2
+                  stack: cflinuxfs3
                   routes:
                   - route: "www.${CF_SYSTEM_DOMAIN}"
                   env:
@@ -87,6 +88,7 @@ jobs:
                   path: ./paas-product-page/redirect
                   memory: 32M
                   instances: 2
+                  stack: cflinuxfs3
                   routes:
                   - route: "paas-product-page.${CF_APPS_DOMAIN}"
                   - route: "${CF_SYSTEM_DOMAIN}"
