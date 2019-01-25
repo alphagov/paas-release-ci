@@ -80,6 +80,7 @@ jobs:
                   path: ./paas-codimd/
                   memory: 6G
                   instances: 1
+                  stack: cflinuxfs3
                   env:
                     PGSSLMODE: require
                     UV_THREADPOOL_SIZE: 100
