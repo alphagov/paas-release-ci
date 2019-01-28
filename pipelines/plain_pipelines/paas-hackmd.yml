@@ -86,8 +86,8 @@ jobs:
                     PGSSLMODE: require
                     UV_THREADPOOL_SIZE: 100
                     CMD_PORT: 8080
-                    CMD_GITHUB_CLIENTSECRET: (( grab hackmd_client_id  ))
-                    CMD_GITHUB_CLIENTID: (( grab hackmd_client_secret ))
+                    CMD_GITHUB_CLIENTID: (( grab hackmd_client_id  ))
+                    CMD_GITHUB_CLIENTSECRET: (( grab hackmd_client_secret ))
                     CMD_DOMAIN: 'hackmd.${CF_APPS_DOMAIN}'
                     CMD_PROTOCOL_USESSL: 'true'
                     CMD_ALLOW_ORIGIN: 'localhost,hackmd.${CF_APPS_DOMAIN},cdnjs.cloudflare.com,fonts.googleapis.com,fonts.gstatic.com'
