@@ -138,6 +138,7 @@ jobs:
                 applications:
                 - name: rubbernecker
                   memory: 128M
+                  stack: cflinuxfs3
                   instances: 1
                   buildpack: go_buildpack
                   env:

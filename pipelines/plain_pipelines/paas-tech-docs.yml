@@ -115,6 +115,7 @@ jobs:
                   path: build
                   buildpack: staticfile_buildpack
                   instances: 2
+                  stack: cflinuxfs3
                   routes:
                   - route: "docs.${CF_SYSTEM_DOMAIN}"
 
@@ -123,6 +124,7 @@ jobs:
                   path: redirect
                   memory: 32M
                   instances: 2
+                  stack: cflinuxfs3
                   routes:
                   - route: "paas-tech-docs.${CF_APPS_DOMAIN}"
                   env:
