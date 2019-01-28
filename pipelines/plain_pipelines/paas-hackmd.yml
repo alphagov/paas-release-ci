@@ -94,7 +94,7 @@ jobs:
 
                 spruce merge \
                   ./manifest-template.yml \
-                  ./hackmd-secrets/hackmd-secrets.yml |
+                  ../hackmd-secrets/hackmd-secrets.yml |
                   spruce merge --cherry-pick applications > manifest-prod.yml
 
                 cf zero-downtime-push hackmd -f ./manifest-prod.yml
