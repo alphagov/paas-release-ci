@@ -79,7 +79,10 @@ jobs:
                   memory: 6G
                   instances: 1
                   stack: cflinuxfs3
+                  services:
+                    - hackmd-db
                   env:
+                    CF_DB: hackmd-db
                     PGSSLMODE: require
                     UV_THREADPOOL_SIZE: 100
                     CMD_PORT: 8080
