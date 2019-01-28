@@ -63,8 +63,6 @@ jobs:
                   -o "${CF_ORG}" \
                   -s "${CF_SPACE}"
 
-                cd paas-codimd/
-
                 cf create-service postgres tiny-unencrypted-9.5 hackmd-db
                 while ! cf service hackmd-db | grep -q 'create succeeded'; do
                   echo "Waiting for creation of service to complete..."
@@ -94,7 +92,7 @@ jobs:
 
                 spruce merge \
                   ./manifest-template.yml \
-                  ../hackmd-secrets/hackmd-secrets.yml |
+                  ./hackmd-secrets/hackmd-secrets.yml |
                   spruce merge --cherry-pick applications > manifest-prod.yml
 
                 cf zero-downtime-push hackmd -f ./manifest-prod.yml
