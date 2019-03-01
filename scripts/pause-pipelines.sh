@@ -17,5 +17,7 @@ fi
 
 pipelines=$($FLY_CMD -t "${FLY_TARGET}" pipelines --json | jq -r '.[].name')
 for pipeline in $pipelines; do
-  $FLY_CMD -t "${FLY_TARGET}" "${action}-pipeline" -p "$pipeline"
+  if [ "${pipeline}" != "create-bosh-concourse" ]; then
+    $FLY_CMD -t "${FLY_TARGET}" "${action}-pipeline" -p "$pipeline"
+  fi
 done
