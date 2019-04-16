@@ -114,9 +114,9 @@ lint_concourse:
 	./scripts/pipecleaner.py --fatal-warnings pipelines/*.yml
 
 .PHONY: pause-all-pipelines
-pause-all-pipelines:
+pause-all-pipelines: ## Pause all pipelines so that create-bosh-concourse can be run safely.
 	./scripts/pause-pipelines.sh pause
 
 .PHONY: unpause-all-pipelines
-unpause-all-pipelines:
+unpause-all-pipelines: ## Unpause all pipelines after running create-bosh-concourse
 	./scripts/pause-pipelines.sh unpause
