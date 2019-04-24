@@ -7,6 +7,11 @@ resource_types:
       repository: governmentpaas/s3-resource
       tag: fda60bf4c5f85e96c16f704e128e5ead9e84d30d
 
+  - name: slack-notification-resource
+    type: docker-image
+    source:
+      repository: cfcommunity/slack-notification-resource
+
 resources:
   - name: paas-codimd
     type: git
@@ -22,6 +27,12 @@ resources:
       bucket: ((state_bucket))
       region_name: ((aws_region))
       versioned_file: hackmd-secrets.yml
+
+  - name: slack-notification
+    type: slack-notification-resource
+    source:
+      url: ((slack_webhook_url))
+
 jobs:
   - name: deploy
     serial: true
@@ -99,3 +110,7 @@ jobs:
                   spruce merge --cherry-pick applications > manifest-prod.yml
 
                 cf zero-downtime-push hackmd -f ./manifest-prod.yml
+        on_failure:
+          put: slack-notification
+          params:
+            text: "Job $BUILD_NAME in $BUILD_JOB_NAME on $BUILD_PIPELINE_NAME failed. Check the logs at $ATC_EXTERNAL_URL/builds/$BUILD_ID."

@@ -8,6 +8,11 @@ resource_types:
       repository: governmentpaas/s3-resource
       tag: fda60bf4c5f85e96c16f704e128e5ead9e84d30d
 
+  - name: slack-notification-resource
+    type: docker-image
+    source:
+      repository: cfcommunity/slack-notification-resource
+
 resources:
   - name: paas-team-manual
     type: git
@@ -23,6 +28,11 @@ resources:
       bucket: ((state_bucket))
       versioned_file: ci_build_tag_key
       region_name: ((aws_region))
+
+  - name: slack-notification
+    type: slack-notification-resource
+    source:
+      url: ((slack_webhook_url))
 
 jobs:
   - name: publish
@@ -72,3 +82,7 @@ jobs:
 
                 bundle install
                 bundle exec rake publish
+        on_failure:
+          put: slack-notification
+          params:
+            text: "Job $BUILD_NAME in $BUILD_JOB_NAME on $BUILD_PIPELINE_NAME failed. Check the logs at $ATC_EXTERNAL_URL/builds/$BUILD_ID."
