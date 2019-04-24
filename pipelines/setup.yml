@@ -12,6 +12,11 @@ resource_types:
       repository: governmentpaas/semver-resource
       tag: ecbdd201e122b44de99a40ac9f24407c1a43b9a2
 
+  - name: slack-notification-resource
+    type: docker-image
+    source:
+      repository: cfcommunity/slack-notification-resource
+
 resources:
   - name: pipeline-trigger
     type: semver-iam
@@ -69,6 +74,11 @@ resources:
       region_name: ((aws_region))
       initial_version: "-"
 
+  - name: slack-notification
+    type: slack-notification-resource
+    source:
+      url: ((slack_webhook_url))
+
 jobs:
   - name: self-update
     plan:
@@ -91,6 +101,7 @@ jobs:
             MAKEFILE_ENV_TARGET: ((makefile_env_target))
             CONCOURSE_URL: ((concourse_url))
             GITHUB_ACCESS_TOKEN: ((github_access_token))
+            SLACK_WEBHOOK_URL: ((slack_webhook_url))
             STATE_BUCKET_NAME: ((state_bucket_name))
             RELEASES_BUCKET_NAME: ((releases_bucket_name))
             CF_APPS_DOMAIN: ((cf_apps_domain))
@@ -109,6 +120,10 @@ jobs:
 
                   make -C ./paas-release-ci "${MAKEFILE_ENV_TARGET}" pipelines
                 fi
+        on_failure: &slack_failure_notification
+          put: slack-notification
+          params:
+            text: "Job $BUILD_NAME in $BUILD_JOB_NAME on $BUILD_PIPELINE_NAME failed. Check the logs at $ATC_EXTERNAL_URL/builds/$BUILD_ID."
       - put: pipeline-trigger
         params: {bump: patch}
 
@@ -155,6 +170,7 @@ jobs:
           put: release-ci-tfstate
           params:
             file: updated-release-ci-tfstate/release-ci.tfstate
+        on_failure: *slack_failure_notification
 
   - name: generate-ssh-keys
     serial: true
@@ -208,6 +224,7 @@ jobs:
               - put: ssh-public-key
                 params:
                   file: generated-ssh-public-key/ci_build_tag_key.pub
+        on_failure: *slack_failure_notification
 
   - name: dynamic-pipelines
     plan:
@@ -234,6 +251,7 @@ jobs:
             CONCOURSE_ATC_PASSWORD: ((concourse_atc_password))
             CONCOURSE_URL: ((concourse_url))
             GITHUB_ACCESS_TOKEN: ((github_access_token))
+            SLACK_WEBHOOK_URL: ((slack_webhook_url))
             STATE_BUCKET_NAME: ((state_bucket_name))
             RELEASES_BUCKET_NAME: ((releases_bucket_name))
             CF_USER: ((cf_user))
@@ -250,3 +268,4 @@ jobs:
                 make -C ./paas-release-ci "${MAKEFILE_ENV_TARGET}" boshrelease-pipelines
                 make -C ./paas-release-ci "${MAKEFILE_ENV_TARGET}" integration-test-pipelines
                 make -C ./paas-release-ci "${MAKEFILE_ENV_TARGET}" plain-pipelines
+        on_failure: *slack_failure_notification

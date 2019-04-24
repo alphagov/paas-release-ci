@@ -18,6 +18,7 @@ state_bucket: ${STATE_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-state}
 aws_region: ${AWS_DEFAULT_REGION:-eu-west-1}
 cf_apps_domain: ${CF_APPS_DOMAIN}
 cf_system_domain: ${CF_SYSTEM_DOMAIN}
+slack_webhook_url: ${SLACK_WEBHOOK_URL}
 EOF
 }
 

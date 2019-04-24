@@ -8,6 +8,11 @@ resource_types:
       repository: governmentpaas/s3-resource
       tag: fda60bf4c5f85e96c16f704e128e5ead9e84d30d
 
+  - name: slack-notification-resource
+    type: docker-image
+    source:
+      repository: cfcommunity/slack-notification-resource
+
 resources:
   - name: paas-tech-docs
     type: git
@@ -15,6 +20,11 @@ resources:
     source:
       uri: https://github.com/alphagov/paas-tech-docs.git
       branch: master
+
+  - name: slack-notification
+    type: slack-notification-resource
+    source:
+      url: ((slack_webhook_url))
 
 jobs:
   - name: test
@@ -39,6 +49,10 @@ jobs:
               - -c
               - |
                 make -C paas-tech-docs test
+        on_failure: &slack_failure_notification
+          put: slack-notification
+          params:
+            text: "Job $BUILD_NAME in $BUILD_JOB_NAME on $BUILD_PIPELINE_NAME failed. Check the logs at $ATC_EXTERNAL_URL/builds/$BUILD_ID."
 
   - name: deploy
     serial: true
@@ -70,6 +84,7 @@ jobs:
                 echo "Copying files to destination..."
                 cp -pr "paas-tech-docs/." files-to-push
                 ls -l files-to-push
+        on_failure: *slack_failure_notification
 
       - task: push
         config:
@@ -133,3 +148,4 @@ jobs:
 
                 cf zero-downtime-push paas-tech-docs -f manifest.yml
                 cf zero-downtime-push paas-tech-docs-redirect -f manifest.yml
+        on_failure: *slack_failure_notification

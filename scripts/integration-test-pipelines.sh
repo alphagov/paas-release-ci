@@ -15,6 +15,7 @@ SSH_KEY=$(aws s3 cp s3://"${STATE_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-state}"/ci
 pipeline_name: ${pipeline_name}
 github_access_token: ${GITHUB_ACCESS_TOKEN}
 github_status_context: ${DEPLOY_ENV}/status
+slack_webhook_url: ${SLACK_WEBHOOK_URL}
 state_bucket: ${STATE_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-state}
 aws_region: ${AWS_DEFAULT_REGION:-eu-west-1}
 branch_name: ${BRANCH:-master}

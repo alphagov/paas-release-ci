@@ -29,6 +29,10 @@ if [ -z "${GITHUB_ACCESS_TOKEN:-}" ]; then
   GITHUB_ACCESS_TOKEN=$(pass github.com/release_ci_pr_status_token)
 fi
 
+if [ -z "${SLACK_WEBHOOK_URL:-}" ]; then
+  SLACK_WEBHOOK_URL=$(pass gds.slack.com/concourse_slack_webhook_url)
+fi
+
 if [ -z "${CF_USER:-}" ]; then
   if aws s3 ls "s3://gds-paas-${DEPLOY_ENV}-state/cf-cli-secrets.yml" > /dev/null; then
     CF_USER=$(scripts/val_from_yaml.rb secrets.cf_user <(aws s3 cp "s3://gds-paas-${DEPLOY_ENV}-state/cf-cli-secrets.yml" -))
@@ -51,6 +55,7 @@ export CONCOURSE_ATC_USER=${CONCOURSE_ATC_USER}
 export CONCOURSE_ATC_PASSWORD=${CONCOURSE_ATC_PASSWORD}
 export CONCOURSE_URL=${CONCOURSE_URL}
 export GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
+export SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
 export FLY_CMD=${FLY_CMD}
 export FLY_TARGET=${FLY_TARGET}
 export CF_USER=${CF_USER}
