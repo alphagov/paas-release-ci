@@ -27,7 +27,7 @@ ci: globals ## Work on the ci account
 	$(eval export DEPLOY_ENV=build)
 	$(eval export AWS_ACCOUNT=ci)
 	$(eval export SYSTEM_DNS_ZONE_NAME=${DEPLOY_ENV}.ci.cloudpipeline.digital)
-	$(eval export CONCOURSE_ATC_PASSWORD_PASS_FILE=ci_deployments/build/concourse_password)
+	$(eval export CONCOURSE_WEB_PASSWORD_PASS_FILE=ci_deployments/build/concourse_password)
 	$(eval export CF_APPS_DOMAIN=cloudapps.digital)
 	$(eval export CF_SYSTEM_DOMAIN=cloud.service.gov.uk)
 	@true

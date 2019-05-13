@@ -248,7 +248,7 @@ jobs:
             DEPLOY_ENV: ((deploy_env))
             BRANCH: ((branch_name))
             MAKEFILE_ENV_TARGET: ((makefile_env_target))
-            CONCOURSE_ATC_PASSWORD: ((concourse_atc_password))
+            CONCOURSE_WEB_PASSWORD: ((concourse_web_password))
             CONCOURSE_URL: ((concourse_url))
             GITHUB_ACCESS_TOKEN: ((github_access_token))
             SLACK_WEBHOOK_URL: ((slack_webhook_url))

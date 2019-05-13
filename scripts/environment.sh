@@ -20,9 +20,9 @@ CONCOURSE_URL="${CONCOURSE_URL:-https://concourse.${SYSTEM_DNS_ZONE_NAME}}"
 FLY_TARGET=${FLY_TARGET:-$DEPLOY_ENV}
 FLY_CMD="${FLY_DIR}/fly"
 
-CONCOURSE_ATC_USER=${CONCOURSE_ATC_USER:-admin}
-if [ -z "${CONCOURSE_ATC_PASSWORD:-}" ]; then
-  CONCOURSE_ATC_PASSWORD=$(scripts/val_from_yaml.rb secrets.concourse_atc_password <(aws s3 cp "s3://gds-paas-${DEPLOY_ENV}-state/concourse-secrets.yml" -))
+CONCOURSE_WEB_USER=${CONCOURSE_WEB_USER:-admin}
+if [ -z "${CONCOURSE_WEB_PASSWORD:-}" ]; then
+  CONCOURSE_WEB_PASSWORD=$(scripts/val_from_yaml.rb secrets.concourse_web_password <(aws s3 cp "s3://gds-paas-${DEPLOY_ENV}-state/concourse-secrets.yml" -))
 fi
 
 if [ -z "${GITHUB_ACCESS_TOKEN:-}" ]; then
@@ -51,8 +51,8 @@ fi
 cat <<EOF
 export AWS_ACCOUNT=${AWS_ACCOUNT}
 export DEPLOY_ENV=${DEPLOY_ENV}
-export CONCOURSE_ATC_USER=${CONCOURSE_ATC_USER}
-export CONCOURSE_ATC_PASSWORD=${CONCOURSE_ATC_PASSWORD}
+export CONCOURSE_WEB_USER=${CONCOURSE_WEB_USER}
+export CONCOURSE_WEB_PASSWORD=${CONCOURSE_WEB_PASSWORD}
 export CONCOURSE_URL=${CONCOURSE_URL}
 export GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
 export SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
