@@ -73,3 +73,4 @@ setup_release_pipeline log-cache alphagov/paas-log-cache-release gds_master
 setup_release_pipeline s3-broker alphagov/paas-s3-broker-boshrelease master
 setup_release_pipeline uaa-customized alphagov/paas-uaa-customized-boshrelease master
 setup_release_pipeline paas-uaa alphagov/paas-uaa-release gds_master
+setup_release_pipeline paas-cflinuxfs3-release alphagov/paas-cflinuxfs3-release gds_master
