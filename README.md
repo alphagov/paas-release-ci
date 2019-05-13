@@ -61,7 +61,7 @@ When you setup the pipelines in a dev environment they will be paused by default
 
 You can override some variables to customise the deployment:
  * `BRANCH` current branch to pull and use. e.g. `BRANCH=$(git rev-parse --abbrev-ref HEAD)`
- * `CONCOURSE_URL`, `CONCOURSE_ATC_PASSWORD`: to point to a different concourse with the given credentials.
+ * `CONCOURSE_URL`, `CONCOURSE_WEB_PASSWORD`: to point to a different concourse with the given credentials.
  * `STATE_BUCKET_NAME`, `RELEASES_BUCKET_NAME`, `RELEASES_BLOBS_BUCKET_NAME`: use alternative state and releases buckets. Note that buckets for releases get created in the `setup` pipeline. You have to thus chose a bucket name, that policy of the concourse you use allows creating. See our [bootstrap concourse bucket policy](https://github.digital.cabinet-office.gov.uk/government-paas/aws-account-wide-terraform/blob/master/policies-json/concourse_manage_s3_buckets.json) for example. Also, if the bucket exists already, you'll have to remove it as creation would fail.
 
 ## Accessing Concourse
