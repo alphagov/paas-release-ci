@@ -75,3 +75,5 @@ setup_release_pipeline uaa-customized alphagov/paas-uaa-customized-boshrelease m
 setup_release_pipeline paas-uaa alphagov/paas-uaa-release gds_master
 setup_release_pipeline cflinuxfs3 alphagov/paas-cflinuxfs3-release gds_master
 setup_release_pipeline awslogs alphagov/paas-awslogs-boshrelease gds_master
+setup_release_pipeline oauth2-proxy alphagov/paas-oauth2-proxy-boshrelease gds_master
+setup_release_pipeline traefik alphagov/paas-traefik-boshrelease gds_master
