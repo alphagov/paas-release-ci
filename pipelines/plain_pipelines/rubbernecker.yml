@@ -13,7 +13,7 @@ resource_types:
       repository: cfcommunity/slack-notification-resource
 
 resources:
-  - name: rubbernecker
+  - name: paas-rubbernecker
     type: git
     check_every: 1m
     source:
@@ -37,7 +37,7 @@ resources:
 jobs:
   - name: test
     plan:
-      - get: rubbernecker
+      - get: paas-rubbernecker
         trigger: true
 
       - task: test
@@ -46,12 +46,10 @@ jobs:
           image_resource:
             type: docker-image
             source:
-              repository: governmentpaas/rubbernecker-tools
-              tag: latest
+              repository: golang
+              tag: 1.12
           inputs:
-            - name: rubbernecker
-          params:
-            PROJECT_DIR: /go/src/github.com/alphagov/paas-rubbernecker
+            - name: paas-rubbernecker
           run:
             path: sh
             args:
@@ -59,11 +57,8 @@ jobs:
               - -u
               - -c
               - |
-                mkdir -p /go/src/github.com/alphagov
-                ln -s "$(pwd)/rubbernecker" "${PROJECT_DIR}"
-                cd ${PROJECT_DIR}
-
-                make dependencies test
+                cd paas-rubbernecker
+                make test
         on_failure: &slack_failure_notification
           put: slack-notification
           params:
@@ -72,45 +67,11 @@ jobs:
   - name: deploy
     serial: true
     plan:
-      - get: rubbernecker
+      - get: paas-rubbernecker
         passed: ['test']
         trigger: true
 
       - get: rubbernecker-secrets
-
-      - task: build
-        config:
-          platform: linux
-          image_resource:
-            type: docker-image
-            source:
-              repository: governmentpaas/rubbernecker-tools
-              tag: latest
-          inputs:
-            - name: rubbernecker
-          outputs:
-            - name: files-to-push
-          params:
-            PROJECT_DIR: /go/src/github.com/alphagov/paas-rubbernecker
-          run:
-            path: sh
-            args:
-              - -e
-              - -u
-              - -c
-              - |
-                WORKDIR=$(pwd)
-
-                mkdir -p /go/src/github.com/alphagov
-                ln -s "$(pwd)/rubbernecker" "${PROJECT_DIR}"
-                cd ${PROJECT_DIR}
-
-                make dependencies build
-
-                echo "Copying files to destination..."
-                cp -pr . "${WORKDIR}/files-to-push"
-                ls -l "${WORKDIR}/files-to-push"
-        on_failure: *slack_failure_notification
 
       - task: push
         config:
@@ -121,7 +82,7 @@ jobs:
               repository: governmentpaas/cf-cli
               tag: 0eff5b6a9c092f865a2b19cc4e75a3b539b82fa2
           inputs:
-            - name: files-to-push
+            - name: paas-rubbernecker
             - name: rubbernecker-secrets
           params:
             CF_API: https://api.((cf_system_domain))
@@ -138,7 +99,7 @@ jobs:
               - -u
               - -c
               - |
-                WORKDIR=$(pwd)
+                cd paas-rubbernecker
 
                 echo "Logging on to Cloudfoundry..."
                 cf login \
@@ -147,8 +108,6 @@ jobs:
                   -p "${CF_PASSWORD}" \
                   -o "${CF_ORG}" \
                   -s "${CF_SPACE}"
-
-                cd files-to-push
 
                 echo "Generating manifest template"
                 cat <<EOF | tee manifest-template.yml
@@ -160,15 +119,17 @@ jobs:
                   instances: 1
                   buildpack: go_buildpack
                   env:
-                    GOPACKAGENAME: github.com/alphagov/paas-rubbernecker
                     PIVOTAL_TRACKER_PROJECT_ID: (( grab pivotal_tracker_project_id ))
                     PIVOTAL_TRACKER_API_TOKEN: (( grab pivotal_tracker_api_token ))
                     PAGERDUTY_AUTHTOKEN: (( grab pagerduty_authtoken ))
+                    GO111MODULE: on
+                    GOPACKAGENAME: github.com/alphagov/paas-rubbernecker
+                    GOVERSION: go1.12
                 EOF
 
                 spruce merge \
                   manifest-template.yml \
-                  "${WORKDIR}/rubbernecker-secrets/rubbernecker-secrets.yml" |
+                  ../rubbernecker-secrets/rubbernecker-secrets.yml |
                   spruce merge --cherry-pick applications > manifest.yml
 
                 cf zero-downtime-push rubbernecker -f manifest.yml
