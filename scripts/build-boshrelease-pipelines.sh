@@ -72,7 +72,7 @@ setup_release_pipeline bosh-aws-cpi alphagov/paas-bosh-aws-cpi-release gds_maste
 setup_release_pipeline log-cache alphagov/paas-log-cache-release gds_master
 setup_release_pipeline s3-broker alphagov/paas-s3-broker-boshrelease master
 setup_release_pipeline uaa-customized alphagov/paas-uaa-customized-boshrelease master
-setup_release_pipeline paas-uaa alphagov/paas-uaa-release gds_master
+setup_release_pipeline uaa alphagov/paas-uaa-release gds_master
 setup_release_pipeline cflinuxfs3 alphagov/paas-cflinuxfs3-release gds_master
 setup_release_pipeline awslogs alphagov/paas-awslogs-boshrelease gds_master
 setup_release_pipeline oauth2-proxy alphagov/paas-oauth2-proxy-boshrelease gds_master
