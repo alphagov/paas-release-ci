@@ -101,6 +101,7 @@ jobs:
                 cd bosh-release-pr
 
                 VERSION=0.0.$(date +%s)
+                export VERSION
                 bosh create-release \
                   --name "${NAME}" \
                   --version "${VERSION}" \
@@ -169,6 +170,7 @@ jobs:
                 cd bosh-release-repo
 
                 VERSION=$(cat ../bosh-release-version/number)
+                export VERSION
                 bosh create-release \
                   --name "${NAME}" \
                   --version "${VERSION}" \
