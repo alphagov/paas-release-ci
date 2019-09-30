@@ -15,7 +15,6 @@ aws_account: ${AWS_ACCOUNT:-dev}
 deploy_env: ${DEPLOY_ENV}
 branch_name: ${BRANCH:-master}
 aws_region: ${AWS_DEFAULT_REGION:-eu-west-1}
-concourse_web_password: ${CONCOURSE_WEB_PASSWORD}
 concourse_url: ${CONCOURSE_URL}
 system_dns_zone_name: ${SYSTEM_DNS_ZONE_NAME}
 aws_account: ${AWS_ACCOUNT}
