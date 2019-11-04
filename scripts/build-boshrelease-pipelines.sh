@@ -69,3 +69,4 @@ setup_release_pipeline awslogs alphagov/paas-awslogs-boshrelease gds_master
 setup_release_pipeline oauth2-proxy alphagov/paas-oauth2-proxy-boshrelease gds_master
 setup_release_pipeline traefik alphagov/paas-traefik-boshrelease gds_master
 setup_release_pipeline observability alphagov/paas-observability-release master
+setup_release_pipeline routing alphagov/paas-routing-release gds_master
