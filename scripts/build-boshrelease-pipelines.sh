@@ -50,23 +50,26 @@ remove_release_pipeline() {
   ${FLY_CMD} -t "${FLY_TARGET}" destroy-pipeline --pipeline "${pipeline_name}" --non-interactive || true
 }
 
-setup_release_pipeline rds-broker alphagov/paas-rds-broker-boshrelease master
-setup_release_pipeline ipsec alphagov/paas-ipsec-release gds_master
-setup_release_pipeline cdn-broker alphagov/paas-cdn-broker-boshrelease master
+echo Setting fork pipelines
+setup_release_pipeline awslogs            alphagov/paas-awslogs-boshrelease            gds_master
+setup_release_pipeline bosh               alphagov/paas-bosh                           gds_master
+setup_release_pipeline bosh-aws-cpi       alphagov/paas-bosh-aws-cpi-release           gds_master
+setup_release_pipeline capi               alphagov/paas-capi-release                   gds_master
+setup_release_pipeline cflinuxfs3         alphagov/paas-cflinuxfs3-release             gds_master
+setup_release_pipeline concourse          alphagov/paas-concourse-bosh-release         gds_master
+setup_release_pipeline ipsec              alphagov/paas-ipsec-release                  gds_master
+setup_release_pipeline log-cache          alphagov/paas-log-cache-release              gds_master
+setup_release_pipeline oauth2-proxy       alphagov/paas-oauth2-proxy-boshrelease       gds_master
+setup_release_pipeline prometheus         alphagov/paas-prometheus-boshrelease         gds_master
+setup_release_pipeline routing            alphagov/paas-routing-release                gds_master
+setup_release_pipeline traefik            alphagov/paas-traefik-boshrelease            gds_master
+setup_release_pipeline uaa                alphagov/paas-uaa-release                    gds_master
+
+echo Setting paas pipelines
+setup_release_pipeline cdn-broker         alphagov/paas-cdn-broker-boshrelease         master
 setup_release_pipeline elasticache-broker alphagov/paas-elasticache-broker-boshrelease master
-setup_release_pipeline metric-exporter alphagov/paas-metric-exporter-boshrelease master
-setup_release_pipeline capi alphagov/paas-capi-release gds_master
-setup_release_pipeline bosh alphagov/paas-bosh gds_master
-setup_release_pipeline concourse alphagov/paas-concourse-bosh-release gds_master
-setup_release_pipeline prometheus alphagov/paas-prometheus-boshrelease gds_master
-setup_release_pipeline bosh-aws-cpi alphagov/paas-bosh-aws-cpi-release gds_master
-setup_release_pipeline log-cache alphagov/paas-log-cache-release gds_master
-setup_release_pipeline s3-broker alphagov/paas-s3-broker-boshrelease master
-setup_release_pipeline uaa-customized alphagov/paas-uaa-customized-boshrelease master
-setup_release_pipeline uaa alphagov/paas-uaa-release gds_master
-setup_release_pipeline cflinuxfs3 alphagov/paas-cflinuxfs3-release gds_master
-setup_release_pipeline awslogs alphagov/paas-awslogs-boshrelease gds_master
-setup_release_pipeline oauth2-proxy alphagov/paas-oauth2-proxy-boshrelease gds_master
-setup_release_pipeline traefik alphagov/paas-traefik-boshrelease gds_master
-setup_release_pipeline observability alphagov/paas-observability-release master
-setup_release_pipeline routing alphagov/paas-routing-release gds_master
+setup_release_pipeline metric-exporter    alphagov/paas-metric-exporter-boshrelease    master
+setup_release_pipeline observability      alphagov/paas-observability-release          master
+setup_release_pipeline rds-broker         alphagov/paas-rds-broker-boshrelease         master
+setup_release_pipeline s3-broker          alphagov/paas-s3-broker-boshrelease          master
+setup_release_pipeline uaa-customized     alphagov/paas-uaa-customized-boshrelease     master
