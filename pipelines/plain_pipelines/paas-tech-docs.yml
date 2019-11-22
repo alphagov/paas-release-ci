@@ -26,7 +26,54 @@ resources:
     source:
       url: ((slack_webhook_url))
 
+  - name: dockerhub-secrets
+    type: s3-iam
+    check_every: 24h
+    source:
+      bucket: ((state_bucket))
+      region_name: ((aws_region))
+      versioned_file: dockerhub-secrets.yml
+
 jobs:
+  - name: docker-container-build
+    plan:
+      - get: paas-tech-docs
+        trigger: true
+      - get: dockerhub-secrets
+      - task: build
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: rbekker87/build-tools
+              tag: latest
+          inputs:
+            - name: paas-tech-docs
+            - name: dockerhub-secrets
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                cd paas-tech-docs/
+                dockerrebuild=$(git diff $(git log --merges --pretty=format:"%H" --max-count=1 --skip=1) -- Gemfile.lock Dockerfile)
+                if [[ $? != 0 ]]; then
+                    echo "Command failed."
+                elif [[ $dockerrebuild ]]; then
+                    echo "Let's rebuild the docker container."
+                    docker login -u (( grab dockerhub_id  )) -p (( grab dockerhub_password  ))
+                	docker build -t governmentpaas/tech-docs:master .
+                	docker push governmentpaas/tech-docs:master
+                else
+                    echo "No need to rebuild the docker container."
+                fi
+        on_failure: &slack_failure_notification
+          put: slack-notification
+          params:
+            text: "Job $BUILD_NAME in $BUILD_JOB_NAME on $BUILD_PIPELINE_NAME failed. Check the logs at $ATC_EXTERNAL_URL/builds/$BUILD_ID."
   - name: test
     plan:
       - get: paas-tech-docs
