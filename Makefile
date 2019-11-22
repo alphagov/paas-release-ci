@@ -48,6 +48,14 @@ upload-aiven-secrets: check-env-vars ## Decrypt and upload Aiven credentials to 
 	$(if $(wildcard ${AIVEN_PASSWORD_STORE_DIR}),,$(error Password store ${AIVEN_PASSWORD_STORE_DIR} does not exist))
 	@scripts/upload-aiven-secrets.sh
 
+.PHONY: upload-dockerhub-secrets
+upload-dockerhub-secrets: check-env-vars ## Decrypt and upload Aiven credentials to S3
+	$(eval export DOCKERHUB_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
+	$(if ${AWS_ACCOUNT},,$(error Must set environment to dev/ci))
+	$(if ${DOCKERHUB_PASSWORD_STORE_DIR},,$(error Must pass _PASSWORD_STORE_DIR=<path_to_password_store>))
+	$(if $(wildcard ${DOCKERHUB_PASSWORD_STORE_DIR}),,$(error Password store ${DOCKERHUB_PASSWORD_STORE_DIR} does not exist))
+	@scripts/upload-dockerhub-secrets.sh
+
 .PHONY: upload-zendesk-secrets
 upload-zendesk-secrets: check-env-vars ## Decrypt and upload Zendesk credentials to S3
 	$(eval export ZENDESK_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
