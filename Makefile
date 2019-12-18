@@ -38,7 +38,7 @@ upload-cf-cli-secrets: check-env-vars ## Decrypt and upload CF CLI credentials t
 	$(if ${AWS_ACCOUNT},,$(error Must set environment to dev/ci))
 	$(if ${CF_CLI_PASSWORD_STORE_DIR},,$(error Must pass CF_CLI_PASSWORD_STORE_DIR=<path_to_password_store>))
 	$(if $(wildcard ${CF_CLI_PASSWORD_STORE_DIR}),,$(error Password store ${CF_CLI_PASSWORD_STORE_DIR} does not exist))
-	@scripts/upload-cf-cli-secrets.sh
+	@scripts/upload-secrets/upload-cf-cli-secrets.sh
 
 .PHONY: upload-aiven-secrets
 upload-aiven-secrets: check-env-vars ## Decrypt and upload Aiven credentials to S3
@@ -46,28 +46,28 @@ upload-aiven-secrets: check-env-vars ## Decrypt and upload Aiven credentials to 
 	$(if ${AWS_ACCOUNT},,$(error Must set environment to dev/ci))
 	$(if ${AIVEN_PASSWORD_STORE_DIR},,$(error Must pass _PASSWORD_STORE_DIR=<path_to_password_store>))
 	$(if $(wildcard ${AIVEN_PASSWORD_STORE_DIR}),,$(error Password store ${AIVEN_PASSWORD_STORE_DIR} does not exist))
-	@scripts/upload-aiven-secrets.sh
+	@scripts/upload-secrets/upload-aiven-secrets.sh
 
 .PHONY: upload-zendesk-secrets
 upload-zendesk-secrets: check-env-vars ## Decrypt and upload Zendesk credentials to S3
 	$(eval export ZENDESK_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
 	$(if ${ZENDESK_PASSWORD_STORE_DIR},,$(error Must pass ZENDESK_PASSWORD_STORE_DIR=<path_to_password_store>))
 	$(if $(wildcard ${ZENDESK_PASSWORD_STORE_DIR}),,$(error Password store ${ZENDESK_PASSWORD_STORE_DIR} does not exist))
-	@scripts/upload-zendesk-secrets.sh
+	@scripts/upload-secrets/upload-zendesk-secrets.sh
 
 .PHONY: upload-rubbernecker-secrets
 upload-rubbernecker-secrets: check-env-vars ## Decrypt and upload Rubbernecker credentials to S3
 	$(eval export RUBBERNECKER_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
 	$(if ${RUBBERNECKER_PASSWORD_STORE_DIR},,$(error Must pass RUBBERNECKER_PASSWORD_STORE_DIR=<path_to_password_store>))
 	$(if $(wildcard ${RUBBERNECKER_PASSWORD_STORE_DIR}),,$(error Password store ${RUBBERNECKER_PASSWORD_STORE_DIR} does not exist))
-	@scripts/upload-rubbernecker-secrets.sh
+	@scripts/upload-secrets/upload-rubbernecker-secrets.sh
 
 .PHONY: upload-hackmd-secrets
 upload-hackmd-secrets: check-env-vars ## Decrypt and upload Hackmd credentials to S3
 	$(eval export HACKMD_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
 	$(if ${HACKMD_PASSWORD_STORE_DIR},,$(error Must pass HACKMD_PASSWORD_STORE_DIR=<path_to_password_store>))
 	$(if $(wildcard ${HACKMD_PASSWORD_STORE_DIR}),,$(error Password store ${HACKMD_PASSWORD_STORE_DIR} does not exist))
-	@scripts/upload-hackmd-secrets.sh
+	@scripts/upload-secrets/upload-hackmd-secrets.sh
 
 .PHONY: pipelines
 pipelines: ## Upload setup pipelines to concourse
