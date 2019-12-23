@@ -22,7 +22,7 @@ slack_webhook_url: ${SLACK_WEBHOOK_URL}
 EOF
 }
 
-for pipeline_path in ${SCRIPTS_DIR}/../pipelines/plain_pipelines/* ; do
+for pipeline_path in "${SCRIPTS_DIR}"/../pipelines/plain_pipelines/* ; do
   (
     pipeline_name=${pipeline_path##*/}
     pipeline_name=${pipeline_name%%.yml}
