@@ -111,7 +111,8 @@ lint_yaml:
 
 .PHONY: lint_concourse
 lint_concourse:
-	./scripts/pipecleaner.py --fatal-warnings pipelines/*.yml
+	pipecleaner pipelines/*.yml pipelines/**/*.yml
+
 
 .PHONY: pause-all-pipelines
 pause-all-pipelines: ## Pause all pipelines so that create-bosh-concourse can be run safely.
