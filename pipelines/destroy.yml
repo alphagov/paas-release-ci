@@ -46,7 +46,7 @@ jobs:
 
   - name: terraform-destroy
     plan:
-      - aggregate:
+      - in_parallel:
           - get: pipeline-trigger
             passed: ['init']
             trigger: true
