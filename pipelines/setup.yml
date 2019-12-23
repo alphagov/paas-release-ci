@@ -132,7 +132,7 @@ jobs:
 
   - name: terraform
     plan:
-      - aggregate:
+      - in_parallel:
           - get: pipeline-trigger
             passed: ['self-update']
             trigger: true
@@ -178,7 +178,7 @@ jobs:
   - name: generate-ssh-keys
     serial: true
     plan:
-      - aggregate:
+      - in_parallel:
          - get: ssh-private-key
          - get: ssh-public-key
          - get: pipeline-trigger
@@ -220,7 +220,7 @@ jobs:
                 cp ci_build_tag_key.pub generated-ssh-public-key
         on_success:
           try:
-            aggregate:
+            in_parallel:
               - put: ssh-private-key
                 params:
                   file: generated-ssh-private-key/ci_build_tag_key
@@ -231,7 +231,7 @@ jobs:
 
   - name: dynamic-pipelines
     plan:
-      - aggregate:
+      - in_parallel:
           - get: pipeline-trigger
             passed: ['generate-ssh-keys']
             trigger: true
