@@ -38,104 +38,104 @@ resources:
   source: &build-image-source
     username: ((dockerhub_username))
     password: ((dockerhub_password))
-    repository: ((dockerhub_username))/psql
+    repository: governmentpaas/psql
     tag: pr-build
 
 - name: spruce
   type: registry-image
   source:
     <<: *build-image-source
-    repository: ((dockerhub_username))/spruce
+    repository: governmentpaas/spruce
 
 - name: json-minify
   type: registry-image
   source:
     <<: *build-image-source
-    repository: ((dockerhub_username))/json-minify
+    repository: governmentpaas/json-minify
 
 - name: terraform
   type: registry-image
   source:
     <<: *build-image-source
-    repository: ((dockerhub_username))/terraform
+    repository: governmentpaas/terraform
 
 - name: self-update-pipelines
   type: registry-image
   source:
     <<: *build-image-source
-    repository: ((dockerhub_username))/self-update-pipelines
+    repository: governmentpaas/self-update-pipelines
 
 - name: git-ssh
   type: registry-image
   source:
     <<: *build-image-source
-    repository: ((dockerhub_username))/git-ssh
+    repository: governmentpaas/git-ssh
 
 - name: curl-ssl
   type: registry-image
   source:
     <<: *build-image-source
-    repository: ((dockerhub_username))/curl-ssl
+    repository: governmentpaas/curl-ssl
 
 - name: cf-cli
   type: registry-image
   source:
     <<: *build-image-source
-    repository: ((dockerhub_username))/cf-cli
+    repository: governmentpaas/cf-cli
 
 - name: cf-acceptance-tests
   type: registry-image
   source:
     <<: *build-image-source
-    repository: ((dockerhub_username))/cf-acceptance-tests
+    repository: governmentpaas/cf-acceptance-tests
 
 - name: cf-uaac
   type: registry-image
   source:
     <<: *build-image-source
-    repository: ((dockerhub_username))/cf-uaac
+    repository: governmentpaas/cf-uaac
 
 - name: certstrap
   type: registry-image
   source:
     <<: *build-image-source
-    repository: ((dockerhub_username))/certstrap
+    repository: governmentpaas/certstrap
 
 - name: bosh-shell
   type: registry-image
   source:
     <<: *build-image-source
-    repository: ((dockerhub_username))/bosh-shell
+    repository: governmentpaas/bosh-shell
 
 - name: bosh
   type: registry-image
   source:
     <<: *build-image-source
-    repository: ((dockerhub_username))/bosh
+    repository: governmentpaas/bosh
 
 - name: bosh-cli-v2
   type: registry-image
   source:
     <<: *build-image-source
-    repository: ((dockerhub_username))/bosh-cli-v2
+    repository: governmentpaas/bosh-cli-v2
 
 - name: awscli
   type: registry-image
   source:
     <<: *build-image-source
-    repository: ((dockerhub_username))/awscli
+    repository: governmentpaas/awscli
 
 - name: tech-docs
   type: registry-image
   source:
     <<: *build-image-source
-    repository: ((dockerhub_username))/tech-docs
+    repository: governmentpaas/tech-docs
 
 - name: semver-resource
   type: registry-image
   source:
     <<: *build-image-source
-    repository: ((dockerhub_username))/semver-resource
+    repository: governmentpaas/semver-resource
 
 jobs:
 - name: build-psql-pr
