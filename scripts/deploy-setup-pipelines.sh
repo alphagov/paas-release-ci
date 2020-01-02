@@ -37,6 +37,8 @@ cf_user: ${CF_USER}
 cf_password: ${CF_PASSWORD}
 cf_apps_domain: ${CF_APPS_DOMAIN:-}
 cf_system_domain: ${CF_SYSTEM_DOMAIN:-}
+dockerhub_username: ${DOCKERHUB_USERNAME:-}
+dockerhub_password: ${DOCKERHUB_PASSWORD:-}
 EOF
 }
 
