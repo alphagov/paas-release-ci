@@ -43,6 +43,14 @@ if [ -z "${CF_PASSWORD:-}" ]; then
   fi
 fi
 
+if [ -z "${DOCKERHUB_USERNAME:-}" ]; then
+  DOCKERHUB_USERNAME=$(pass dockerhub/ci/id)
+fi
+
+if [ -z "${DOCKERHUB_PASSWORD:-}" ]; then
+  DOCKERHUB_PASSWORD=$(pass dockerhub/ci/password)
+fi
+
 cat <<EOF
 export AWS_ACCOUNT=${AWS_ACCOUNT}
 export DEPLOY_ENV=${DEPLOY_ENV}
@@ -53,4 +61,6 @@ export FLY_CMD=${FLY_CMD}
 export FLY_TARGET=${FLY_TARGET}
 export CF_USER=${CF_USER}
 export CF_PASSWORD=${CF_PASSWORD}
+export DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}
+export DOCKERHUB_PASSWORD=${DOCKERHUB_PASSWORD}
 EOF
