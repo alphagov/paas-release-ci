@@ -109,6 +109,8 @@ jobs:
             RELEASES_BUCKET_NAME: ((releases_bucket_name))
             CF_APPS_DOMAIN: ((cf_apps_domain))
             CF_SYSTEM_DOMAIN: ((cf_system_domain))
+            DOCKERHUB_USERNAME: ((dockerhub_username))
+            DOCKERHUB_PASSWORD: ((dockerhub_password))
           run:
             path: sh
             args:
@@ -263,6 +265,8 @@ jobs:
             CF_PASSWORD: ((cf_password))
             CF_APPS_DOMAIN: ((cf_apps_domain))
             CF_SYSTEM_DOMAIN: ((cf_system_domain))
+            DOCKERHUB_USERNAME: ((dockerhub_username))
+            DOCKERHUB_PASSWORD: ((dockerhub_password))
           run:
             path: sh
             args:
