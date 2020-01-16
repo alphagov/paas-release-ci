@@ -48,7 +48,9 @@ jobs:
               - -u
               - -c
               - |
-                make -C paas-tech-docs dependencies test
+                cd paas-tech-docs
+                bundle install
+                make test
         on_failure: &slack_failure_notification
           put: slack-notification
           params:
@@ -79,7 +81,9 @@ jobs:
               - -u
               - -c
               - |
-                make -C paas-tech-docs dependencies build
+                cd paas-tech-docs
+                bundle install
+                make build
 
                 echo "Copying files to destination..."
                 cp -pr "paas-tech-docs/." files-to-push
