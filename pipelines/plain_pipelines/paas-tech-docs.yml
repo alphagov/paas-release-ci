@@ -85,6 +85,7 @@ jobs:
                 bundle install
                 make build
 
+                cd ..
                 echo "Copying files to destination..."
                 cp -pr "paas-tech-docs/." files-to-push
                 ls -l files-to-push
