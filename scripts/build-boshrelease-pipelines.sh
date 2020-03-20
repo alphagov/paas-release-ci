@@ -57,7 +57,6 @@ setup_release_pipeline bosh-aws-cpi       alphagov/paas-bosh-aws-cpi-release    
 setup_release_pipeline capi               alphagov/paas-capi-release                   gds_master
 setup_release_pipeline cflinuxfs3         alphagov/paas-cflinuxfs3-release             gds_master
 setup_release_pipeline concourse          alphagov/paas-concourse-bosh-release         gds_master
-setup_release_pipeline ipsec              alphagov/paas-ipsec-release                  gds_master
 setup_release_pipeline oauth2-proxy       alphagov/paas-oauth2-proxy-boshrelease       gds_master
 setup_release_pipeline prometheus         alphagov/paas-prometheus-boshrelease         gds_master
 setup_release_pipeline routing            alphagov/paas-routing-release                gds_master
