@@ -121,3 +121,7 @@ pause-all-pipelines: ## Pause all pipelines so that create-bosh-concourse can be
 .PHONY: unpause-all-pipelines
 unpause-all-pipelines: ## Unpause all pipelines after running create-bosh-concourse
 	./scripts/pause-pipelines.sh unpause
+
+.PHONY: credhub
+credhub:
+	@./scripts/credhub-shell.sh
