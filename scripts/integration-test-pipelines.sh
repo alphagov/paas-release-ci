@@ -62,7 +62,7 @@ setup_test_pipeline paas-auditor alphagov paas-auditor master
 setup_test_pipeline rds-metric-collector alphagov paas-rds-metric-collector master
 setup_test_pipeline paas-admin alphagov paas-admin master
 setup_test_pipeline paas-log-cache-adapter alphagov paas-log-cache-adapter master
-setup_test_pipeline aiven-broker alphagov paas-aiven-broker master aiven-broker-secrets.yml
+setup_test_pipeline aiven-broker alphagov paas-aiven-broker integation-tests-use-credhub
 setup_test_pipeline s3-broker alphagov paas-s3-broker master
 setup_test_pipeline paas-service-broker-base alphagov paas-service-broker-base master
 setup_test_pipeline paas-trusted-people alphagov paas-trusted-people master
