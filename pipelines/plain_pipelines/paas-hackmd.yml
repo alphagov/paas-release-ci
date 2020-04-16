@@ -108,6 +108,12 @@ jobs:
                   sleep 30
                 done
 
+                cf create-service aws-s3-bucket default hackmd-store -c '{"public_bucket":true}'
+                while ! cf service hackmd-store | grep -q 'create succeeded'; do
+                  echo "Waiting for creation of service to complete..."
+                  sleep 5
+                done
+
                 echo "Generating manifest template"
                 cat <<EOF | tee manifest-template.yml
                 ---
@@ -121,6 +127,7 @@ jobs:
                   stack: cflinuxfs3
                   services:
                     - hackmd-db
+                    - hackmd-store
                   env:
                     CF_DB: hackmd-db
                     PGSSLMODE: require
@@ -131,6 +138,7 @@ jobs:
                     CMD_DOMAIN: 'hackmd.${CF_APPS_DOMAIN}'
                     CMD_PROTOCOL_USESSL: 'true'
                     CMD_ALLOW_ORIGIN: 'localhost,hackmd.${CF_APPS_DOMAIN},cdnjs.cloudflare.com,fonts.googleapis.com,fonts.gstatic.com'
+                    CMD_IMAGE_UPLOAD_TYPE: s3
                 EOF
 
                 spruce merge \
@@ -139,6 +147,8 @@ jobs:
                   spruce merge --cherry-pick applications > manifest-prod.yml
 
                 cf zero-downtime-push hackmd -f ./manifest-prod.yml
+
+                cf bind-service hackmd hackmd-store -c '{"permissions": "read-write"}'
         on_failure:
           put: slack-notification
           params:
