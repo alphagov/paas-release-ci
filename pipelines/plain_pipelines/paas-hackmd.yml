@@ -40,6 +40,34 @@ jobs:
       - get: paas-codimd
         trigger: true
       - get: hackmd-secrets
+
+      - task: build
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: node
+              tag: 10
+          inputs:
+          - name: paas-codimd
+          outputs:
+          - name: paas-codimd
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                cd paas-codimd
+
+                echo "Installing application dependencies..."
+                npm install
+
+                echo "Building application assets..."
+                npm run build
+
       - task: push
         config:
           platform: linux
@@ -66,7 +94,7 @@ jobs:
               - -u
               - -c
               - |
-                echo "Logging on to Cloudfoundry..."
+                echo "Logging on to CloudFoundry..."
                 cf login \
                   -a "${CF_API}" \
                   -u "${CF_USER}" \
@@ -85,7 +113,8 @@ jobs:
                 ---
                 applications:
                 - name: hackmd
-                  buildpack: nodejs_buildpack
+                  buildpacks:
+                    - nodejs_buildpack
                   path: ./paas-codimd/
                   memory: 6G
                   instances: 1
