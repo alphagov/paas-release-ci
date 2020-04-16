@@ -139,6 +139,7 @@ jobs:
                     CMD_PROTOCOL_USESSL: 'true'
                     CMD_ALLOW_ORIGIN: 'localhost,hackmd.${CF_APPS_DOMAIN},cdnjs.cloudflare.com,fonts.googleapis.com,fonts.gstatic.com'
                     CMD_IMAGE_UPLOAD_TYPE: s3
+                    CMD_SESSION_SECRET: (( grab hackmd_session_secret ))
                 EOF
 
                 spruce merge \
