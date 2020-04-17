@@ -20,14 +20,6 @@ resources:
       uri: https://github.com/alphagov/paas-product-page.git
       branch: master
 
-  - name: zendesk-secrets
-    type: s3-iam
-    check_every: 24h
-    source:
-      bucket: ((state_bucket))
-      region_name: ((aws_region))
-      versioned_file: zendesk-secrets.yml
-
   - name: slack-notification
     type: slack-notification-resource
     source:
@@ -39,7 +31,6 @@ jobs:
     plan:
       - get: paas-product-page
         trigger: true
-      - get: zendesk-secrets
       - task: push
         config:
           platform: linux
@@ -50,7 +41,6 @@ jobs:
               tag: 0eff5b6a9c092f865a2b19cc4e75a3b539b82fa2
           inputs:
             - name: paas-product-page
-            - name: zendesk-secrets
           params:
             CF_API: https://api.((cf_system_domain))
             CF_USER: ((cf_user))
@@ -59,6 +49,8 @@ jobs:
             CF_SYSTEM_DOMAIN: ((cf_system_domain))
             CF_ORG: govuk-paas
             CF_SPACE: docs
+            ZENDESK_USER: ((zendesk_user))
+            ZENDESK_TOKEN: ((zendesk_token))
           run:
             path: sh
             args:
@@ -74,8 +66,8 @@ jobs:
                   -o "${CF_ORG}" \
                   -s "${CF_SPACE}"
 
-                echo "Generating manifest template"
-                cat <<EOF | tee manifest-template.yml
+                echo "Generating manifest"
+                cat <<EOF > manifest.yml
                 ---
                 applications:
                 - name: paas-product-page
@@ -88,8 +80,8 @@ jobs:
                   - route: "www.${CF_SYSTEM_DOMAIN}"
                   env:
                     APP_ENV: production
-                    ZENDESK_USER: (( grab zendesk_user ))
-                    ZENDESK_TOKEN: (( grab zendesk_token ))
+                    ZENDESK_USER: "${ZENDESK_USER}"
+                    ZENDESK_TOKEN: "${ZENDESK_TOKEN}"
                     ZENDESK_URL: 'https://govuk.zendesk.com/api/v2'
                     ZENDESK_GROUP_ID: 360000031809
 
@@ -105,11 +97,6 @@ jobs:
                   env:
                     REDIRECT_DOMAIN: "www.${CF_SYSTEM_DOMAIN}"
                 EOF
-
-                spruce merge \
-                  ./manifest-template.yml \
-                  ./zendesk-secrets/zendesk-secrets.yml |
-                  spruce merge --cherry-pick applications > manifest.yml
 
                 cf zero-downtime-push paas-product-page -f ./manifest.yml
                 cf zero-downtime-push paas-product-page-redirect -f ./manifest.yml

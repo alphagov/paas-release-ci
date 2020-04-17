@@ -49,11 +49,11 @@ upload-aiven-secrets: check-env-vars require-credhub ## Decrypt and upload Aiven
 	@scripts/upload-secrets/upload-aiven-secrets.rb
 
 .PHONY: upload-zendesk-secrets
-upload-zendesk-secrets: check-env-vars ## Decrypt and upload Zendesk credentials to S3
+upload-zendesk-secrets: check-env-vars require-credhub ## Decrypt and upload Zendesk credentials to Credhub
 	$(eval export ZENDESK_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
 	$(if ${ZENDESK_PASSWORD_STORE_DIR},,$(error Must pass ZENDESK_PASSWORD_STORE_DIR=<path_to_password_store>))
 	$(if $(wildcard ${ZENDESK_PASSWORD_STORE_DIR}),,$(error Password store ${ZENDESK_PASSWORD_STORE_DIR} does not exist))
-	@scripts/upload-secrets/upload-zendesk-secrets.sh
+	@scripts/upload-secrets/upload-zendesk-secrets.rb
 
 .PHONY: upload-rubbernecker-secrets
 upload-rubbernecker-secrets: check-env-vars ## Decrypt and upload Rubbernecker credentials to S3
