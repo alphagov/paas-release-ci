@@ -33,15 +33,15 @@ ci: globals ## Work on the ci account
 	@true
 
 .PHONY: upload-cf-cli-secrets
-upload-cf-cli-secrets: check-env-vars ## Decrypt and upload CF CLI credentials to S3
+upload-cf-cli-secrets: check-env-vars require-credhub ## Decrypt and upload CF CLI credentials to Credhub
 	$(eval export CF_CLI_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
 	$(if ${AWS_ACCOUNT},,$(error Must set environment to dev/ci))
 	$(if ${CF_CLI_PASSWORD_STORE_DIR},,$(error Must pass CF_CLI_PASSWORD_STORE_DIR=<path_to_password_store>))
 	$(if $(wildcard ${CF_CLI_PASSWORD_STORE_DIR}),,$(error Password store ${CF_CLI_PASSWORD_STORE_DIR} does not exist))
-	@scripts/upload-secrets/upload-cf-cli-secrets.sh
+	@scripts/upload-secrets/upload-cf-cli-secrets.rb
 
 .PHONY: upload-aiven-secrets
-upload-aiven-secrets: check-env-vars require-credhub ## Decrypt and upload Aiven credentials to S3
+upload-aiven-secrets: check-env-vars require-credhub ## Decrypt and upload Aiven credentials to Credhub
 	$(eval export AIVEN_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
 	$(if ${AWS_ACCOUNT},,$(error Must set environment to dev/ci))
 	$(if ${AIVEN_PASSWORD_STORE_DIR},,$(error Must pass _PASSWORD_STORE_DIR=<path_to_password_store>))
