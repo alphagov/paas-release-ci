@@ -63,11 +63,11 @@ upload-rubbernecker-secrets: check-env-vars require-credhub ## Decrypt and uploa
 	@scripts/upload-secrets/upload-rubbernecker-secrets.rb
 
 .PHONY: upload-hackmd-secrets
-upload-hackmd-secrets: check-env-vars ## Decrypt and upload Hackmd credentials to S3
+upload-hackmd-secrets: check-env-vars require-credhub ## Decrypt and upload Hackmd credentials to Credhub
 	$(eval export HACKMD_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
 	$(if ${HACKMD_PASSWORD_STORE_DIR},,$(error Must pass HACKMD_PASSWORD_STORE_DIR=<path_to_password_store>))
 	$(if $(wildcard ${HACKMD_PASSWORD_STORE_DIR}),,$(error Password store ${HACKMD_PASSWORD_STORE_DIR} does not exist))
-	@scripts/upload-secrets/upload-hackmd-secrets.sh
+	@scripts/upload-secrets/upload-hackmd-secrets.rb
 
 .PHONY: pipelines
 pipelines: ## Upload setup pipelines to concourse
