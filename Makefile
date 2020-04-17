@@ -56,11 +56,11 @@ upload-zendesk-secrets: check-env-vars require-credhub ## Decrypt and upload Zen
 	@scripts/upload-secrets/upload-zendesk-secrets.rb
 
 .PHONY: upload-rubbernecker-secrets
-upload-rubbernecker-secrets: check-env-vars ## Decrypt and upload Rubbernecker credentials to S3
+upload-rubbernecker-secrets: check-env-vars require-credhub ## Decrypt and upload Rubbernecker credentials to Credhub
 	$(eval export RUBBERNECKER_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
 	$(if ${RUBBERNECKER_PASSWORD_STORE_DIR},,$(error Must pass RUBBERNECKER_PASSWORD_STORE_DIR=<path_to_password_store>))
 	$(if $(wildcard ${RUBBERNECKER_PASSWORD_STORE_DIR}),,$(error Password store ${RUBBERNECKER_PASSWORD_STORE_DIR} does not exist))
-	@scripts/upload-secrets/upload-rubbernecker-secrets.sh
+	@scripts/upload-secrets/upload-rubbernecker-secrets.rb
 
 .PHONY: upload-hackmd-secrets
 upload-hackmd-secrets: check-env-vars ## Decrypt and upload Hackmd credentials to S3

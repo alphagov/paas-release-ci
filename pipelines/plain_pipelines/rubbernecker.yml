@@ -20,15 +20,6 @@ resources:
       uri: https://github.com/alphagov/paas-rubbernecker.git
       branch: master
 
-  - name: rubbernecker-secrets
-    type: s3-iam
-    check_every: 24h
-    source:
-      bucket: ((state_bucket))
-      region_name: ((aws_region))
-      versioned_file: rubbernecker-secrets.yml
-      initial_version: "-"
-
   - name: slack-notification
     type: slack-notification-resource
     source:
@@ -68,10 +59,8 @@ jobs:
     serial: true
     plan:
       - get: paas-rubbernecker
-        passed: ['test']
+        passed: [test]
         trigger: true
-
-      - get: rubbernecker-secrets
 
       - task: push
         config:
@@ -83,7 +72,6 @@ jobs:
               tag: 0eff5b6a9c092f865a2b19cc4e75a3b539b82fa2
           inputs:
             - name: paas-rubbernecker
-            - name: rubbernecker-secrets
           params:
             CF_API: https://api.((cf_system_domain))
             CF_USER: ((cf_user))
@@ -92,6 +80,9 @@ jobs:
             CF_SPACE: tools
             CF_APPS_DOMAIN: ((cf_apps_domain))
             CF_SYSTEM_DOMAIN: ((cf_system_domain))
+            PIVOTAL_TRACKER_PROJECT_ID: ((pivotal_tracker_project_id))
+            PIVOTAL_TRACKER_API_TOKEN: ((pivotal_tracker_api_token))
+            PAGERDUTY_AUTHTOKEN: ((pagerduty_authtoken))
           run:
             path: sh
             args:
@@ -109,8 +100,8 @@ jobs:
                   -o "${CF_ORG}" \
                   -s "${CF_SPACE}"
 
-                echo "Generating manifest template"
-                cat <<EOF | tee manifest-template.yml
+                echo "Generating manifest"
+                cat <<EOF > manifest.yml
                 ---
                 applications:
                 - name: rubbernecker
@@ -119,18 +110,13 @@ jobs:
                   instances: 1
                   buildpack: go_buildpack
                   env:
-                    PIVOTAL_TRACKER_PROJECT_ID: (( grab pivotal_tracker_project_id ))
-                    PIVOTAL_TRACKER_API_TOKEN: (( grab pivotal_tracker_api_token ))
-                    PAGERDUTY_AUTHTOKEN: (( grab pagerduty_authtoken ))
+                    PIVOTAL_TRACKER_PROJECT_ID: "${PIVOTAL_TRACKER_PROJECT_ID}"
+                    PIVOTAL_TRACKER_API_TOKEN: "${PIVOTAL_TRACKER_API_TOKEN}"
+                    PAGERDUTY_AUTHTOKEN: "${PAGERDUTY_AUTHTOKEN}"
                     GO111MODULE: on
                     GOPACKAGENAME: github.com/alphagov/paas-rubbernecker
                     GOVERSION: go1.12
                 EOF
-
-                spruce merge \
-                  manifest-template.yml \
-                  ../rubbernecker-secrets/rubbernecker-secrets.yml |
-                  spruce merge --cherry-pick applications > manifest.yml
 
                 cf zero-downtime-push rubbernecker -f manifest.yml
         on_failure: *slack_failure_notification
