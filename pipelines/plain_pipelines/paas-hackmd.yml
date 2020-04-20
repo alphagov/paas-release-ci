@@ -40,6 +40,34 @@ jobs:
       - get: paas-codimd
         trigger: true
       - get: hackmd-secrets
+
+      - task: build
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: node
+              tag: 10
+          inputs:
+          - name: paas-codimd
+          outputs:
+          - name: paas-codimd
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                cd paas-codimd
+
+                echo "Installing application dependencies..."
+                npm install
+
+                echo "Building application assets..."
+                npm run build
+
       - task: push
         config:
           platform: linux
@@ -47,7 +75,7 @@ jobs:
             type: docker-image
             source:
               repository: governmentpaas/cf-cli
-              tag: 0eff5b6a9c092f865a2b19cc4e75a3b539b82fa2
+              tag: latest
           inputs:
             - name: paas-codimd
             - name: hackmd-secrets
@@ -66,7 +94,7 @@ jobs:
               - -u
               - -c
               - |
-                echo "Logging on to Cloudfoundry..."
+                echo "Logging on to CloudFoundry..."
                 cf login \
                   -a "${CF_API}" \
                   -u "${CF_USER}" \
@@ -79,37 +107,26 @@ jobs:
                   echo "Waiting for creation of service to complete..."
                   sleep 30
                 done
+                cf bind-service hackmd hackmd-db
 
-                echo "Generating manifest template"
-                cat <<EOF | tee manifest-template.yml
+                cf create-service aws-s3-bucket default hackmd-store -c '{"public_bucket":true}'
+                while ! cf service hackmd-store | grep -q 'create succeeded'; do
+                  echo "Waiting for creation of service to complete..."
+                  sleep 5
+                done
+                cf bind-service hackmd hackmd-store -c '{"permissions": "read-write"}'
+
+                echo "Generating manifest variables"
+                cat <<EOF | tee paas-codimd/vars.yml
                 ---
-                applications:
-                - name: hackmd
-                  buildpack: nodejs_buildpack
-                  path: ./paas-codimd/
-                  memory: 6G
-                  instances: 1
-                  stack: cflinuxfs3
-                  services:
-                    - hackmd-db
-                  env:
-                    CF_DB: hackmd-db
-                    PGSSLMODE: require
-                    UV_THREADPOOL_SIZE: 100
-                    CMD_PORT: 8080
-                    CMD_GITHUB_CLIENTID: (( grab hackmd_client_id  ))
-                    CMD_GITHUB_CLIENTSECRET: (( grab hackmd_client_secret ))
-                    CMD_DOMAIN: 'hackmd.${CF_APPS_DOMAIN}'
-                    CMD_PROTOCOL_USESSL: 'true'
-                    CMD_ALLOW_ORIGIN: 'localhost,hackmd.${CF_APPS_DOMAIN},cdnjs.cloudflare.com,fonts.googleapis.com,fonts.gstatic.com'
+                domain: ${CF_APPS_DOMAIN}
+                github_client_id: $(grep hackmd_client_id hackmd-secrets/hackmd-secrets.yml | awk '{print $2}')
+                github_client_secret: $(grep hackmd_client_secret hackmd-secrets/hackmd-secrets.yml | awk '{print $2}')
+                secret: $(grep hackmd_session_secret hackmd-secrets/hackmd-secrets.yml | awk '{print $2}')
                 EOF
 
-                spruce merge \
-                  ./manifest-template.yml \
-                  ./hackmd-secrets/hackmd-secrets.yml |
-                  spruce merge --cherry-pick applications > manifest-prod.yml
-
-                cf zero-downtime-push hackmd -f ./manifest-prod.yml
+                cd paas-codimd
+                cf push hackmd --vars-file vars.yml
         on_failure:
           put: slack-notification
           params:
