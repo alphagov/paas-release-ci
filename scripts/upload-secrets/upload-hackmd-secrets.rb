@@ -14,12 +14,12 @@ secrets = [
   {
     "name" => "/concourse/main/hackmd_github_client_id",
     "type" => "value",
-    "value" => hackmd_client_id.chomp,
+    "value" => hackmd_github_client_id.chomp,
   },
   {
     "name" => "/concourse/main/hackmd_github_client_secret",
     "type" => "value",
-    "value" => hackmd_client_secret.chomp,
+    "value" => hackmd_github_client_secret.chomp,
   },
   {
     "name" => "/concourse/main/hackmd_session_secret",

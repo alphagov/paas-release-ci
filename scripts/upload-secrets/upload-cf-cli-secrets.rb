@@ -19,7 +19,7 @@ secrets = [
   {
     "name" => "/concourse/main/cf_password",
     "type" => "value",
-    "value" => cf_password, # No chomp in case the password ends in a space on purpose
+    "value" => cf_password.chomp,
   }
 ]
 
