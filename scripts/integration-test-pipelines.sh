@@ -25,7 +25,6 @@ github_repo: ${organisation}/${repository}
 github_repo_uri: git@github.com:${organisation}/${repository}.git
 tag_branch: ${tag_branch}
 version_file: ${version_file}
-secrets_file: ${secrets_file}
 EOF
 echo -e "tagging_key: |\n  ${SSH_KEY//$'\n'/$'\n'  }"
 }
@@ -36,8 +35,6 @@ setup_test_pipeline() {
   organisation="$2"
   repository="$3"
   tag_branch="$4"
-  secrets_file="${5:-no-secrets-needed}"
-
 
   generate_vars_file > /dev/null # Check for missing vars
 
@@ -62,7 +59,7 @@ setup_test_pipeline paas-auditor alphagov paas-auditor master
 setup_test_pipeline rds-metric-collector alphagov paas-rds-metric-collector master
 setup_test_pipeline paas-admin alphagov paas-admin master
 setup_test_pipeline paas-log-cache-adapter alphagov paas-log-cache-adapter master
-setup_test_pipeline aiven-broker alphagov paas-aiven-broker integation-tests-use-credhub
+setup_test_pipeline aiven-broker alphagov paas-aiven-broker master
 setup_test_pipeline s3-broker alphagov paas-s3-broker master
 setup_test_pipeline paas-service-broker-base alphagov paas-service-broker-base master
 setup_test_pipeline paas-trusted-people alphagov paas-trusted-people master

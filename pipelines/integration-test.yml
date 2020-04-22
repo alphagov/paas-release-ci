@@ -45,20 +45,10 @@ resources:
       private_key: ((tagging_key))
       uri: ((github_repo_uri))
 
-  - name: secrets
-    type: s3-iam
-    check_every: 24h
-    source:
-      bucket: ((state_bucket))
-      region_name: ((aws_region))
-      versioned_file: ((secrets_file))
-      initial_version: "-"
-
 jobs:
   - name: integration-test
     serial: true
     plan:
-      - get: secrets
       - get: repo
         resource: pr
         version: every
@@ -70,8 +60,6 @@ jobs:
           context: ((github_status_context))
           status: pending
       - task: run-tests
-        params:
-          SECRETS_FILE: ((secrets_file))
         file: repo/ci/integration.yml
     on_success:
       put: repo
@@ -94,14 +82,11 @@ jobs:
     - get: repo
       resource: release-repository
       trigger: true
-    - get: secrets
     - get: resource-version
       params:
         bump: minor
     - task: run-tests
       file: repo/ci/integration.yml
-      params:
-        SECRETS_FILE: ((secrets_file))
       on_success:
         put: resource-version
         params:
