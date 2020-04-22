@@ -12,8 +12,6 @@ generate_vars_file() {
 ---
 aws_account: ${AWS_ACCOUNT}
 deploy_env: ${DEPLOY_ENV}
-cf_user: ${CF_USER}
-cf_password: ${CF_PASSWORD}
 state_bucket: ${STATE_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-state}
 aws_region: ${AWS_DEFAULT_REGION:-eu-west-1}
 cf_apps_domain: ${CF_APPS_DOMAIN}

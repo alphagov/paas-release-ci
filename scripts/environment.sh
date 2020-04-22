@@ -28,21 +28,6 @@ if [ -z "${SLACK_WEBHOOK_URL:-}" ]; then
   SLACK_WEBHOOK_URL=$(pass gds.slack.com/concourse_slack_webhook_url)
 fi
 
-if [ -z "${CF_USER:-}" ]; then
-  if aws s3 ls "s3://gds-paas-${DEPLOY_ENV}-state/cf-cli-secrets.yml" > /dev/null; then
-    CF_USER=$(scripts/val_from_yaml.rb secrets.cf_user <(aws s3 cp "s3://gds-paas-${DEPLOY_ENV}-state/cf-cli-secrets.yml" -))
-  else
-    CF_USER="admin"
-  fi
-fi
-if [ -z "${CF_PASSWORD:-}" ]; then
-  if aws s3 ls "s3://gds-paas-${DEPLOY_ENV}-state/cf-cli-secrets.yml" > /dev/null; then
-    CF_PASSWORD=$(scripts/val_from_yaml.rb secrets.cf_password <(aws s3 cp "s3://gds-paas-${DEPLOY_ENV}-state/cf-cli-secrets.yml" -))
-  else
-    CF_PASSWORD=""
-  fi
-fi
-
 if [ -z "${DOCKERHUB_USERNAME:-}" ]; then
   DOCKERHUB_USERNAME=$(pass dockerhub/ci/id)
 fi
@@ -59,8 +44,6 @@ export GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
 export SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
 export FLY_CMD=${FLY_CMD}
 export FLY_TARGET=${FLY_TARGET}
-export CF_USER=${CF_USER}
-export CF_PASSWORD=${CF_PASSWORD}
 export DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}
 export DOCKERHUB_PASSWORD=${DOCKERHUB_PASSWORD}
 EOF

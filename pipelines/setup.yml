@@ -261,8 +261,6 @@ jobs:
             SLACK_WEBHOOK_URL: ((slack_webhook_url))
             STATE_BUCKET_NAME: ((state_bucket_name))
             RELEASES_BUCKET_NAME: ((releases_bucket_name))
-            CF_USER: ((cf_user))
-            CF_PASSWORD: ((cf_password))
             CF_APPS_DOMAIN: ((cf_apps_domain))
             CF_SYSTEM_DOMAIN: ((cf_system_domain))
             DOCKERHUB_USERNAME: ((dockerhub_username))

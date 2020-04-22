@@ -33,41 +33,41 @@ ci: globals ## Work on the ci account
 	@true
 
 .PHONY: upload-cf-cli-secrets
-upload-cf-cli-secrets: check-env-vars ## Decrypt and upload CF CLI credentials to S3
+upload-cf-cli-secrets: check-env-vars require-credhub ## Decrypt and upload CF CLI credentials to Credhub
 	$(eval export CF_CLI_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
 	$(if ${AWS_ACCOUNT},,$(error Must set environment to dev/ci))
 	$(if ${CF_CLI_PASSWORD_STORE_DIR},,$(error Must pass CF_CLI_PASSWORD_STORE_DIR=<path_to_password_store>))
 	$(if $(wildcard ${CF_CLI_PASSWORD_STORE_DIR}),,$(error Password store ${CF_CLI_PASSWORD_STORE_DIR} does not exist))
-	@scripts/upload-secrets/upload-cf-cli-secrets.sh
+	@scripts/upload-secrets/upload-cf-cli-secrets.rb
 
 .PHONY: upload-aiven-secrets
-upload-aiven-secrets: check-env-vars ## Decrypt and upload Aiven credentials to S3
+upload-aiven-secrets: check-env-vars require-credhub ## Decrypt and upload Aiven credentials to Credhub
 	$(eval export AIVEN_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
 	$(if ${AWS_ACCOUNT},,$(error Must set environment to dev/ci))
 	$(if ${AIVEN_PASSWORD_STORE_DIR},,$(error Must pass _PASSWORD_STORE_DIR=<path_to_password_store>))
 	$(if $(wildcard ${AIVEN_PASSWORD_STORE_DIR}),,$(error Password store ${AIVEN_PASSWORD_STORE_DIR} does not exist))
-	@scripts/upload-secrets/upload-aiven-secrets.sh
+	@scripts/upload-secrets/upload-aiven-secrets.rb
 
 .PHONY: upload-zendesk-secrets
-upload-zendesk-secrets: check-env-vars ## Decrypt and upload Zendesk credentials to S3
+upload-zendesk-secrets: check-env-vars require-credhub ## Decrypt and upload Zendesk credentials to Credhub
 	$(eval export ZENDESK_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
 	$(if ${ZENDESK_PASSWORD_STORE_DIR},,$(error Must pass ZENDESK_PASSWORD_STORE_DIR=<path_to_password_store>))
 	$(if $(wildcard ${ZENDESK_PASSWORD_STORE_DIR}),,$(error Password store ${ZENDESK_PASSWORD_STORE_DIR} does not exist))
-	@scripts/upload-secrets/upload-zendesk-secrets.sh
+	@scripts/upload-secrets/upload-zendesk-secrets.rb
 
 .PHONY: upload-rubbernecker-secrets
-upload-rubbernecker-secrets: check-env-vars ## Decrypt and upload Rubbernecker credentials to S3
+upload-rubbernecker-secrets: check-env-vars require-credhub ## Decrypt and upload Rubbernecker credentials to Credhub
 	$(eval export RUBBERNECKER_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
 	$(if ${RUBBERNECKER_PASSWORD_STORE_DIR},,$(error Must pass RUBBERNECKER_PASSWORD_STORE_DIR=<path_to_password_store>))
 	$(if $(wildcard ${RUBBERNECKER_PASSWORD_STORE_DIR}),,$(error Password store ${RUBBERNECKER_PASSWORD_STORE_DIR} does not exist))
-	@scripts/upload-secrets/upload-rubbernecker-secrets.sh
+	@scripts/upload-secrets/upload-rubbernecker-secrets.rb
 
 .PHONY: upload-hackmd-secrets
-upload-hackmd-secrets: check-env-vars ## Decrypt and upload Hackmd credentials to S3
+upload-hackmd-secrets: check-env-vars require-credhub ## Decrypt and upload Hackmd credentials to Credhub
 	$(eval export HACKMD_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
 	$(if ${HACKMD_PASSWORD_STORE_DIR},,$(error Must pass HACKMD_PASSWORD_STORE_DIR=<path_to_password_store>))
 	$(if $(wildcard ${HACKMD_PASSWORD_STORE_DIR}),,$(error Password store ${HACKMD_PASSWORD_STORE_DIR} does not exist))
-	@scripts/upload-secrets/upload-hackmd-secrets.sh
+	@scripts/upload-secrets/upload-hackmd-secrets.rb
 
 .PHONY: pipelines
 pipelines: ## Upload setup pipelines to concourse
@@ -121,3 +121,10 @@ pause-all-pipelines: ## Pause all pipelines so that create-bosh-concourse can be
 .PHONY: unpause-all-pipelines
 unpause-all-pipelines: ## Unpause all pipelines after running create-bosh-concourse
 	./scripts/pause-pipelines.sh unpause
+
+.PHONY: credhub
+credhub:
+	@./scripts/credhub-shell.sh
+
+require-credhub:
+	$(if ${CREDHUB_SHELL},,$(error Must be inside credhub shell. Run `make {env} credhub`))
