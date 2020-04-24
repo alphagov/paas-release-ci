@@ -33,8 +33,6 @@ system_dns_zone_name: ${SYSTEM_DNS_ZONE_NAME}
 pipeline_trigger_file: ${pipeline_name}.trigger
 cf_apps_domain: ${CF_APPS_DOMAIN:-}
 cf_system_domain: ${CF_SYSTEM_DOMAIN:-}
-dockerhub_username: ${DOCKERHUB_USERNAME:-}
-dockerhub_password: ${DOCKERHUB_PASSWORD:-}
 EOF
 }
 

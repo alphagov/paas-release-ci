@@ -16,8 +16,6 @@ state_bucket: ${STATE_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-state}
 aws_region: ${AWS_DEFAULT_REGION:-eu-west-1}
 cf_apps_domain: ${CF_APPS_DOMAIN}
 cf_system_domain: ${CF_SYSTEM_DOMAIN}
-dockerhub_username: ${DOCKERHUB_USERNAME}
-dockerhub_password: ${DOCKERHUB_PASSWORD}
 github_status_context: ${DEPLOY_ENV}/status
 EOF
 }
