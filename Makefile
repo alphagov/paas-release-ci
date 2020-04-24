@@ -76,9 +76,15 @@ upload-github-secrets: check-env-vars require-credhub ## Decrypt and upload Gith
 	$(if $(wildcard ${GITHUB_PASSWORD_STORE_DIR}),,$(error Password store ${GITHUB_PASSWORD_STORE_DIR} does not exist))
 	@scripts/upload-secrets/upload-github-secrets.rb
 
+.PHONY: upload-slack-secrets
+upload-slack-secrets: check-env-vars require-credhub ## Decrypt and upload Github credentials to Credhub
+	$(eval export SLACK_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
+	$(if ${SLACK_PASSWORD_STORE_DIR},,$(error Must pass SLACK_PASSWORD_STORE_DIR=<path_to_password_store>))
+	$(if $(wildcard ${SLACK_PASSWORD_STORE_DIR}),,$(error Password store ${SLACK_PASSWORD_STORE_DIR} does not exist))
+	@scripts/upload-secrets/upload-slack-secrets.rb
 
 .PHONY: upload-all-secrets
-upload-all-secrets: upload-cf-cli-secrets upload-aiven-secrets upload-zendesk-secrets upload-rubbernecker-secrets upload-hackmd-secrets upload-github-secrets
+upload-all-secrets: upload-cf-cli-secrets upload-aiven-secrets upload-zendesk-secrets upload-rubbernecker-secrets upload-hackmd-secrets upload-github-secrets upload-slack-secrets
 
 .PHONY: pipelines
 pipelines: ## Upload setup pipelines to concourse
