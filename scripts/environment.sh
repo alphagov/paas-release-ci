@@ -20,10 +20,6 @@ CONCOURSE_URL="${CONCOURSE_URL:-https://concourse.${SYSTEM_DNS_ZONE_NAME}}"
 FLY_TARGET=${FLY_TARGET:-$DEPLOY_ENV}
 FLY_CMD="${FLY_DIR}/fly"
 
-if [ -z "${GITHUB_ACCESS_TOKEN:-}" ]; then
-  GITHUB_ACCESS_TOKEN=$(pass github.com/release_ci_pr_status_token)
-fi
-
 if [ -z "${SLACK_WEBHOOK_URL:-}" ]; then
   SLACK_WEBHOOK_URL=$(pass gds.slack.com/concourse_slack_webhook_url)
 fi
@@ -40,7 +36,6 @@ cat <<EOF
 export AWS_ACCOUNT=${AWS_ACCOUNT}
 export DEPLOY_ENV=${DEPLOY_ENV}
 export CONCOURSE_URL=${CONCOURSE_URL}
-export GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
 export SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
 export FLY_CMD=${FLY_CMD}
 export FLY_TARGET=${FLY_TARGET}

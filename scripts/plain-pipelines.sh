@@ -19,7 +19,6 @@ cf_system_domain: ${CF_SYSTEM_DOMAIN}
 slack_webhook_url: ${SLACK_WEBHOOK_URL}
 dockerhub_username: ${DOCKERHUB_USERNAME}
 dockerhub_password: ${DOCKERHUB_PASSWORD}
-github_access_token: ${GITHUB_ACCESS_TOKEN}
 github_status_context: ${DEPLOY_ENV}/status
 EOF
 }
