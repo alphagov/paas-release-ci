@@ -31,12 +31,8 @@ aws_region: ${AWS_DEFAULT_REGION:-eu-west-1}
 concourse_url: ${CONCOURSE_URL}
 system_dns_zone_name: ${SYSTEM_DNS_ZONE_NAME}
 pipeline_trigger_file: ${pipeline_name}.trigger
-github_access_token: ${GITHUB_ACCESS_TOKEN}
-slack_webhook_url: ${SLACK_WEBHOOK_URL}
 cf_apps_domain: ${CF_APPS_DOMAIN:-}
 cf_system_domain: ${CF_SYSTEM_DOMAIN:-}
-dockerhub_username: ${DOCKERHUB_USERNAME:-}
-dockerhub_password: ${DOCKERHUB_PASSWORD:-}
 EOF
 }
 
