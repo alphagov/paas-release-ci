@@ -21,9 +21,38 @@ resources:
 jobs:
   - name: deploy
     serial: true
+
+    on_failure:
+      put: slack-notification
+      params:
+        text: "Job $BUILD_NAME in $BUILD_JOB_NAME on $BUILD_PIPELINE_NAME failed. Check the logs at $ATC_EXTERNAL_URL/builds/$BUILD_ID."
+
     plan:
       - get: paas-product-pages
         trigger: true
+
+      - task: build
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: node
+              tag: lts
+          inputs:
+            - name: paas-product-pages
+          outputs:
+            - name: paas-product-pages
+          run:
+            dir: paas-product-pages
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                npm install
+                node "$(npm bin)/next" build && node "$(npm bin)/next" export
 
       - task: push
         config:
@@ -60,7 +89,3 @@ jobs:
                   -s "${CF_SPACE}"
 
                 cf zero-downtime-push paas-product-pages -f ./manifest.yml
-        on_failure:
-          put: slack-notification
-          params:
-            text: "Job $BUILD_NAME in $BUILD_JOB_NAME on $BUILD_PIPELINE_NAME failed. Check the logs at $ATC_EXTERNAL_URL/builds/$BUILD_ID."
