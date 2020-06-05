@@ -21,6 +21,12 @@ resources:
 jobs:
   - name: deploy
     serial: true
+
+    on_failure:
+      put: slack-notification
+      params:
+        text: "Job $BUILD_NAME in $BUILD_JOB_NAME on $BUILD_PIPELINE_NAME failed. Check the logs at $ATC_EXTERNAL_URL/builds/$BUILD_ID."
+
     plan:
       - get: paas-product-pages
         trigger: true
@@ -83,7 +89,3 @@ jobs:
                   -s "${CF_SPACE}"
 
                 cf zero-downtime-push paas-product-pages -f ./manifest.yml
-        on_failure:
-          put: slack-notification
-          params:
-            text: "Job $BUILD_NAME in $BUILD_JOB_NAME on $BUILD_PIPELINE_NAME failed. Check the logs at $ATC_EXTERNAL_URL/builds/$BUILD_ID."
