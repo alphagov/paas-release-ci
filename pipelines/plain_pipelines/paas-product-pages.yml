@@ -25,6 +25,29 @@ jobs:
       - get: paas-product-pages
         trigger: true
 
+      - task: build
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: node
+              tag: lts
+          inputs:
+            - name: paas-product-pages
+          outputs:
+            - name: paas-product-pages
+          run:
+            dir: paas-product-pages
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                npm install
+                node "$(npm bin)/next" build && node "$(npm bin)/next" export
+
       - task: push
         config:
           platform: linux
