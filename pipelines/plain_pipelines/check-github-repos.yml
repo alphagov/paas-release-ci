@@ -1,4 +1,14 @@
 ---
+groups:
+  - name: checks
+    jobs:
+      - check-repos-are-tagged
+
+  - name: finds
+    jobs:
+      - find-ruby-versions
+      - find-default-branch-names
+
 resource_types:
   - name: slack-notification-resource
     type: docker-image
