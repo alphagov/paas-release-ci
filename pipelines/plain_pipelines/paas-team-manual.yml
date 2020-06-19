@@ -48,7 +48,7 @@ jobs:
             type: docker-image
             source:
               repository: ruby
-              tag: 2.5-slim
+              tag: 2.7-slim
           inputs:
             - name: paas-team-manual
             - name: ssh-private-key
