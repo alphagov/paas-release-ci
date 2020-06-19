@@ -1,0 +1,314 @@
+---
+resource_types:
+  - name: slack-notification-resource
+    type: docker-image
+    source:
+      repository: cfcommunity/slack-notification-resource
+
+resources:
+  - name: every-weekday
+    type: time
+    source:
+      start: '0930'
+      stop: '1630'
+      location: Europe/London
+      days: [Monday, Tuesday, Wednesday, Thursday, Friday]
+
+  - name: slack-notification
+    type: slack-notification-resource
+    source:
+      url: ((slack_webhook_url))
+
+jobs:
+  - name: check-repos-are-tagged
+    serial: true
+
+    on_failure:
+      put: slack-notification
+      params:
+        text: |
+          Job $BUILD_NAME in $BUILD_JOB_NAME on $BUILD_PIPELINE_NAME failed.
+          Check the logs at $ATC_EXTERNAL_URL/builds/$BUILD_ID.
+
+    plan:
+      - get: every-weekday
+        trigger: true
+
+      - task: check-repos-are-tagged
+        config:
+          platform: linux
+
+          image_resource:
+            type: docker-image
+            source:
+              repository: ruby
+              tag: 2.7-slim
+
+          params:
+            GITHUB_ACCESS_TOKEN: ((github_access_token))
+
+          run:
+            path: ruby
+            args:
+              - -e
+              - |
+                # rubocop:disable Layout/MultilineMethodCallIndentation
+                # rubocop:disable Style/TrailingCommaInArrayLiteral
+                # frozen_string_literal: true
+
+                require 'json'
+                require 'net/http'
+                require 'uri'
+
+                puts <<~PRELUDE
+                  This Concourse task finds all repos that:
+                  * owned by "alphagov"
+                  * have "paas" in the name
+                  * are not archived
+                  and checks that they have the "paas" topic
+
+                PRELUDE
+
+                token = ENV.fetch('GITHUB_ACCESS_TOKEN')
+
+                search = [
+                  'paas in:name', 'org:alphagov', 'archived:false',
+                  'fork:true', # either fork or not fork, not fork:only
+                ]
+                query = search.join(' ')
+
+                url = "https://api.github.com/search/repositories?q=#{query}"
+                uri = URI(url)
+
+                http = Net::HTTP.new(uri.host, uri.port)
+                http.use_ssl = true
+
+                req = Net::HTTP::Get.new(uri.request_uri)
+                req['Accept'] = 'application/vnd.github.mercy-preview+json'
+                req['Authorization'] = "token #{token}"
+
+                res = http.request(req)
+                repos = JSON.parse(res.body).fetch('items')
+
+                puts 'Found the following repos:'
+                repos.each do |repo|
+                  puts "  - #{repo['name']}"
+                end
+
+                puts
+
+                repos_without_paas_topic = repos
+                  .select { |repo| repo['name'].match?(/^paas/) }
+                  .reject { |repo| repo['topics'].include? 'paas' }
+
+                if repos_without_paas_topic.empty?
+                  puts 'All repos have "paas" topic'
+                  exit
+                end
+
+                puts 'The following repos should have the "paas" topic:'
+                repos_without_paas_topic.each do |repo|
+                  puts "  - #{repo['name']}"
+                end
+
+                exit 1
+                # rubocop:enable Layout/MultilineMethodCallIndentation
+                # rubocop:enable Style/TrailingCommaInArrayLiteral
+
+  - name: find-ruby-versions
+    serial: true
+
+    on_failure:
+      put: slack-notification
+      params:
+        text: |
+          Job $BUILD_NAME in $BUILD_JOB_NAME on $BUILD_PIPELINE_NAME failed.
+          Check the logs at $ATC_EXTERNAL_URL/builds/$BUILD_ID.
+
+    plan:
+      - get: every-weekday
+        trigger: true
+
+      - task: find-ruby-versions
+        config:
+          platform: linux
+
+          image_resource:
+            type: docker-image
+            source:
+              repository: ruby
+              tag: 2.7-slim
+
+          params:
+            GITHUB_ACCESS_TOKEN: ((github_access_token))
+
+          run:
+            path: ruby
+            args:
+              - -e
+              - |
+                # rubocop:disable Style/EachWithObject
+                # frozen_string_literal: true
+
+                require 'base64'
+                require 'json'
+                require 'net/http'
+                require 'uri'
+
+                puts <<~PRELUDE
+                  This Concourse task finds all repos that:
+                  * owned by "alphagov"
+                  * have the "paas" topic
+                  * are not forks
+                  * are not archived
+                  and reports their ruby versions
+
+                PRELUDE
+
+                token = ENV.fetch('GITHUB_ACCESS_TOKEN')
+
+                search = ['topic:paas', 'archived:false', 'org:alphagov']
+                query = search.join(' ')
+
+                url = "https://api.github.com/search/repositories?q=#{query}"
+                uri = URI(url)
+
+                http = Net::HTTP.new(uri.host, uri.port)
+                http.use_ssl = true
+
+                req = Net::HTTP::Get.new(uri.request_uri)
+                req['Accept'] = 'application/vnd.github.mercy-preview+json'
+                req['Authorization'] = "token #{token}"
+
+                res = http.request(req)
+                abort "Request to #{url} failed with #{res.code}" unless res.code == '200'
+                repos = JSON.parse(res.body).fetch('items')
+
+                puts 'Found the following repos:'
+                repos.each do |repo|
+                  puts "  - #{repo['name']}"
+                end
+
+                puts
+
+                repos_by_ruby_version = repos.reduce({}) do |acc, repo|
+                  contents_proto_url = repo['contents_url']
+                  url = contents_proto_url.sub('{+path}', '.ruby-version')
+
+                  uri = URI(url)
+
+                  http = Net::HTTP.new(uri.host, uri.port)
+                  http.use_ssl = true
+
+                  req = Net::HTTP::Get.new(uri.request_uri)
+                  req['Accept'] = 'application/vnd.github.mercy-preview+json'
+                  req['Authorization'] = "token #{token}"
+
+                  res = http.request(req)
+
+                  puts "#{repo['name']} file=.ruby-version code=#{res.code}"
+
+                  if res.code == '200'
+                    metadata = JSON.parse(res.body)
+                    content = metadata['content']
+                    version = Base64.strict_decode64(content.strip).strip
+
+                    acc[version] ||= []
+                    acc[version] << repo['name']
+                  end
+
+                  acc
+                end
+
+                puts
+
+                puts 'Found the following repos that use ruby:'
+                repos_by_ruby_version.each do |ruby_version, repo_names|
+                  puts "Version #{ruby_version}"
+                  repo_names.each do |repo_name|
+                    puts "  - #{repo_name}"
+                  end
+                end
+                # rubocop:enable Style/EachWithObject
+
+  - name: find-default-branch-names
+    serial: true
+
+    on_failure:
+      put: slack-notification
+      params:
+        text: |
+          Job $BUILD_NAME in $BUILD_JOB_NAME on $BUILD_PIPELINE_NAME failed.
+          Check the logs at $ATC_EXTERNAL_URL/builds/$BUILD_ID.
+
+    plan:
+      - get: every-weekday
+        trigger: true
+
+      - task: find-default-branch-names
+        config:
+          platform: linux
+
+          image_resource:
+            type: docker-image
+            source:
+              repository: ruby
+              tag: 2.7-slim
+
+          params:
+            GITHUB_ACCESS_TOKEN: ((github_access_token))
+
+          run:
+            path: ruby
+            args:
+              - -e
+              - |
+                # rubocop:disable Style/TrailingCommaInArrayLiteral
+                # frozen_string_literal: true
+
+                require 'base64'
+                require 'json'
+                require 'net/http'
+                require 'uri'
+
+                puts <<~PRELUDE
+                  This Concourse task finds all repos that:
+                  * owned by "alphagov"
+                  * have the "paas" topic
+                  * are not archived
+                  and reports their default branch names
+
+                PRELUDE
+
+                token = ENV.fetch('GITHUB_ACCESS_TOKEN')
+
+                search = [
+                  'topic:paas', 'archived:false', 'org:alphagov',
+                  'fork:true', # either fork or not fork, not fork:only
+                ]
+                query = search.join(' ')
+
+                url = "https://api.github.com/search/repositories?q=#{query}"
+                uri = URI(url)
+
+                http = Net::HTTP.new(uri.host, uri.port)
+                http.use_ssl = true
+
+                req = Net::HTTP::Get.new(uri.request_uri)
+                req['Accept'] = 'application/vnd.github.mercy-preview+json'
+                req['Authorization'] = "token #{token}"
+
+                res = http.request(req)
+                repos = JSON.parse(res.body).fetch('items')
+
+                puts 'Found the following repos:'
+                repos
+                  .group_by { |repo| repo['default_branch'] }
+                  .each do |default_branch_name, repos_for_branch_name|
+                    puts "Default branch name #{default_branch_name}"
+                    repos_for_branch_name.each do |repo|
+                      puts "  - #{repo['name']}"
+                    end
+                  end
+
+                # rubocop:enable Style/TrailingCommaInArrayLiteral

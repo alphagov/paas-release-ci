@@ -1,4 +1,8 @@
 dist: focal
+
+rvm:
+  - 2.7
+
 env:
   global:
     - TF_VERSION=0.11.1
@@ -26,6 +30,7 @@ before_install:
   - go get github.com/onsi/ginkgo/ginkgo
   - go get github.com/onsi/gomega/...
   - go get -u github.com/alphagov/paas-cf/tools/pipecleaner
+  - bundle install
 
 script:
   - make test
