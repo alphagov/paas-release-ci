@@ -124,6 +124,7 @@ jobs:
 - name: build-psql
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config: &build-image-config
@@ -158,15 +159,22 @@ jobs:
           - -u
           - -c
           - |
-            cut -d : -f 2 image/digest > image/tag
+            git_branch_name="$(cd paas-docker-cloudfoundry-tools-pr && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-docker-cloudfoundry-tools-pr && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name},${git_commit_sha}" > image/tags
   - put: psql
     params:
       image: image/image.tar
-      additional_tags: image/tag
+      additional_tags: image/tags
 
 - name: build-spruce
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -178,11 +186,12 @@ jobs:
   - put: spruce
     params:
       image: image/image.tar
-      additional_tags: image/tag
+      additional_tags: image/tags
 
 - name: build-json-minify
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -194,11 +203,12 @@ jobs:
   - put: json-minify
     params:
       image: image/image.tar
-      additional_tags: image/tag
+      additional_tags: image/tags
 
 - name: build-terraform
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -210,11 +220,12 @@ jobs:
   - put: terraform
     params:
       image: image/image.tar
-      additional_tags: image/tag
+      additional_tags: image/tags
 
 - name: build-self-update-pipelines
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -226,11 +237,12 @@ jobs:
   - put: self-update-pipelines
     params:
       image: image/image.tar
-      additional_tags: image/tag
+      additional_tags: image/tags
 
 - name: build-git-ssh
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -242,11 +254,12 @@ jobs:
   - put: git-ssh
     params:
       image: image/image.tar
-      additional_tags: image/tag
+      additional_tags: image/tags
 
 - name: build-curl-ssl
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -258,11 +271,12 @@ jobs:
   - put: curl-ssl
     params:
       image: image/image.tar
-      additional_tags: image/tag
+      additional_tags: image/tags
 
 - name: build-cf-cli
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -274,11 +288,12 @@ jobs:
   - put: cf-cli
     params:
       image: image/image.tar
-      additional_tags: image/tag
+      additional_tags: image/tags
 
 - name: build-cf-acceptance-tests
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -290,11 +305,12 @@ jobs:
   - put: cf-acceptance-tests
     params:
       image: image/image.tar
-      additional_tags: image/tag
+      additional_tags: image/tags
 
 - name: build-cf-uaac
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -306,11 +322,12 @@ jobs:
   - put: cf-uaac
     params:
       image: image/image.tar
-      additional_tags: image/tag
+      additional_tags: image/tags
 
 - name: build-certstrap
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -322,11 +339,12 @@ jobs:
   - put: certstrap
     params:
       image: image/image.tar
-      additional_tags: image/tag
+      additional_tags: image/tags
 
 - name: build-bosh-shell
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -338,11 +356,12 @@ jobs:
   - put: bosh-shell
     params:
       image: image/image.tar
-      additional_tags: image/tag
+      additional_tags: image/tags
 
 - name: build-bosh
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -354,11 +373,12 @@ jobs:
   - put: bosh
     params:
       image: image/image.tar
-      additional_tags: image/tag
+      additional_tags: image/tags
 
 - name: build-bosh-cli-v2
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -370,11 +390,12 @@ jobs:
   - put: bosh-cli-v2
     params:
       image: image/image.tar
-      additional_tags: image/tag
+      additional_tags: image/tags
 
 - name: build-awscli
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -386,11 +407,12 @@ jobs:
   - put: awscli
     params:
       image: image/image.tar
-      additional_tags: image/tag
+      additional_tags: image/tags
 
 - name: build-paas-tech-docs
   plan:
   - get: paas-tech-docs
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -413,6 +435,7 @@ jobs:
 - name: build-paas-semver-resource
   plan:
   - get: paas-semver-resource
+    trigger: true
   - task: build
     privileged: true
     config:
