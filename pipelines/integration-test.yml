@@ -57,7 +57,7 @@ jobs:
         params:
           integration_tool: checkout
           submodules: true
-      - put: repo
+      - put: update-repo
         resource: pr
         params:
           path: repo
