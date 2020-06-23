@@ -73,6 +73,7 @@ jobs:
         trigger: true
         params:
           integration_tool: checkout
+          submodules: true
       - put: update-bosh-release-pr
         resource: bosh-release-pr
         params:

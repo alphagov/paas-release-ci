@@ -144,6 +144,7 @@ jobs:
     trigger: true
     params:
       integration_tool: checkout
+      submodules: true
   - put: update-paas-docker-cloudfoundry-tools-pr
     resource: paas-docker-cloudfoundry-tools-pr
     params:
@@ -220,6 +221,7 @@ jobs:
     trigger: true
     params:
       integration_tool: checkout
+      submodules: true
   - put: update-paas-docker-cloudfoundry-tools-pr
     resource: paas-docker-cloudfoundry-tools-pr
     params:
@@ -266,6 +268,7 @@ jobs:
     trigger: true
     params:
       integration_tool: checkout
+      submodules: true
   - put: update-paas-docker-cloudfoundry-tools-pr
     resource: paas-docker-cloudfoundry-tools-pr
     params:
@@ -312,6 +315,7 @@ jobs:
     trigger: true
     params:
       integration_tool: checkout
+      submodules: true
   - put: update-paas-docker-cloudfoundry-tools-pr
     resource: paas-docker-cloudfoundry-tools-pr
     params:
@@ -358,6 +362,7 @@ jobs:
     trigger: true
     params:
       integration_tool: checkout
+      submodules: true
   - put: update-paas-docker-cloudfoundry-tools-pr
     resource: paas-docker-cloudfoundry-tools-pr
     params:
@@ -404,6 +409,7 @@ jobs:
     trigger: true
     params:
       integration_tool: checkout
+      submodules: true
   - put: update-paas-docker-cloudfoundry-tools-pr
     resource: paas-docker-cloudfoundry-tools-pr
     params:
@@ -450,6 +456,7 @@ jobs:
     trigger: true
     params:
       integration_tool: checkout
+      submodules: true
   - put: update-paas-docker-cloudfoundry-tools-pr
     resource: paas-docker-cloudfoundry-tools-pr
     params:
@@ -496,6 +503,7 @@ jobs:
     trigger: true
     params:
       integration_tool: checkout
+      submodules: true
   - put: update-paas-docker-cloudfoundry-tools-pr
     resource: paas-docker-cloudfoundry-tools-pr
     params:
@@ -542,6 +550,7 @@ jobs:
     trigger: true
     params:
       integration_tool: checkout
+      submodules: true
   - put: update-paas-docker-cloudfoundry-tools-pr
     resource: paas-docker-cloudfoundry-tools-pr
     params:
@@ -588,6 +597,7 @@ jobs:
     trigger: true
     params:
       integration_tool: checkout
+      submodules: true
   - put: update-paas-docker-cloudfoundry-tools-pr
     resource: paas-docker-cloudfoundry-tools-pr
     params:
@@ -634,6 +644,7 @@ jobs:
     trigger: true
     params:
       integration_tool: checkout
+      submodules: true
   - put: update-paas-docker-cloudfoundry-tools-pr
     resource: paas-docker-cloudfoundry-tools-pr
     params:
@@ -680,6 +691,7 @@ jobs:
     trigger: true
     params:
       integration_tool: checkout
+      submodules: true
   - put: update-paas-docker-cloudfoundry-tools-pr
     resource: paas-docker-cloudfoundry-tools-pr
     params:
@@ -726,6 +738,7 @@ jobs:
     trigger: true
     params:
       integration_tool: checkout
+      submodules: true
   - put: update-paas-docker-cloudfoundry-tools-pr
     resource: paas-docker-cloudfoundry-tools-pr
     params:
@@ -772,6 +785,7 @@ jobs:
     trigger: true
     params:
       integration_tool: checkout
+      submodules: true
   - put: update-paas-docker-cloudfoundry-tools-pr
     resource: paas-docker-cloudfoundry-tools-pr
     params:
@@ -818,6 +832,7 @@ jobs:
     trigger: true
     params:
       integration_tool: checkout
+      submodules: true
   - put: update-paas-docker-cloudfoundry-tools-pr
     resource: paas-docker-cloudfoundry-tools-pr
     params:
@@ -864,6 +879,7 @@ jobs:
     trigger: true
     params:
       integration_tool: checkout
+      submodules: true
   - put: update-paas-tech-docs-pr
     resource: paas-tech-docs-pr
     params:
@@ -937,6 +953,7 @@ jobs:
     trigger: true
     params:
       integration_tool: checkout
+      submodules: true
   - put: update-paas-semver-resource-pr
     resource: paas-semver-resource-pr
     params:
