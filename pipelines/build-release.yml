@@ -73,7 +73,8 @@ jobs:
         trigger: true
         params:
           integration_tool: checkout
-      - put: bosh-release-pr
+      - put: update-bosh-release-pr
+        resource: bosh-release-pr
         params:
           path: bosh-release-pr
           context: ((github_status_context))
