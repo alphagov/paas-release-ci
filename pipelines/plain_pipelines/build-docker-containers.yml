@@ -124,6 +124,7 @@ jobs:
 - name: build-psql
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config: &build-image-config
@@ -173,6 +174,7 @@ jobs:
 - name: build-spruce
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -189,6 +191,7 @@ jobs:
 - name: build-json-minify
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -205,6 +208,7 @@ jobs:
 - name: build-terraform
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -221,6 +225,7 @@ jobs:
 - name: build-self-update-pipelines
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -237,6 +242,7 @@ jobs:
 - name: build-git-ssh
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -253,6 +259,7 @@ jobs:
 - name: build-curl-ssl
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -269,6 +276,7 @@ jobs:
 - name: build-cf-cli
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -285,6 +293,7 @@ jobs:
 - name: build-cf-acceptance-tests
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -301,6 +310,7 @@ jobs:
 - name: build-cf-uaac
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -317,6 +327,7 @@ jobs:
 - name: build-certstrap
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -333,6 +344,7 @@ jobs:
 - name: build-bosh-shell
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -349,6 +361,7 @@ jobs:
 - name: build-bosh
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -365,6 +378,7 @@ jobs:
 - name: build-bosh-cli-v2
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -381,6 +395,7 @@ jobs:
 - name: build-awscli
   plan:
   - get: paas-docker-cloudfoundry-tools
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -397,6 +412,7 @@ jobs:
 - name: build-paas-tech-docs
   plan:
   - get: paas-tech-docs
+    trigger: true
   - task: build
     privileged: true
     config:
@@ -419,6 +435,7 @@ jobs:
 - name: build-paas-semver-resource
   plan:
   - get: paas-semver-resource
+    trigger: true
   - task: build
     privileged: true
     config:
