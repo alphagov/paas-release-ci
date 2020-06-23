@@ -84,12 +84,6 @@ resources:
     <<: *build-image-source
     repository: governmentpaas/certstrap
 
-- name: bosh
-  type: registry-image
-  source:
-    <<: *build-image-source
-    repository: governmentpaas/bosh
-
 - name: bosh-cli-v2
   type: registry-image
   source:
@@ -331,23 +325,6 @@ jobs:
   - task: create-image-tag
     config: *create-image-tag
   - put: certstrap
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-bosh
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      <<: *build-image-config
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/bosh
-  - task: create-image-tag
-    config: *create-image-tag
-  - put: bosh
     params:
       image: image/image.tar
       additional_tags: image/tags
