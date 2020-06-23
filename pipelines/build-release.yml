@@ -71,6 +71,8 @@ jobs:
       - get: bosh-release-pr
         version: every
         trigger: true
+        params:
+          integration_tool: checkout
       - put: bosh-release-pr
         params:
           path: bosh-release-pr

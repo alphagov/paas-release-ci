@@ -53,6 +53,8 @@ jobs:
         resource: pr
         version: every
         trigger: true
+        params:
+          integration_tool: checkout
       - put: repo
         resource: pr
         params:
