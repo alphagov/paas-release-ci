@@ -182,9 +182,13 @@ jobs:
           - -u
           - -c
           - |
-            cut -d : -f 2 image/digest > image/sha
-            cd paas-docker-cloudfoundry-tools-pr && git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /' > ../image/branch
-            cat ../image/sha ../image/branch | tr -d '\n' > ../image/tags
+            git_branch_name="$(cd paas-docker-cloudfoundry-tools-pr && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-docker-cloudfoundry-tools-pr && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name},${git_commit_sha}" > image/tags
     on_success:
       do:
         - put: psql
