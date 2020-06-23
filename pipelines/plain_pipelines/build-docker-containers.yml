@@ -147,10 +147,10 @@ jobs:
           - -u
           - -c
           - |
-            git_branch_name="$(cd paas-docker-cloudfoundry-tools-pr && \
+            git_branch_name="$(cd paas-docker-cloudfoundry-tools && \
                           git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
 
-            git_commit_sha="$(cd paas-docker-cloudfoundry-tools-pr && \
+            git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
                      git log --pretty=format:'%H' -n 1)"
 
             echo "${git_branch_name},${git_commit_sha}" > image/tags
