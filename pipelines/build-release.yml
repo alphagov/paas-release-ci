@@ -78,6 +78,8 @@ jobs:
           path: bosh-release-pr
           context: ((github_status_context))
           status: pending
+        get_params:
+          skip_download: true
       - task: build
         config:
           platform: linux
@@ -131,12 +133,16 @@ jobs:
                 path: bosh-release-pr
                 context: ((github_status_context))
                 status: success
+              get_params:
+                skip_download: true
         on_failure:
           put: bosh-release-pr
           params:
             path: bosh-release-pr
             context: ((github_status_context))
             status: failure
+          get_params:
+            skip_download: true
 
   - name: build-final-release
     serial: true

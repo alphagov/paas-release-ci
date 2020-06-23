@@ -149,6 +149,8 @@ jobs:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
       status: pending
+    get_params:
+      skip_download: true
   - task: build
     privileged: true
     config: &build-image-config
@@ -198,12 +200,16 @@ jobs:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
             status: success
+          get_params:
+            skip_download: true
     on_failure:
       put: paas-docker-cloudfoundry-tools-pr
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
         status: failure
+      get_params:
+        skip_download: true
 
 - name: build-spruce-pr
   serial: true
@@ -218,6 +224,8 @@ jobs:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
       status: pending
+    get_params:
+      skip_download: true
   - task: build
     privileged: true
     config:
@@ -237,12 +245,16 @@ jobs:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
             status: success
+          get_params:
+            skip_download: true
     on_failure:
       put: paas-docker-cloudfoundry-tools-pr
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
         status: failure
+      get_params:
+        skip_download: true
 
 - name: build-json-minify-pr
   serial: true
@@ -257,6 +269,8 @@ jobs:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
       status: pending
+    get_params:
+      skip_download: true
   - task: build
     privileged: true
     config:
@@ -276,12 +290,16 @@ jobs:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
             status: success
+          get_params:
+            skip_download: true
     on_failure:
       put: paas-docker-cloudfoundry-tools-pr
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
         status: failure
+      get_params:
+        skip_download: true
 
 - name: build-terraform-pr
   serial: true
@@ -296,6 +314,8 @@ jobs:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
       status: pending
+    get_params:
+      skip_download: true
   - task: build
     privileged: true
     config:
@@ -315,12 +335,16 @@ jobs:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
             status: success
+          get_params:
+            skip_download: true
     on_failure:
       put: paas-docker-cloudfoundry-tools-pr
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
         status: failure
+      get_params:
+        skip_download: true
 
 - name: build-self-update-pipelines-pr
   serial: true
@@ -335,6 +359,8 @@ jobs:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
       status: pending
+    get_params:
+      skip_download: true
   - task: build
     privileged: true
     config:
@@ -354,12 +380,16 @@ jobs:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
             status: success
+          get_params:
+            skip_download: true
     on_failure:
       put: paas-docker-cloudfoundry-tools-pr
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
         status: failure
+      get_params:
+        skip_download: true
 
 - name: build-git-ssh-pr
   serial: true
@@ -374,6 +404,8 @@ jobs:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
       status: pending
+    get_params:
+      skip_download: true
   - task: build
     privileged: true
     config:
@@ -393,12 +425,16 @@ jobs:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
             status: success
+          get_params:
+            skip_download: true
     on_failure:
       put: paas-docker-cloudfoundry-tools-pr
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
         status: failure
+      get_params:
+        skip_download: true
 
 - name: build-curl-ssl-pr
   serial: true
@@ -413,6 +449,8 @@ jobs:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
       status: pending
+    get_params:
+      skip_download: true
   - task: build
     privileged: true
     config:
@@ -432,12 +470,16 @@ jobs:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
             status: success
+          get_params:
+            skip_download: true
     on_failure:
       put: paas-docker-cloudfoundry-tools-pr
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
         status: failure
+      get_params:
+        skip_download: true
 
 - name: build-cf-cli-pr
   serial: true
@@ -452,6 +494,8 @@ jobs:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
       status: pending
+    get_params:
+      skip_download: true
   - task: build
     privileged: true
     config:
@@ -471,12 +515,16 @@ jobs:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
             status: success
+          get_params:
+            skip_download: true
     on_failure:
       put: paas-docker-cloudfoundry-tools-pr
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
         status: failure
+      get_params:
+        skip_download: true
 
 - name: build-cf-acceptance-tests-pr
   serial: true
@@ -491,6 +539,8 @@ jobs:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
       status: pending
+    get_params:
+      skip_download: true
   - task: build
     privileged: true
     config:
@@ -510,12 +560,16 @@ jobs:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
             status: success
+          get_params:
+            skip_download: true
     on_failure:
       put: paas-docker-cloudfoundry-tools-pr
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
         status: failure
+      get_params:
+        skip_download: true
 
 - name: build-cf-uaac-pr
   serial: true
@@ -530,6 +584,8 @@ jobs:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
       status: pending
+    get_params:
+      skip_download: true
   - task: build
     privileged: true
     config:
@@ -549,12 +605,16 @@ jobs:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
             status: success
+          get_params:
+            skip_download: true
     on_failure:
       put: paas-docker-cloudfoundry-tools-pr
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
         status: failure
+      get_params:
+        skip_download: true
 
 - name: build-certstrap-pr
   serial: true
@@ -569,6 +629,8 @@ jobs:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
       status: pending
+    get_params:
+      skip_download: true
   - task: build
     privileged: true
     config:
@@ -588,12 +650,16 @@ jobs:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
             status: success
+          get_params:
+            skip_download: true
     on_failure:
       put: paas-docker-cloudfoundry-tools-pr
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
         status: failure
+    get_params:
+      skip_download: true
 
 - name: build-bosh-shell-pr
   serial: true
@@ -608,6 +674,8 @@ jobs:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
       status: pending
+    get_params:
+      skip_download: true
   - task: build
     privileged: true
     config:
@@ -627,12 +695,16 @@ jobs:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
             status: success
+          get_params:
+            skip_download: true
     on_failure:
       put: paas-docker-cloudfoundry-tools-pr
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
         status: failure
+      get_params:
+        skip_download: true
 
 - name: build-bosh-pr
   serial: true
@@ -647,6 +719,8 @@ jobs:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
       status: pending
+    get_params:
+      skip_download: true
   - task: build
     privileged: true
     config:
@@ -666,12 +740,16 @@ jobs:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
             status: success
+          get_params:
+            skip_download: true
     on_failure:
       put: paas-docker-cloudfoundry-tools-pr
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
         status: failure
+      get_params:
+        skip_download: true
 
 - name: build-bosh-cli-v2-pr
   serial: true
@@ -686,6 +764,8 @@ jobs:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
       status: pending
+    get_params:
+      skip_download: true
   - task: build
     privileged: true
     config:
@@ -705,12 +785,16 @@ jobs:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
             status: success
+          get_params:
+            skip_download: true
     on_failure:
       put: paas-docker-cloudfoundry-tools-pr
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
         status: failure
+      get_params:
+        skip_download: true
 
 - name: build-awscli-pr
   serial: true
@@ -725,6 +809,8 @@ jobs:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
       status: pending
+    get_params:
+      skip_download: true
   - task: build
     privileged: true
     config:
@@ -744,12 +830,16 @@ jobs:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
             status: success
+          get_params:
+            skip_download: true
     on_failure:
       put: paas-docker-cloudfoundry-tools-pr
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
         status: failure
+      get_params:
+        skip_download: true
 
 - name: build-paas-tech-pr
   serial: true
@@ -764,6 +854,8 @@ jobs:
       path: paas-tech-docs-pr
       context: ((github_status_context))
       status: pending
+    get_params:
+      skip_download: true
   - task: build
     privileged: true
     config:
@@ -810,12 +902,16 @@ jobs:
             path: paas-tech-docs-pr
             context: ((github_status_context))
             status: success
+          get_params:
+            skip_download: true
     on_failure:
       put: paas-tech-docs-pr
       params:
         path: paas-tech-docs-pr
         context: ((github_status_context))
         status: failure
+      get_params:
+        skip_download: true
 
 - name: build-paas-semver-resource-pr
   serial: true
@@ -830,6 +926,8 @@ jobs:
       path: paas-semver-resource-pr
       context: ((github_status_context))
       status: pending
+    get_params:
+      skip_download: true
   - task: build
     privileged: true
     config:
@@ -876,9 +974,13 @@ jobs:
             path: paas-semver-resource-pr
             context: ((github_status_context))
             status: success
+          get_params:
+            skip_download: true
     on_failure:
       put: paas-semver-resource-pr
       params:
         path: paas-semver-resource-pr
         context: ((github_status_context))
         status: failure
+      get_params:
+        skip_download: true

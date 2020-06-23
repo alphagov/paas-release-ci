@@ -61,6 +61,8 @@ jobs:
           path: repo
           context: ((github_status_context))
           status: pending
+        get_params:
+          skip_download: true
       - task: run-tests
         file: repo/ci/integration.yml
     on_success:
@@ -70,6 +72,8 @@ jobs:
         path: repo
         context: ((github_status_context))
         status: success
+      get_params:
+        skip_download: true
     on_failure:
       put: repo
       resource: pr
@@ -77,6 +81,8 @@ jobs:
         path: repo
         context: ((github_status_context))
         status: failure
+      get_params:
+        skip_download: true
 
   - name: tag-releases
     serial: true
