@@ -60,7 +60,7 @@ jobs:
         params:
           path: repo
           context: ((github_status_context))
-          status: pending
+          status: PENDING
         get_params:
           skip_download: true
       - task: run-tests
@@ -71,7 +71,7 @@ jobs:
       params:
         path: repo
         context: ((github_status_context))
-        status: success
+        status: SUCCESS
       get_params:
         skip_download: true
     on_failure:
@@ -80,7 +80,7 @@ jobs:
       params:
         path: repo
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
       get_params:
         skip_download: true
 

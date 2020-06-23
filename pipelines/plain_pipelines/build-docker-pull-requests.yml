@@ -148,7 +148,7 @@ jobs:
     params:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
-      status: pending
+      status: PENDING
     get_params:
       skip_download: true
   - task: build
@@ -199,7 +199,7 @@ jobs:
           params:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
-            status: success
+            status: SUCCESS
           get_params:
             skip_download: true
     on_failure:
@@ -207,7 +207,7 @@ jobs:
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
       get_params:
         skip_download: true
 
@@ -223,7 +223,7 @@ jobs:
     params:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
-      status: pending
+      status: PENDING
     get_params:
       skip_download: true
   - task: build
@@ -244,7 +244,7 @@ jobs:
           params:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
-            status: success
+            status: SUCCESS
           get_params:
             skip_download: true
     on_failure:
@@ -252,7 +252,7 @@ jobs:
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
       get_params:
         skip_download: true
 
@@ -268,7 +268,7 @@ jobs:
     params:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
-      status: pending
+      status: PENDING
     get_params:
       skip_download: true
   - task: build
@@ -289,7 +289,7 @@ jobs:
           params:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
-            status: success
+            status: SUCCESS
           get_params:
             skip_download: true
     on_failure:
@@ -297,7 +297,7 @@ jobs:
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
       get_params:
         skip_download: true
 
@@ -313,7 +313,7 @@ jobs:
     params:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
-      status: pending
+      status: PENDING
     get_params:
       skip_download: true
   - task: build
@@ -334,7 +334,7 @@ jobs:
           params:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
-            status: success
+            status: SUCCESS
           get_params:
             skip_download: true
     on_failure:
@@ -342,7 +342,7 @@ jobs:
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
       get_params:
         skip_download: true
 
@@ -358,7 +358,7 @@ jobs:
     params:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
-      status: pending
+      status: PENDING
     get_params:
       skip_download: true
   - task: build
@@ -379,7 +379,7 @@ jobs:
           params:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
-            status: success
+            status: SUCCESS
           get_params:
             skip_download: true
     on_failure:
@@ -387,7 +387,7 @@ jobs:
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
       get_params:
         skip_download: true
 
@@ -403,7 +403,7 @@ jobs:
     params:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
-      status: pending
+      status: PENDING
     get_params:
       skip_download: true
   - task: build
@@ -424,7 +424,7 @@ jobs:
           params:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
-            status: success
+            status: SUCCESS
           get_params:
             skip_download: true
     on_failure:
@@ -432,7 +432,7 @@ jobs:
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
       get_params:
         skip_download: true
 
@@ -448,7 +448,7 @@ jobs:
     params:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
-      status: pending
+      status: PENDING
     get_params:
       skip_download: true
   - task: build
@@ -469,7 +469,7 @@ jobs:
           params:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
-            status: success
+            status: SUCCESS
           get_params:
             skip_download: true
     on_failure:
@@ -477,7 +477,7 @@ jobs:
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
       get_params:
         skip_download: true
 
@@ -493,7 +493,7 @@ jobs:
     params:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
-      status: pending
+      status: PENDING
     get_params:
       skip_download: true
   - task: build
@@ -514,7 +514,7 @@ jobs:
           params:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
-            status: success
+            status: SUCCESS
           get_params:
             skip_download: true
     on_failure:
@@ -522,7 +522,7 @@ jobs:
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
       get_params:
         skip_download: true
 
@@ -538,7 +538,7 @@ jobs:
     params:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
-      status: pending
+      status: PENDING
     get_params:
       skip_download: true
   - task: build
@@ -559,7 +559,7 @@ jobs:
           params:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
-            status: success
+            status: SUCCESS
           get_params:
             skip_download: true
     on_failure:
@@ -567,7 +567,7 @@ jobs:
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
       get_params:
         skip_download: true
 
@@ -583,7 +583,7 @@ jobs:
     params:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
-      status: pending
+      status: PENDING
     get_params:
       skip_download: true
   - task: build
@@ -604,7 +604,7 @@ jobs:
           params:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
-            status: success
+            status: SUCCESS
           get_params:
             skip_download: true
     on_failure:
@@ -612,7 +612,7 @@ jobs:
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
       get_params:
         skip_download: true
 
@@ -628,7 +628,7 @@ jobs:
     params:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
-      status: pending
+      status: PENDING
     get_params:
       skip_download: true
   - task: build
@@ -649,7 +649,7 @@ jobs:
           params:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
-            status: success
+            status: SUCCESS
           get_params:
             skip_download: true
     on_failure:
@@ -657,7 +657,7 @@ jobs:
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
     get_params:
       skip_download: true
 
@@ -673,7 +673,7 @@ jobs:
     params:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
-      status: pending
+      status: PENDING
     get_params:
       skip_download: true
   - task: build
@@ -694,7 +694,7 @@ jobs:
           params:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
-            status: success
+            status: SUCCESS
           get_params:
             skip_download: true
     on_failure:
@@ -702,7 +702,7 @@ jobs:
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
       get_params:
         skip_download: true
 
@@ -718,7 +718,7 @@ jobs:
     params:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
-      status: pending
+      status: PENDING
     get_params:
       skip_download: true
   - task: build
@@ -739,7 +739,7 @@ jobs:
           params:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
-            status: success
+            status: SUCCESS
           get_params:
             skip_download: true
     on_failure:
@@ -747,7 +747,7 @@ jobs:
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
       get_params:
         skip_download: true
 
@@ -763,7 +763,7 @@ jobs:
     params:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
-      status: pending
+      status: PENDING
     get_params:
       skip_download: true
   - task: build
@@ -784,7 +784,7 @@ jobs:
           params:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
-            status: success
+            status: SUCCESS
           get_params:
             skip_download: true
     on_failure:
@@ -792,7 +792,7 @@ jobs:
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
       get_params:
         skip_download: true
 
@@ -808,7 +808,7 @@ jobs:
     params:
       path: paas-docker-cloudfoundry-tools-pr
       context: ((github_status_context))
-      status: pending
+      status: PENDING
     get_params:
       skip_download: true
   - task: build
@@ -829,7 +829,7 @@ jobs:
           params:
             path: paas-docker-cloudfoundry-tools-pr
             context: ((github_status_context))
-            status: success
+            status: SUCCESS
           get_params:
             skip_download: true
     on_failure:
@@ -837,7 +837,7 @@ jobs:
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
       get_params:
         skip_download: true
 
@@ -853,7 +853,7 @@ jobs:
     params:
       path: paas-tech-docs-pr
       context: ((github_status_context))
-      status: pending
+      status: PENDING
     get_params:
       skip_download: true
   - task: build
@@ -901,7 +901,7 @@ jobs:
           params:
             path: paas-tech-docs-pr
             context: ((github_status_context))
-            status: success
+            status: SUCCESS
           get_params:
             skip_download: true
     on_failure:
@@ -909,7 +909,7 @@ jobs:
       params:
         path: paas-tech-docs-pr
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
       get_params:
         skip_download: true
 
@@ -925,7 +925,7 @@ jobs:
     params:
       path: paas-semver-resource-pr
       context: ((github_status_context))
-      status: pending
+      status: PENDING
     get_params:
       skip_download: true
   - task: build
@@ -973,7 +973,7 @@ jobs:
           params:
             path: paas-semver-resource-pr
             context: ((github_status_context))
-            status: success
+            status: SUCCESS
           get_params:
             skip_download: true
     on_failure:
@@ -981,6 +981,6 @@ jobs:
       params:
         path: paas-semver-resource-pr
         context: ((github_status_context))
-        status: failure
+        status: FAILURE
       get_params:
         skip_download: true
