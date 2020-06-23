@@ -13,7 +13,6 @@ resources:
   source:
     repository: alphagov/paas-docker-cloudfoundry-tools
     access_token: ((github_access_token))
-    every: true
     disable_forks: true
 
 - name: paas-tech-docs-pr
@@ -22,7 +21,6 @@ resources:
   source:
     repository: alphagov/paas-tech-docs
     access_token: ((github_access_token))
-    every: true
     disable_forks: true
 
 - name: paas-semver-resource-pr
@@ -31,7 +29,6 @@ resources:
   source:
     repository: alphagov/paas-semver-resource
     access_token: ((github_access_token))
-    every: true
     disable_forks: true
 
 - name: psql
