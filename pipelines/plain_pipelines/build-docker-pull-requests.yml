@@ -100,12 +100,6 @@ resources:
     <<: *build-image-source
     repository: governmentpaas/certstrap
 
-- name: bosh-shell
-  type: registry-image
-  source:
-    <<: *build-image-source
-    repository: governmentpaas/bosh-shell
-
 - name: bosh
   type: registry-image
   source:
@@ -687,53 +681,6 @@ jobs:
         status: FAILURE
     get_params:
       skip_download: true
-
-- name: build-bosh-shell-pr
-  serial: true
-  plan:
-  - get: paas-docker-cloudfoundry-tools-pr
-    version: every
-    trigger: true
-    params:
-      integration_tool: checkout
-      submodules: true
-  - put: update-paas-docker-cloudfoundry-tools-pr
-    resource: paas-docker-cloudfoundry-tools-pr
-    params:
-      path: paas-docker-cloudfoundry-tools-pr
-      context: ((github_status_context))
-      status: PENDING
-    get_params:
-      skip_download: true
-  - task: build
-    privileged: true
-    config:
-      <<: *build-image-config
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools-pr/bosh-shell
-  - task: create-image-tag
-    config: *create-image-tag
-    on_success:
-      do:
-        - put: bosh-shell
-          params:
-            image: image/image.tar
-            additional_tags: image/tags
-        - put: paas-docker-cloudfoundry-tools-pr
-          params:
-            path: paas-docker-cloudfoundry-tools-pr
-            context: ((github_status_context))
-            status: SUCCESS
-          get_params:
-            skip_download: true
-    on_failure:
-      put: paas-docker-cloudfoundry-tools-pr
-      params:
-        path: paas-docker-cloudfoundry-tools-pr
-        context: ((github_status_context))
-        status: FAILURE
-      get_params:
-        skip_download: true
 
 - name: build-bosh-pr
   serial: true
