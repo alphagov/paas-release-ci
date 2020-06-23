@@ -3,14 +3,15 @@ resource_types:
     type: docker-image
     check_every: 24h
     source:
-      repository: jtarchie/pr
+      repository: teliaoss/github-pr-resource
+      tag: v0.21.0
 
 resources:
 - name: paas-docker-cloudfoundry-tools-pr
   type: pull-request
   check_every: 1m
   source:
-    repo: alphagov/paas-docker-cloudfoundry-tools
+    repository: alphagov/paas-docker-cloudfoundry-tools
     access_token: ((github_access_token))
     every: true
     disable_forks: true
@@ -19,7 +20,7 @@ resources:
   type: pull-request
   check_every: 1m
   source:
-    repo: alphagov/paas-tech-docs
+    repository: alphagov/paas-tech-docs
     access_token: ((github_access_token))
     every: true
     disable_forks: true
@@ -28,7 +29,7 @@ resources:
   type: pull-request
   check_every: 1m
   source:
-    repo: alphagov/paas-semver-resource
+    repository: alphagov/paas-semver-resource
     access_token: ((github_access_token))
     every: true
     disable_forks: true
