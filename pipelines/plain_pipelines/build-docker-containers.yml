@@ -137,6 +137,7 @@ jobs:
         source:
           repository: vito/oci-build-task
       inputs:
+      - name: paas-docker-cloudfoundry-tools
       - name: image
       outputs:
       - name: image
