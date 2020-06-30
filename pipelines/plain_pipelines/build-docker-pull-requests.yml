@@ -183,7 +183,7 @@ jobs:
             git_commit_sha="$(cd paas-docker-cloudfoundry-tools-pr && \
                      git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name},${git_commit_sha}" > image/tags
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
     on_success:
       do:
         - put: psql
