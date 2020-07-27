@@ -61,7 +61,7 @@ jobs:
             type: docker-image
             source:
               repository: governmentpaas/cf-cli
-              tag: 0eff5b6a9c092f865a2b19cc4e75a3b539b82fa2
+              tag: b9a032b6ca185690bd679e1802e6b7af6a2bc43a
           inputs:
             - name: paas-product-pages
           params:
@@ -88,4 +88,5 @@ jobs:
                   -o "${CF_ORG}" \
                   -s "${CF_SPACE}"
 
-                cf zero-downtime-push paas-product-pages -f ./manifest.yml
+                cf cancel-deployment paas-product-pages || true
+                cf push paas-product-pages --strategy=rolling
