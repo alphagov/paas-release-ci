@@ -92,7 +92,8 @@ jobs:
                 cf push paas-product-pages --strategy=rolling
 
                 cf map-route paas-product-pages \
-                  "${CF_SYSTEM_DOMAIN}"
-
-                cf map-route paas-product-pages \
                   --hostname www "${CF_SYSTEM_DOMAIN}"
+
+                cd redirect
+                cf cancel-deployment paas-product-pages-redirect || true
+                cf push paas-product-pages-redirect --strategy=rolling
