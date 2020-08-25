@@ -59,6 +59,7 @@ setup_test_pipeline paas-admin alphagov paas-admin master
 setup_test_pipeline paas-log-cache-adapter alphagov paas-log-cache-adapter master
 setup_test_pipeline aiven-broker alphagov paas-aiven-broker master
 setup_test_pipeline s3-broker alphagov paas-s3-broker master
+setup_test_pipeline sqs-broker alphagov paas-sqs-broker master
 setup_test_pipeline paas-service-broker-base alphagov paas-service-broker-base master
 setup_test_pipeline paas-trusted-people alphagov paas-trusted-people master
 setup_test_pipeline paas-prometheus-endpoints alphagov paas-prometheus-endpoints main
