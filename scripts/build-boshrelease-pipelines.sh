@@ -67,5 +67,5 @@ setup_release_pipeline metric-exporter    alphagov/paas-metric-exporter-boshrele
 setup_release_pipeline observability      alphagov/paas-observability-release          master
 setup_release_pipeline rds-broker         alphagov/paas-rds-broker-boshrelease         master
 setup_release_pipeline s3-broker          alphagov/paas-s3-broker-boshrelease          master
-setup_release_pipeline sqs-broker         alphagov/paas-sqs-broker-boshrelease         master
+setup_release_pipeline sqs-broker         alphagov/paas-sqs-broker-boshrelease         main
 setup_release_pipeline uaa-customized     alphagov/paas-uaa-customized-boshrelease     master
