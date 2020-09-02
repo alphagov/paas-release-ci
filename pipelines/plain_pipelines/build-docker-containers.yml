@@ -3,7 +3,7 @@ resources:
   type: git
   source:
     uri: https://github.com/alphagov/paas-docker-cloudfoundry-tools.git
-    branch: master
+    branch: main
 
 - name: paas-tech-docs
   type: git
