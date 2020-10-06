@@ -32,6 +32,14 @@ resources:
     access_token: ((github_access_token))
     disable_forks: true
 
+- name: paas-grafana-annotation-resource-pr
+  type: pull-request
+  check_every: 1m
+  source:
+    repository: alphagov/paas-grafana-annotation-resource
+    access_token: ((github_access_token))
+    disable_forks: true
+
 - name: psql
   type: registry-image
   source: &build-image-source
@@ -123,6 +131,12 @@ resources:
   source:
     <<: *build-image-source
     repository: governmentpaas/semver-resource
+
+- name: grafana-annotation-resource
+  type: registry-image
+  source:
+    <<: *build-image-source
+    repository: governmentpaas/grafana-annotation-resource
 
 jobs:
 - name: build-psql-pr
@@ -914,6 +928,80 @@ jobs:
       params:
         path: paas-semver-resource-pr
         context: ((github_status_context))/build-paas-semver-resource-pr
+        status: FAILURE
+      get_params:
+        skip_download: true
+
+- name: build-paas-grafana-annotation-resource-pr
+  serial: true
+  plan:
+  - get: paas-grafana-annotation-resource-pr
+    version: every
+    trigger: true
+    params:
+      integration_tool: checkout
+      submodules: true
+  - put: update-paas-grafana-annotation-resource-pr
+    resource: paas-grafana-annotation-resource-pr
+    params:
+      path: paas-grafana-annotation-resource-pr
+      context: ((github_status_context))/build-paas-grafana-annotation-resource-pr
+      status: PENDING
+    get_params:
+      skip_download: true
+  - task: build
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-grafana-annotation-resource-pr
+        path: .
+      outputs:
+      - name: image
+      run:
+        path: build
+  - task: create-image-tag
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-grafana-annotation-resource-pr
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            cd paas-grafana-annotation-resource-pr && git rev-parse --abbrev-ref HEAD > ../image/branch
+    on_success:
+      do:
+        - put: grafana-annotation-resource
+          params:
+            image: image/image.tar
+            additional_tags: image/branch
+        - put: paas-grafana-annotation-resource-pr
+          params:
+            path: paas-grafana-annotation-resource-pr
+            context: ((github_status_context))/build-paas-grafana-annotation-resource-pr
+            status: SUCCESS
+          get_params:
+            skip_download: true
+    on_failure:
+      put: paas-grafana-annotation-resource-pr
+      params:
+        path: paas-grafana-annotation-resource-pr
+        context: ((github_status_context))/build-paas-grafana-annotation-resource-pr
         status: FAILURE
       get_params:
         skip_download: true

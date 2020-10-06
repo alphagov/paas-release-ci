@@ -17,6 +17,12 @@ resources:
     uri: https://github.com/alphagov/paas-semver-resource.git
     branch: gds_master
 
+- name: paas-grafana-annotation-resource
+  type: git
+  source:
+    uri: https://github.com/alphagov/paas-grafana-annotation-resource.git
+    branch: main
+
 - name: psql
   type: registry-image
   source: &build-image-source
@@ -107,6 +113,12 @@ resources:
   source:
     <<: *build-image-source
     repository: governmentpaas/semver-resource
+
+- name: grafana-annotation-resource
+  type: registry-image
+  source:
+    <<: *build-image-source
+    repository: governmentpaas/grafana-annotation-resource
 
 jobs:
 - name: build-psql
@@ -407,5 +419,28 @@ jobs:
       run:
         path: build
   - put: semver-resource
+    params:
+      image: image/image.tar
+
+- name: build-paas-grafana-annotation-resource
+  plan:
+  - get: paas-grafana-annotation-resource
+    trigger: true
+  - task: build
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-grafana-annotation-resource
+        path: .
+      outputs:
+      - name: image
+      run:
+        path: build
+  - put: grafana-annotation-resource
     params:
       image: image/image.tar
