@@ -687,8 +687,8 @@ jobs:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))/build-certstrap-pr
         status: FAILURE
-    get_params:
-      skip_download: true
+      get_params:
+        skip_download: true
 
 - name: build-bosh-cli-v2-pr
   serial: true
