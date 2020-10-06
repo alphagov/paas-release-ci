@@ -418,9 +418,36 @@ jobs:
       - name: image
       run:
         path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-semver-resource
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-semver-resource && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-semver-resource && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
   - put: semver-resource
     params:
       image: image/image.tar
+      additional_tags: image/tags
 
 - name: build-paas-grafana-annotation-resource
   plan:
@@ -441,6 +468,33 @@ jobs:
       - name: image
       run:
         path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-grafana-annotation-resource
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-grafana-annotation-resource && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-grafana-annotation-resource && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
   - put: grafana-annotation-resource
     params:
       image: image/image.tar
+      additional_tags: image/tags
