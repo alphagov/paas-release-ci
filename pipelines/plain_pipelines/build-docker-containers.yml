@@ -31,12 +31,27 @@ resources:
     password: ((dockerhub_password))
     repository: governmentpaas/psql
 
+- name: psql-github-registry
+  type: registry-image
+  icon: github
+  source: &build-image-source-github-registry
+    username: ((github_username))
+    password: ((github_registry_access_token))
+    repository: ghcr.io/alphagov/paas/psql
+
 - name: spruce
   type: registry-image
   icon: docker
   source:
     <<: *build-image-source
     repository: governmentpaas/spruce
+
+- name: spruce-github-registry
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source-github-registry
+    repository: ghcr.io/alphagov/paas/spruce
 
 - name: json-minify
   type: registry-image
@@ -45,12 +60,26 @@ resources:
     <<: *build-image-source
     repository: governmentpaas/json-minify
 
+- name: json-minify-github-registry
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source-github-registry
+    repository: ghcr.io/alphagov/paas/json-minify
+
 - name: terraform
   type: registry-image
   icon: docker
   source:
     <<: *build-image-source
     repository: governmentpaas/terraform
+
+- name: terraform-github-registry
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source-github-registry
+    repository: ghcr.io/alphagov/paas/terraform
 
 - name: self-update-pipelines
   type: registry-image
@@ -59,12 +88,26 @@ resources:
     <<: *build-image-source
     repository: governmentpaas/self-update-pipelines
 
+- name: self-update-pipelines-github-registry
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source-github-registry
+    repository: ghcr.io/alphagov/paas/self-update-pipelines
+
 - name: git-ssh
   type: registry-image
   icon: docker
   source:
     <<: *build-image-source
     repository: governmentpaas/git-ssh
+
+- name: git-ssh-github-registry
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source-github-registry
+    repository: ghcr.io/alphagov/paas/git-ssh
 
 - name: curl-ssl
   type: registry-image
@@ -73,12 +116,26 @@ resources:
     <<: *build-image-source
     repository: governmentpaas/curl-ssl
 
+- name: curl-ssl-github-registry
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source-github-registry
+    repository: ghcr.io/alphagov/paas/curl-ssl
+
 - name: cf-cli
   type: registry-image
   icon: docker
   source:
     <<: *build-image-source
     repository: governmentpaas/cf-cli
+
+- name: cf-cli-github-registry
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source-github-registry
+    repository: ghcr.io/alphagov/paas/cf-cli
 
 - name: cf-acceptance-tests
   type: registry-image
@@ -87,12 +144,26 @@ resources:
     <<: *build-image-source
     repository: governmentpaas/cf-acceptance-tests
 
+- name: cf-acceptance-tests-github-registry
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source-github-registry
+    repository: ghcr.io/alphagov/paas/cf-acceptance-tests
+
 - name: cf-uaac
   type: registry-image
   icon: docker
   source:
     <<: *build-image-source
     repository: governmentpaas/cf-uaac
+
+- name: cf-uaac-github-registry
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source-github-registry
+    repository: ghcr.io/alphagov/paas/cf-uaac
 
 - name: certstrap
   type: registry-image
@@ -101,12 +172,26 @@ resources:
     <<: *build-image-source
     repository: governmentpaas/certstrap
 
+- name: certstrap-github-registry
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source-github-registry
+    repository: ghcr.io/alphagov/paas/certstrap
+
 - name: bosh-cli-v2
   type: registry-image
   icon: docker
   source:
     <<: *build-image-source
     repository: governmentpaas/bosh-cli-v2
+
+- name: bosh-cli-v2-github-registry
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source-github-registry
+    repository: ghcr.io/alphagov/paas/bosh-cli-v2
 
 - name: awscli
   type: registry-image
@@ -115,12 +200,26 @@ resources:
     <<: *build-image-source
     repository: governmentpaas/awscli
 
+- name: awscli-github-registry
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source-github-registry
+    repository: ghcr.io/alphagov/paas/awscli
+
 - name: tech-docs
   type: registry-image
   icon: docker
   source:
     <<: *build-image-source
     repository: governmentpaas/tech-docs
+
+- name: tech-docs-github-registry
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source-github-registry
+    repository: ghcr.io/alphagov/paas/tech-docs
 
 - name: semver-resource
   type: registry-image
@@ -129,12 +228,26 @@ resources:
     <<: *build-image-source
     repository: governmentpaas/semver-resource
 
+- name: semver-resource-github-registry
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source-github-registry
+    repository: ghcr.io/alphagov/paas/semver-resource
+
 - name: grafana-annotation-resource
   type: registry-image
   icon: docker
   source:
     <<: *build-image-source
     repository: governmentpaas/grafana-annotation-resource
+
+- name: grafana-annotation-resource-github-registry
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source-github-registry
+    repository: ghcr.io/alphagov/paas/grafana-annotation-resource
 
 jobs:
 - name: build-psql
@@ -187,6 +300,10 @@ jobs:
     params:
       image: image/image.tar
       additional_tags: image/tags
+  - put: psql-github-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
 
 - name: build-spruce
   plan:
@@ -201,6 +318,10 @@ jobs:
   - task: create-image-tag
     config: *create-image-tag
   - put: spruce
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+  - put: spruce-github-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -221,6 +342,10 @@ jobs:
     params:
       image: image/image.tar
       additional_tags: image/tags
+  - put: json-minify-github-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
 
 - name: build-terraform
   plan:
@@ -235,6 +360,10 @@ jobs:
   - task: create-image-tag
     config: *create-image-tag
   - put: terraform
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+  - put: terraform-github-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -255,6 +384,10 @@ jobs:
     params:
       image: image/image.tar
       additional_tags: image/tags
+  - put: self-update-pipelines-github-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
 
 - name: build-git-ssh
   plan:
@@ -269,6 +402,10 @@ jobs:
   - task: create-image-tag
     config: *create-image-tag
   - put: git-ssh
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+  - put: git-ssh-github-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -289,6 +426,10 @@ jobs:
     params:
       image: image/image.tar
       additional_tags: image/tags
+  - put: curl-ssl-github-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
 
 - name: build-cf-cli
   plan:
@@ -303,6 +444,10 @@ jobs:
   - task: create-image-tag
     config: *create-image-tag
   - put: cf-cli
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+  - put: cf-cli-github-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -323,6 +468,10 @@ jobs:
     params:
       image: image/image.tar
       additional_tags: image/tags
+  - put: cf-acceptance-tests-github-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
 
 - name: build-cf-uaac
   plan:
@@ -337,6 +486,10 @@ jobs:
   - task: create-image-tag
     config: *create-image-tag
   - put: cf-uaac
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+  - put: cf-uaac-github-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -357,6 +510,10 @@ jobs:
     params:
       image: image/image.tar
       additional_tags: image/tags
+  - put: certstrap-github-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
 
 - name: build-bosh-cli-v2
   plan:
@@ -374,6 +531,10 @@ jobs:
     params:
       image: image/image.tar
       additional_tags: image/tags
+  - put: bosh-cli-v2-github-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
 
 - name: build-awscli
   plan:
@@ -388,6 +549,10 @@ jobs:
   - task: create-image-tag
     config: *create-image-tag
   - put: awscli
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+  - put: awscli-github-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -412,6 +577,10 @@ jobs:
       run:
         path: build
   - put: tech-docs
+    params:
+      image: image/image.tar
+
+  - put: tech-docs-github-registry
     params:
       image: image/image.tar
 
@@ -464,6 +633,10 @@ jobs:
     params:
       image: image/image.tar
       additional_tags: image/tags
+  - put: semver-resource-github-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
 
 - name: build-paas-grafana-annotation-resource
   plan:
@@ -511,6 +684,10 @@ jobs:
 
             echo "${git_branch_name} ${git_commit_sha}" > image/tags
   - put: grafana-annotation-resource
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+  - put: grafana-annotation-resource-github-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
