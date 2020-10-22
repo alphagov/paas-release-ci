@@ -37,7 +37,7 @@ jobs:
           image_resource:
             type: docker-image
             source:
-              repository: governmentpaas/tech-docs
+              repository: ghcr.io/alphagov/paas/tech-docs
               tag: latest
           inputs:
             - name: paas-tech-docs
@@ -68,7 +68,7 @@ jobs:
           image_resource:
             type: docker-image
             source:
-              repository: governmentpaas/tech-docs
+              repository: ghcr.io/alphagov/paas/tech-docs
               tag: latest
           inputs:
             - name: paas-tech-docs
@@ -97,8 +97,8 @@ jobs:
           image_resource:
             type: docker-image
             source:
-              repository: governmentpaas/cf-cli
-              tag: 0eff5b6a9c092f865a2b19cc4e75a3b539b82fa2
+              repository: ghcr.io/alphagov/paas/cf-cli
+              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
           inputs:
             - name: files-to-push
           params:

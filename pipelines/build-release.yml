@@ -29,7 +29,7 @@ resource_types:
     type: docker-image
     check_every: 24h
     source:
-      repository: governmentpaas/semver-resource
+      repository: ghcr.io/alphagov/paas/semver-resource
       tag: f2a80c95481056aa57d837e3b14f0012b542fdb3
 
 resources:
@@ -89,8 +89,8 @@ jobs:
           image_resource:
             type: docker-image
             source:
-              repository: governmentpaas/bosh-cli-v2
-              tag: 34c0ca163291c796ed6936b1ed0697321a9548b8
+              repository: ghcr.io/alphagov/paas/bosh-cli-v2
+              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
           inputs:
             - name: bosh-release-pr
           outputs:
@@ -161,8 +161,8 @@ jobs:
           image_resource:
             type: docker-image
             source:
-              repository: governmentpaas/bosh-cli-v2
-              tag: 34c0ca163291c796ed6936b1ed0697321a9548b8
+              repository: ghcr.io/alphagov/paas/bosh-cli-v2
+              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
           inputs:
             - name: bosh-release-repo
             - name: bosh-release-version
