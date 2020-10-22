@@ -23,6 +23,12 @@ resources:
     uri: https://github.com/alphagov/paas-grafana-annotation-resource.git
     branch: main
 
+- name: s3-resource-src
+  type: git
+  source:
+    uri: https://github.com/alphagov/paas-s3-resource.git
+    branch: gds_master
+
 - name: psql-docker-registry
   type: registry-image
   icon: docker
@@ -248,6 +254,13 @@ resources:
   source:
     <<: *build-image-source-github-registry
     repository: ghcr.io/alphagov/paas/grafana-annotation-resource
+
+- name: s3-resource-github-registry
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source-github-registry
+    repository: ghcr.io/alphagov/paas/s3-resource
 
 jobs:
 - name: build-psql
@@ -688,6 +701,56 @@ jobs:
       image: image/image.tar
       additional_tags: image/tags
   - put: grafana-annotation-resource-github-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+
+- name: build-s3-resource
+  plan:
+  - get: s3-resource-src
+    trigger: true
+  - task: build
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: s3-resource-src
+        path: .
+      outputs:
+      - name: image
+      run:
+        path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: s3-resource-src
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd s3-resource-src && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd s3-resource-src && \
+                      git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+  - put: s3-resource-github-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
