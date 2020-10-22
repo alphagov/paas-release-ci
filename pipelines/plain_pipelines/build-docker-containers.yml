@@ -23,10 +23,10 @@ resources:
     uri: https://github.com/alphagov/paas-grafana-annotation-resource.git
     branch: main
 
-- name: psql
+- name: psql-docker-registry
   type: registry-image
   icon: docker
-  source: &build-image-source
+  source: &build-image-source-docker-registry
     username: ((dockerhub_username))
     password: ((dockerhub_password))
     repository: governmentpaas/psql
@@ -39,11 +39,11 @@ resources:
     password: ((github_registry_access_token))
     repository: ghcr.io/alphagov/paas/psql
 
-- name: spruce
+- name: spruce-docker-registry
   type: registry-image
   icon: docker
   source:
-    <<: *build-image-source
+    <<: *build-image-source-docker-registry
     repository: governmentpaas/spruce
 
 - name: spruce-github-registry
@@ -53,11 +53,11 @@ resources:
     <<: *build-image-source-github-registry
     repository: ghcr.io/alphagov/paas/spruce
 
-- name: json-minify
+- name: json-minify-docker-registry
   type: registry-image
   icon: docker
   source:
-    <<: *build-image-source
+    <<: *build-image-source-docker-registry
     repository: governmentpaas/json-minify
 
 - name: json-minify-github-registry
@@ -67,11 +67,11 @@ resources:
     <<: *build-image-source-github-registry
     repository: ghcr.io/alphagov/paas/json-minify
 
-- name: terraform
+- name: terraform-docker-registry
   type: registry-image
   icon: docker
   source:
-    <<: *build-image-source
+    <<: *build-image-source-docker-registry
     repository: governmentpaas/terraform
 
 - name: terraform-github-registry
@@ -81,11 +81,11 @@ resources:
     <<: *build-image-source-github-registry
     repository: ghcr.io/alphagov/paas/terraform
 
-- name: self-update-pipelines
+- name: self-update-pipelines-docker-registry
   type: registry-image
   icon: docker
   source:
-    <<: *build-image-source
+    <<: *build-image-source-docker-registry
     repository: governmentpaas/self-update-pipelines
 
 - name: self-update-pipelines-github-registry
@@ -95,11 +95,11 @@ resources:
     <<: *build-image-source-github-registry
     repository: ghcr.io/alphagov/paas/self-update-pipelines
 
-- name: git-ssh
+- name: git-ssh-docker-registry
   type: registry-image
   icon: docker
   source:
-    <<: *build-image-source
+    <<: *build-image-source-docker-registry
     repository: governmentpaas/git-ssh
 
 - name: git-ssh-github-registry
@@ -109,11 +109,11 @@ resources:
     <<: *build-image-source-github-registry
     repository: ghcr.io/alphagov/paas/git-ssh
 
-- name: curl-ssl
+- name: curl-ssl-docker-registry
   type: registry-image
   icon: docker
   source:
-    <<: *build-image-source
+    <<: *build-image-source-docker-registry
     repository: governmentpaas/curl-ssl
 
 - name: curl-ssl-github-registry
@@ -123,11 +123,11 @@ resources:
     <<: *build-image-source-github-registry
     repository: ghcr.io/alphagov/paas/curl-ssl
 
-- name: cf-cli
+- name: cf-cli-docker-registry
   type: registry-image
   icon: docker
   source:
-    <<: *build-image-source
+    <<: *build-image-source-docker-registry
     repository: governmentpaas/cf-cli
 
 - name: cf-cli-github-registry
@@ -137,11 +137,11 @@ resources:
     <<: *build-image-source-github-registry
     repository: ghcr.io/alphagov/paas/cf-cli
 
-- name: cf-acceptance-tests
+- name: cf-acceptance-tests-docker-registry
   type: registry-image
   icon: docker
   source:
-    <<: *build-image-source
+    <<: *build-image-source-docker-registry
     repository: governmentpaas/cf-acceptance-tests
 
 - name: cf-acceptance-tests-github-registry
@@ -151,11 +151,11 @@ resources:
     <<: *build-image-source-github-registry
     repository: ghcr.io/alphagov/paas/cf-acceptance-tests
 
-- name: cf-uaac
+- name: cf-uaac-docker-registry
   type: registry-image
   icon: docker
   source:
-    <<: *build-image-source
+    <<: *build-image-source-docker-registry
     repository: governmentpaas/cf-uaac
 
 - name: cf-uaac-github-registry
@@ -165,11 +165,11 @@ resources:
     <<: *build-image-source-github-registry
     repository: ghcr.io/alphagov/paas/cf-uaac
 
-- name: certstrap
+- name: certstrap-docker-registry
   type: registry-image
   icon: docker
   source:
-    <<: *build-image-source
+    <<: *build-image-source-docker-registry
     repository: governmentpaas/certstrap
 
 - name: certstrap-github-registry
@@ -179,11 +179,11 @@ resources:
     <<: *build-image-source-github-registry
     repository: ghcr.io/alphagov/paas/certstrap
 
-- name: bosh-cli-v2
+- name: bosh-cli-v2-docker-registry
   type: registry-image
   icon: docker
   source:
-    <<: *build-image-source
+    <<: *build-image-source-docker-registry
     repository: governmentpaas/bosh-cli-v2
 
 - name: bosh-cli-v2-github-registry
@@ -193,11 +193,11 @@ resources:
     <<: *build-image-source-github-registry
     repository: ghcr.io/alphagov/paas/bosh-cli-v2
 
-- name: awscli
+- name: awscli-docker-registry
   type: registry-image
   icon: docker
   source:
-    <<: *build-image-source
+    <<: *build-image-source-docker-registry
     repository: governmentpaas/awscli
 
 - name: awscli-github-registry
@@ -207,11 +207,11 @@ resources:
     <<: *build-image-source-github-registry
     repository: ghcr.io/alphagov/paas/awscli
 
-- name: tech-docs
+- name: tech-docs-docker-registry
   type: registry-image
   icon: docker
   source:
-    <<: *build-image-source
+    <<: *build-image-source-docker-registry
     repository: governmentpaas/tech-docs
 
 - name: tech-docs-github-registry
@@ -221,11 +221,11 @@ resources:
     <<: *build-image-source-github-registry
     repository: ghcr.io/alphagov/paas/tech-docs
 
-- name: semver-resource
+- name: semver-resource-docker-registry
   type: registry-image
   icon: docker
   source:
-    <<: *build-image-source
+    <<: *build-image-source-docker-registry
     repository: governmentpaas/semver-resource
 
 - name: semver-resource-github-registry
@@ -235,11 +235,11 @@ resources:
     <<: *build-image-source-github-registry
     repository: ghcr.io/alphagov/paas/semver-resource
 
-- name: grafana-annotation-resource
+- name: grafana-annotation-resource-docker-registry
   type: registry-image
   icon: docker
   source:
-    <<: *build-image-source
+    <<: *build-image-source-docker-registry
     repository: governmentpaas/grafana-annotation-resource
 
 - name: grafana-annotation-resource-github-registry
@@ -296,7 +296,7 @@ jobs:
                      git log --pretty=format:'%H' -n 1)"
 
             echo "${git_branch_name} ${git_commit_sha}" > image/tags
-  - put: psql
+  - put: psql-docker-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -317,7 +317,7 @@ jobs:
         CONTEXT: paas-docker-cloudfoundry-tools/spruce
   - task: create-image-tag
     config: *create-image-tag
-  - put: spruce
+  - put: spruce-docker-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -338,7 +338,7 @@ jobs:
         CONTEXT: paas-docker-cloudfoundry-tools/json-minify
   - task: create-image-tag
     config: *create-image-tag
-  - put: json-minify
+  - put: json-minify-docker-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -359,7 +359,7 @@ jobs:
         CONTEXT: paas-docker-cloudfoundry-tools/terraform
   - task: create-image-tag
     config: *create-image-tag
-  - put: terraform
+  - put: terraform-docker-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -380,7 +380,7 @@ jobs:
         CONTEXT: paas-docker-cloudfoundry-tools/self-update-pipelines
   - task: create-image-tag
     config: *create-image-tag
-  - put: self-update-pipelines
+  - put: self-update-pipelines-docker-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -401,7 +401,7 @@ jobs:
         CONTEXT: paas-docker-cloudfoundry-tools/git-ssh
   - task: create-image-tag
     config: *create-image-tag
-  - put: git-ssh
+  - put: git-ssh-docker-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -422,7 +422,7 @@ jobs:
         CONTEXT: paas-docker-cloudfoundry-tools/curl-ssl
   - task: create-image-tag
     config: *create-image-tag
-  - put: curl-ssl
+  - put: curl-ssl-docker-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -443,7 +443,7 @@ jobs:
         CONTEXT: paas-docker-cloudfoundry-tools/cf-cli
   - task: create-image-tag
     config: *create-image-tag
-  - put: cf-cli
+  - put: cf-cli-docker-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -464,7 +464,7 @@ jobs:
         CONTEXT: paas-docker-cloudfoundry-tools/cf-acceptance-tests
   - task: create-image-tag
     config: *create-image-tag
-  - put: cf-acceptance-tests
+  - put: cf-acceptance-tests-docker-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -485,7 +485,7 @@ jobs:
         CONTEXT: paas-docker-cloudfoundry-tools/cf-uaac
   - task: create-image-tag
     config: *create-image-tag
-  - put: cf-uaac
+  - put: cf-uaac-docker-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -506,7 +506,7 @@ jobs:
         CONTEXT: paas-docker-cloudfoundry-tools/certstrap
   - task: create-image-tag
     config: *create-image-tag
-  - put: certstrap
+  - put: certstrap-docker-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -527,7 +527,7 @@ jobs:
         CONTEXT: paas-docker-cloudfoundry-tools/bosh-cli-v2
   - task: create-image-tag
     config: *create-image-tag
-  - put: bosh-cli-v2
+  - put: bosh-cli-v2-docker-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -548,7 +548,7 @@ jobs:
         CONTEXT: paas-docker-cloudfoundry-tools/awscli
   - task: create-image-tag
     config: *create-image-tag
-  - put: awscli
+  - put: awscli-docker-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -576,7 +576,7 @@ jobs:
       - name: image
       run:
         path: build
-  - put: tech-docs
+  - put: tech-docs-docker-registry
     params:
       image: image/image.tar
 
@@ -629,7 +629,7 @@ jobs:
                      git log --pretty=format:'%H' -n 1)"
 
             echo "${git_branch_name} ${git_commit_sha}" > image/tags
-  - put: semver-resource
+  - put: semver-resource-docker-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
@@ -683,7 +683,7 @@ jobs:
                      git log --pretty=format:'%H' -n 1)"
 
             echo "${git_branch_name} ${git_commit_sha}" > image/tags
-  - put: grafana-annotation-resource
+  - put: grafana-annotation-resource-docker-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
