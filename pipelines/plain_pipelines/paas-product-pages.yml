@@ -60,8 +60,8 @@ jobs:
           image_resource:
             type: docker-image
             source:
-              repository: governmentpaas/cf-cli
-              tag: b9a032b6ca185690bd679e1802e6b7af6a2bc43a
+              repository: ghcr.io/alphagov/paas/cf-cli
+              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
           inputs:
             - name: paas-product-pages
           params:

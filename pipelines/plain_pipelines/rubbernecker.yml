@@ -4,7 +4,7 @@ resource_types:
     type: docker-image
     check_every: 24h
     source:
-      repository: governmentpaas/s3-resource
+      repository: ghcr.io/alphagov/paas/s3-resource
       tag: fda60bf4c5f85e96c16f704e128e5ead9e84d30d
 
   - name: slack-notification-resource
@@ -68,8 +68,8 @@ jobs:
           image_resource:
             type: docker-image
             source:
-              repository: governmentpaas/cf-cli
-              tag: 0eff5b6a9c092f865a2b19cc4e75a3b539b82fa2
+              repository: ghcr.io/alphagov/paas/cf-cli
+              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
           inputs:
             - name: paas-rubbernecker
           params:
