@@ -151,6 +151,6 @@ jobs:
                     REDIRECT_DOMAIN: "docs.${CF_SYSTEM_DOMAIN}"
                 EOF
 
-                cf zero-downtime-push paas-tech-docs -f manifest.yml
-                cf zero-downtime-push paas-tech-docs-redirect -f manifest.yml
+                cf push paas-tech-docs -f manifest.yml --strategy rolling
+                cf push paas-tech-docs-redirect -f manifest.yml --strategy rolling
         on_failure: *slack_failure_notification

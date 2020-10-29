@@ -118,5 +118,5 @@ jobs:
                     GOVERSION: go1.14
                 EOF
 
-                cf zero-downtime-push rubbernecker -f manifest.yml
+                cf push rubbernecker -f manifest.yml --strategy rolling
         on_failure: *slack_failure_notification
