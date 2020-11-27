@@ -29,6 +29,12 @@ resources:
     uri: https://github.com/alphagov/paas-s3-resource.git
     branch: gds_master
 
+- name: paas-prometheus-exporter
+  type: git
+  source:
+    uri: https://github.com/alphagov/paas-prometheus-exporter.git
+    branch: master
+
 - name: psql-docker-registry
   type: registry-image
   icon: docker
@@ -261,6 +267,20 @@ resources:
   source:
     <<: *build-image-source-github-registry
     repository: ghcr.io/alphagov/paas/s3-resource
+
+- name: paas-prometheus-exporter-docker-registry
+  type: registry-image
+  icon: docker
+  source:
+    <<: *build-image-source-docker-registry
+    repository: governmentpaas/paas-prometheus-exporter
+
+- name: paas-prometheus-exporter-github-registry
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source-github-registry
+    repository: ghcr.io/alphagov/paas/paas-prometheus-exporter
 
 jobs:
 - name: build-psql
@@ -650,6 +670,33 @@ jobs:
     params:
       image: image/image.tar
       additional_tags: image/tags
+
+- name: build-paas-prometheus-exporter
+  plan:
+  - get: paas-prometheus-exporter
+    trigger: true
+  - task: build
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-prometheus-exporter
+        path: .
+      outputs:
+      - name: image
+      run:
+        path: build
+  - put: paas-prometheus-exporter-docker-registry
+    params:
+      image: image/image.tar
+
+  - put: paas-prometheus-exporter-github-registry
+    params:
+      image: image/image.tar
 
 - name: build-paas-grafana-annotation-resource
   plan:
