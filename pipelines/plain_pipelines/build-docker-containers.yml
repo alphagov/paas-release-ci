@@ -33,7 +33,7 @@ resources:
   type: git
   source:
     uri: https://github.com/alphagov/paas-prometheus-exporter.git
-    branch: master
+    branch: main
 
 - name: psql-docker-registry
   type: registry-image
