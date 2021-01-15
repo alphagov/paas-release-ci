@@ -51,6 +51,102 @@ resources:
     password: ((github_registry_access_token))
     repository: ghcr.io/alphagov/paas/psql
 
+- name: alpine-docker-registry
+  type: registry-image
+  icon: docker
+  source: &build-image-source-docker-registry
+    username: ((dockerhub_username))
+    password: ((dockerhub_password))
+    repository: governmentpaas/alpine
+
+- name: alpine-github-registry
+  type: registry-image
+  icon: github
+  source: &build-image-source-github-registry
+    username: ((github_username))
+    password: ((github_registry_access_token))
+    repository: ghcr.io/alphagov/paas/alpine
+
+- name: golang-docker-registry
+  type: registry-image
+  icon: docker
+  source: &build-image-source-docker-registry
+    username: ((dockerhub_username))
+    password: ((dockerhub_password))
+    repository: governmentpaas/golang
+
+- name: golang-github-registry
+  type: registry-image
+  icon: github
+  source: &build-image-source-github-registry
+    username: ((github_username))
+    password: ((github_registry_access_token))
+    repository: ghcr.io/alphagov/paas/golang
+
+- name: node-docker-registry
+  type: registry-image
+  icon: docker
+  source: &build-image-source-docker-registry
+    username: ((dockerhub_username))
+    password: ((dockerhub_password))
+    repository: governmentpaas/node
+
+- name: node-github-registry
+  type: registry-image
+  icon: github
+  source: &build-image-source-github-registry
+    username: ((github_username))
+    password: ((github_registry_access_token))
+    repository: ghcr.io/alphagov/paas/node
+
+- name: olhtbr-metadata-resource-docker-registry
+  type: registry-image
+  icon: docker
+  source: &build-image-source-docker-registry
+    username: ((dockerhub_username))
+    password: ((dockerhub_password))
+    repository: governmentpaas/olhtbr-metadata-resource
+
+- name: olhtbr-metadata-resource-github-registry
+  type: registry-image
+  icon: github
+  source: &build-image-source-github-registry
+    username: ((github_username))
+    password: ((github_registry_access_token))
+    repository: ghcr.io/alphagov/paas/olhtbr-metadata-resource
+
+- name: concourse-pool-resource-docker-registry
+  type: registry-image
+  icon: docker
+  source: &build-image-source-docker-registry
+    username: ((dockerhub_username))
+    password: ((dockerhub_password))
+    repository: governmentpaas/concourse-pool-resource
+
+- name: concourse-pool-resource-github-registry
+  type: registry-image
+  icon: github
+  source: &build-image-source-github-registry
+    username: ((github_username))
+    password: ((github_registry_access_token))
+    repository: ghcr.io/alphagov/paas/concourse-pool-resource
+
+- name: ruby-docker-registry
+  type: registry-image
+  icon: docker
+  source: &build-image-source-docker-registry
+    username: ((dockerhub_username))
+    password: ((dockerhub_password))
+    repository: governmentpaas/ruby
+
+- name: ruby-github-registry
+  type: registry-image
+  icon: github
+  source: &build-image-source-github-registry
+    username: ((github_username))
+    password: ((github_registry_access_token))
+    repository: ghcr.io/alphagov/paas/ruby
+
 - name: spruce-docker-registry
   type: registry-image
   icon: docker
@@ -376,6 +472,336 @@ jobs:
       image: image/image.tar
       additional_tags: image/tags
   - put: json-minify-github-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+
+- name: build-alpine
+  plan:
+  - get: paas-docker-cloudfoundry-tools
+    trigger: true
+  - task: build
+    privileged: true
+    config: &build-image-config
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      params:
+        CONTEXT: paas-docker-cloudfoundry-tools/alpine
+      inputs:
+      - name: paas-docker-cloudfoundry-tools
+      outputs:
+      - name: image
+      run:
+        path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-docker-cloudfoundry-tools
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-docker-cloudfoundry-tools && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+  - put: alpine-docker-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+  - put: alpine-github-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+
+- name: build-golang
+  plan:
+  - get: paas-docker-cloudfoundry-tools
+    trigger: true
+  - task: build
+    privileged: true
+    config: &build-image-config
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      params:
+        CONTEXT: paas-docker-cloudfoundry-tools/golang
+      inputs:
+      - name: paas-docker-cloudfoundry-tools
+      outputs:
+      - name: image
+      run:
+        path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-docker-cloudfoundry-tools
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-docker-cloudfoundry-tools && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+  - put: golang-docker-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+  - put: golang-github-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+
+- name: build-node
+  plan:
+  - get: paas-docker-cloudfoundry-tools
+    trigger: true
+  - task: build
+    privileged: true
+    config: &build-image-config
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      params:
+        CONTEXT: paas-docker-cloudfoundry-tools/node
+      inputs:
+      - name: paas-docker-cloudfoundry-tools
+      outputs:
+      - name: image
+      run:
+        path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-docker-cloudfoundry-tools
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-docker-cloudfoundry-tools && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+  - put: node-docker-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+  - put: node-github-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+
+- name: build-olhtbr-metadata-resource
+  plan:
+  - get: paas-docker-cloudfoundry-tools
+    trigger: true
+  - task: build
+    privileged: true
+    config: &build-image-config
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      params:
+        CONTEXT: paas-docker-cloudfoundry-tools/olhtbr-metadata-resource
+      inputs:
+      - name: paas-docker-cloudfoundry-tools
+      outputs:
+      - name: image
+      run:
+        path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-docker-cloudfoundry-tools
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-docker-cloudfoundry-tools && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+  - put: olhtbr-metadata-resource-docker-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+  - put: olhtbr-metadata-resource-github-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+
+- name: build-concourse-pool-resource
+  plan:
+  - get: paas-docker-cloudfoundry-tools
+    trigger: true
+  - task: build
+    privileged: true
+    config: &build-image-config
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      params:
+        CONTEXT: paas-docker-cloudfoundry-tools/concourse-pool-resource
+      inputs:
+      - name: paas-docker-cloudfoundry-tools
+      outputs:
+      - name: image
+      run:
+        path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-docker-cloudfoundry-tools
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-docker-cloudfoundry-tools && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+  - put: concourse-pool-resource-docker-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+  - put: concourse-pool-resource-github-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+
+- name: build-ruby
+  plan:
+  - get: paas-docker-cloudfoundry-tools
+    trigger: true
+  - task: build
+    privileged: true
+    config: &build-image-config
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      params:
+        CONTEXT: paas-docker-cloudfoundry-tools/ruby
+      inputs:
+      - name: paas-docker-cloudfoundry-tools
+      outputs:
+      - name: image
+      run:
+        path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-docker-cloudfoundry-tools
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-docker-cloudfoundry-tools && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+  - put: ruby-docker-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+  - put: ruby-github-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
