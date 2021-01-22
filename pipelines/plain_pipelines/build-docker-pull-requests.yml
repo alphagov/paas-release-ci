@@ -48,6 +48,54 @@ resources:
     repository: governmentpaas/psql
     tag: pr-build
 
+- name: alpine
+  type: registry-image
+  source: &build-image-source
+    username: ((dockerhub_username))
+    password: ((dockerhub_password))
+    repository: governmentpaas/alpine
+    tag: pr-build
+
+- name: golang
+  type: registry-image
+  source: &build-image-source
+    username: ((dockerhub_username))
+    password: ((dockerhub_password))
+    repository: governmentpaas/golang
+    tag: pr-build
+
+- name: node
+  type: registry-image
+  source: &build-image-source
+    username: ((dockerhub_username))
+    password: ((dockerhub_password))
+    repository: governmentpaas/node
+    tag: pr-build
+
+- name: olhtbr-metadata-resource
+  type: registry-image
+  source: &build-image-source
+    username: ((dockerhub_username))
+    password: ((dockerhub_password))
+    repository: governmentpaas/olhtbr-metadata-resource
+    tag: pr-build
+
+- name: concourse-pool-resource
+  type: registry-image
+  source: &build-image-source
+    username: ((dockerhub_username))
+    password: ((dockerhub_password))
+    repository: governmentpaas/concourse-pool-resource
+    tag: pr-build
+
+- name: ruby
+  type: registry-image
+  source: &build-image-source
+    username: ((dockerhub_username))
+    password: ((dockerhub_password))
+    repository: governmentpaas/ruby
+    tag: pr-build
+
 - name: spruce
   type: registry-image
   source:
@@ -216,6 +264,492 @@ jobs:
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))/build-psql-pr
+        status: FAILURE
+      get_params:
+        skip_download: true
+
+- name: build-alpine-pr
+  serial: true
+  plan:
+  - get: paas-docker-cloudfoundry-tools-pr
+    version: every
+    trigger: true
+    params:
+      integration_tool: checkout
+      submodules: true
+  - put: update-paas-docker-cloudfoundry-tools-pr
+    resource: paas-docker-cloudfoundry-tools-pr
+    params:
+      path: paas-docker-cloudfoundry-tools-pr
+      context: ((github_status_context))/build-alpine-pr
+      status: PENDING
+    get_params:
+      skip_download: true
+  - task: build
+    privileged: true
+    config: &build-image-config
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      params:
+        CONTEXT: paas-docker-cloudfoundry-tools-pr/alpine
+      inputs:
+      - name: paas-docker-cloudfoundry-tools-pr
+      outputs:
+      - name: image
+      run:
+        path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-docker-cloudfoundry-tools-pr
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-docker-cloudfoundry-tools-pr && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-docker-cloudfoundry-tools-pr && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+    on_success:
+      do:
+        - put: alpine
+          params:
+            image: image/image.tar
+            additional_tags: image/tags
+        - put: paas-docker-cloudfoundry-tools-pr
+          params:
+            path: paas-docker-cloudfoundry-tools-pr
+            context: ((github_status_context))/build-alpine-pr
+            status: SUCCESS
+          get_params:
+            skip_download: true
+    on_failure:
+      put: paas-docker-cloudfoundry-tools-pr
+      params:
+        path: paas-docker-cloudfoundry-tools-pr
+        context: ((github_status_context))/build-alpine-pr
+        status: FAILURE
+      get_params:
+        skip_download: true
+
+- name: build-golang-pr
+  serial: true
+  plan:
+  - get: paas-docker-cloudfoundry-tools-pr
+    version: every
+    trigger: true
+    params:
+      integration_tool: checkout
+      submodules: true
+  - put: update-paas-docker-cloudfoundry-tools-pr
+    resource: paas-docker-cloudfoundry-tools-pr
+    params:
+      path: paas-docker-cloudfoundry-tools-pr
+      context: ((github_status_context))/build-golang-pr
+      status: PENDING
+    get_params:
+      skip_download: true
+  - task: build
+    privileged: true
+    config: &build-image-config
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      params:
+        CONTEXT: paas-docker-cloudfoundry-tools-pr/golang
+      inputs:
+      - name: paas-docker-cloudfoundry-tools-pr
+      outputs:
+      - name: image
+      run:
+        path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-docker-cloudfoundry-tools-pr
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-docker-cloudfoundry-tools-pr && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-docker-cloudfoundry-tools-pr && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+    on_success:
+      do:
+        - put: golang
+          params:
+            image: image/image.tar
+            additional_tags: image/tags
+        - put: paas-docker-cloudfoundry-tools-pr
+          params:
+            path: paas-docker-cloudfoundry-tools-pr
+            context: ((github_status_context))/build-golang-pr
+            status: SUCCESS
+          get_params:
+            skip_download: true
+    on_failure:
+      put: paas-docker-cloudfoundry-tools-pr
+      params:
+        path: paas-docker-cloudfoundry-tools-pr
+        context: ((github_status_context))/build-golang-pr
+        status: FAILURE
+      get_params:
+        skip_download: true
+
+- name: build-node-pr
+  serial: true
+  plan:
+  - get: paas-docker-cloudfoundry-tools-pr
+    version: every
+    trigger: true
+    params:
+      integration_tool: checkout
+      submodules: true
+  - put: update-paas-docker-cloudfoundry-tools-pr
+    resource: paas-docker-cloudfoundry-tools-pr
+    params:
+      path: paas-docker-cloudfoundry-tools-pr
+      context: ((github_status_context))/build-node-pr
+      status: PENDING
+    get_params:
+      skip_download: true
+  - task: build
+    privileged: true
+    config: &build-image-config
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      params:
+        CONTEXT: paas-docker-cloudfoundry-tools-pr/node
+      inputs:
+      - name: paas-docker-cloudfoundry-tools-pr
+      outputs:
+      - name: image
+      run:
+        path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-docker-cloudfoundry-tools-pr
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-docker-cloudfoundry-tools-pr && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-docker-cloudfoundry-tools-pr && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+    on_success:
+      do:
+        - put: node
+          params:
+            image: image/image.tar
+            additional_tags: image/tags
+        - put: paas-docker-cloudfoundry-tools-pr
+          params:
+            path: paas-docker-cloudfoundry-tools-pr
+            context: ((github_status_context))/build-node-pr
+            status: SUCCESS
+          get_params:
+            skip_download: true
+    on_failure:
+      put: paas-docker-cloudfoundry-tools-pr
+      params:
+        path: paas-docker-cloudfoundry-tools-pr
+        context: ((github_status_context))/build-node-pr
+        status: FAILURE
+      get_params:
+        skip_download: true
+
+- name: build-olhtbr-metadata-resource-pr
+  serial: true
+  plan:
+  - get: paas-docker-cloudfoundry-tools-pr
+    version: every
+    trigger: true
+    params:
+      integration_tool: checkout
+      submodules: true
+  - put: update-paas-docker-cloudfoundry-tools-pr
+    resource: paas-docker-cloudfoundry-tools-pr
+    params:
+      path: paas-docker-cloudfoundry-tools-pr
+      context: ((github_status_context))/build-olhtbr-metadata-resource-pr
+      status: PENDING
+    get_params:
+      skip_download: true
+  - task: build
+    privileged: true
+    config: &build-image-config
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      params:
+        CONTEXT: paas-docker-cloudfoundry-tools-pr/olhtbr-metadata-resource
+      inputs:
+      - name: paas-docker-cloudfoundry-tools-pr
+      outputs:
+      - name: image
+      run:
+        path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-docker-cloudfoundry-tools-pr
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-docker-cloudfoundry-tools-pr && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-docker-cloudfoundry-tools-pr && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+    on_success:
+      do:
+        - put: olhtbr-metadata-resource
+          params:
+            image: image/image.tar
+            additional_tags: image/tags
+        - put: paas-docker-cloudfoundry-tools-pr
+          params:
+            path: paas-docker-cloudfoundry-tools-pr
+            context: ((github_status_context))/build-olhtbr-metadata-resource-pr
+            status: SUCCESS
+          get_params:
+            skip_download: true
+    on_failure:
+      put: paas-docker-cloudfoundry-tools-pr
+      params:
+        path: paas-docker-cloudfoundry-tools-pr
+        context: ((github_status_context))/build-olhtbr-metadata-resource-pr
+        status: FAILURE
+      get_params:
+        skip_download: true
+
+- name: build-concourse-pool-resource-pr
+  serial: true
+  plan:
+  - get: paas-docker-cloudfoundry-tools-pr
+    version: every
+    trigger: true
+    params:
+      integration_tool: checkout
+      submodules: true
+  - put: update-paas-docker-cloudfoundry-tools-pr
+    resource: paas-docker-cloudfoundry-tools-pr
+    params:
+      path: paas-docker-cloudfoundry-tools-pr
+      context: ((github_status_context))/build-concourse-pool-resource-pr
+      status: PENDING
+    get_params:
+      skip_download: true
+  - task: build
+    privileged: true
+    config: &build-image-config
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      params:
+        CONTEXT: paas-docker-cloudfoundry-tools-pr/concourse-pool-resource
+      inputs:
+      - name: paas-docker-cloudfoundry-tools-pr
+      outputs:
+      - name: image
+      run:
+        path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-docker-cloudfoundry-tools-pr
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-docker-cloudfoundry-tools-pr && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-docker-cloudfoundry-tools-pr && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+    on_success:
+      do:
+        - put: concourse-pool-resource
+          params:
+            image: image/image.tar
+            additional_tags: image/tags
+        - put: paas-docker-cloudfoundry-tools-pr
+          params:
+            path: paas-docker-cloudfoundry-tools-pr
+            context: ((github_status_context))/build-concourse-pool-resource-pr
+            status: SUCCESS
+          get_params:
+            skip_download: true
+    on_failure:
+      put: paas-docker-cloudfoundry-tools-pr
+      params:
+        path: paas-docker-cloudfoundry-tools-pr
+        context: ((github_status_context))/build-concourse-pool-resource-pr
+        status: FAILURE
+      get_params:
+        skip_download: true
+
+- name: build-ruby-pr
+  serial: true
+  plan:
+  - get: paas-docker-cloudfoundry-tools-pr
+    version: every
+    trigger: true
+    params:
+      integration_tool: checkout
+      submodules: true
+  - put: update-paas-docker-cloudfoundry-tools-pr
+    resource: paas-docker-cloudfoundry-tools-pr
+    params:
+      path: paas-docker-cloudfoundry-tools-pr
+      context: ((github_status_context))/build-ruby-pr
+      status: PENDING
+    get_params:
+      skip_download: true
+  - task: build
+    privileged: true
+    config: &build-image-config
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      params:
+        CONTEXT: paas-docker-cloudfoundry-tools-pr/ruby
+      inputs:
+      - name: paas-docker-cloudfoundry-tools-pr
+      outputs:
+      - name: image
+      run:
+        path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: paas-docker-cloudfoundry-tools-pr
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-docker-cloudfoundry-tools-pr && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-docker-cloudfoundry-tools-pr && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+    on_success:
+      do:
+        - put: ruby
+          params:
+            image: image/image.tar
+            additional_tags: image/tags
+        - put: paas-docker-cloudfoundry-tools-pr
+          params:
+            path: paas-docker-cloudfoundry-tools-pr
+            context: ((github_status_context))/build-ruby-pr
+            status: SUCCESS
+          get_params:
+            skip_download: true
+    on_failure:
+      put: paas-docker-cloudfoundry-tools-pr
+      params:
+        path: paas-docker-cloudfoundry-tools-pr
+        context: ((github_status_context))/build-ruby-pr
         status: FAILURE
       get_params:
         skip_download: true
