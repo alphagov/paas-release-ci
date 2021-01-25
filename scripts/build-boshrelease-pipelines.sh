@@ -13,7 +13,7 @@ generate_vars_file() {
 ---
 aws_account: ${AWS_ACCOUNT:-dev}
 deploy_env: ${DEPLOY_ENV}
-branch_name: ${BRANCH:-master}
+branch_name: ${BRANCH:-main}
 aws_region: ${AWS_DEFAULT_REGION:-eu-west-1}
 concourse_url: ${CONCOURSE_URL}
 system_dns_zone_name: ${SYSTEM_DNS_ZONE_NAME}
@@ -49,23 +49,23 @@ remove_release_pipeline() {
 }
 
 echo Setting fork pipelines
-setup_release_pipeline awslogs            alphagov/paas-awslogs-boshrelease            gds_master
-setup_release_pipeline bosh               alphagov/paas-bosh                           gds_master
-setup_release_pipeline bosh-aws-cpi       alphagov/paas-bosh-aws-cpi-release           gds_master
-setup_release_pipeline capi               alphagov/paas-capi-release                   gds_master
-setup_release_pipeline cflinuxfs3         alphagov/paas-cflinuxfs3-release             gds_master
-setup_release_pipeline concourse          alphagov/paas-concourse-bosh-release         gds_master
-setup_release_pipeline oauth2-proxy       alphagov/paas-oauth2-proxy-boshrelease       gds_master
-setup_release_pipeline prometheus         alphagov/paas-prometheus-boshrelease         gds_master
-setup_release_pipeline routing            alphagov/paas-routing-release                gds_master
-setup_release_pipeline uaa                alphagov/paas-uaa-release                    gds_master
+setup_release_pipeline awslogs            alphagov/paas-awslogs-boshrelease            gds_main
+setup_release_pipeline bosh               alphagov/paas-bosh                           gds_main
+setup_release_pipeline bosh-aws-cpi       alphagov/paas-bosh-aws-cpi-release           gds_main
+setup_release_pipeline capi               alphagov/paas-capi-release                   gds_main
+setup_release_pipeline cflinuxfs3         alphagov/paas-cflinuxfs3-release             gds_main
+setup_release_pipeline concourse          alphagov/paas-concourse-bosh-release         gds_main
+setup_release_pipeline oauth2-proxy       alphagov/paas-oauth2-proxy-boshrelease       gds_main
+setup_release_pipeline prometheus         alphagov/paas-prometheus-boshrelease         gds_main
+setup_release_pipeline routing            alphagov/paas-routing-release                gds_main
+setup_release_pipeline uaa                alphagov/paas-uaa-release                    gds_main
 
 echo Setting paas pipelines
-setup_release_pipeline cdn-broker         alphagov/paas-cdn-broker-boshrelease         master
-setup_release_pipeline elasticache-broker alphagov/paas-elasticache-broker-boshrelease master
-setup_release_pipeline metric-exporter    alphagov/paas-metric-exporter-boshrelease    master
-setup_release_pipeline observability      alphagov/paas-observability-release          master
-setup_release_pipeline rds-broker         alphagov/paas-rds-broker-boshrelease         master
-setup_release_pipeline s3-broker          alphagov/paas-s3-broker-boshrelease          master
+setup_release_pipeline cdn-broker         alphagov/paas-cdn-broker-boshrelease         main
+setup_release_pipeline elasticache-broker alphagov/paas-elasticache-broker-boshrelease main
+setup_release_pipeline metric-exporter    alphagov/paas-metric-exporter-boshrelease    main
+setup_release_pipeline observability      alphagov/paas-observability-release          main
+setup_release_pipeline rds-broker         alphagov/paas-rds-broker-boshrelease         main
+setup_release_pipeline s3-broker          alphagov/paas-s3-broker-boshrelease          main
 setup_release_pipeline sqs-broker         alphagov/paas-sqs-broker-boshrelease         main
-setup_release_pipeline uaa-customized     alphagov/paas-uaa-customized-boshrelease     master
+setup_release_pipeline uaa-customized     alphagov/paas-uaa-customized-boshrelease     main

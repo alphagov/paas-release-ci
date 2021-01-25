@@ -16,7 +16,7 @@ pipeline_name: ${pipeline_name}
 github_status_context: ${DEPLOY_ENV}/status
 state_bucket: ${STATE_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-state}
 aws_region: ${AWS_DEFAULT_REGION:-eu-west-1}
-branch_name: ${BRANCH:-master}
+branch_name: ${BRANCH:-main}
 organisation: ${organisation}
 repository: ${repository}
 github_repo: ${organisation}/${repository}
@@ -49,17 +49,17 @@ remove_test_pipeline() {
 }
 
 
-setup_test_pipeline rds-broker alphagov paas-rds-broker master
-setup_test_pipeline paas-billing alphagov paas-billing master
-setup_test_pipeline elasticache-broker alphagov paas-elasticache-broker master
-setup_test_pipeline paas-accounts alphagov paas-accounts master
-setup_test_pipeline paas-auditor alphagov paas-auditor master
-setup_test_pipeline rds-metric-collector alphagov paas-rds-metric-collector master
-setup_test_pipeline paas-admin alphagov paas-admin master
-setup_test_pipeline paas-log-cache-adapter alphagov paas-log-cache-adapter master
-setup_test_pipeline aiven-broker alphagov paas-aiven-broker master
-setup_test_pipeline s3-broker alphagov paas-s3-broker master
+setup_test_pipeline rds-broker alphagov paas-rds-broker main
+setup_test_pipeline paas-billing alphagov paas-billing main
+setup_test_pipeline elasticache-broker alphagov paas-elasticache-broker main
+setup_test_pipeline paas-accounts alphagov paas-accounts main
+setup_test_pipeline paas-auditor alphagov paas-auditor main
+setup_test_pipeline rds-metric-collector alphagov paas-rds-metric-collector main
+setup_test_pipeline paas-admin alphagov paas-admin main
+setup_test_pipeline paas-log-cache-adapter alphagov paas-log-cache-adapter main
+setup_test_pipeline aiven-broker alphagov paas-aiven-broker main
+setup_test_pipeline s3-broker alphagov paas-s3-broker main
 setup_test_pipeline sqs-broker alphagov paas-sqs-broker main
-setup_test_pipeline paas-service-broker-base alphagov paas-service-broker-base master
-setup_test_pipeline paas-trusted-people alphagov paas-trusted-people master
+setup_test_pipeline paas-service-broker-base alphagov paas-service-broker-base main
+setup_test_pipeline paas-trusted-people alphagov paas-trusted-people main
 setup_test_pipeline paas-prometheus-endpoints alphagov paas-prometheus-endpoints main
