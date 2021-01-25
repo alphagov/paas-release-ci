@@ -65,7 +65,6 @@ setup_release_pipeline cdn-broker         alphagov/paas-cdn-broker-boshrelease  
 setup_release_pipeline elasticache-broker alphagov/paas-elasticache-broker-boshrelease main
 setup_release_pipeline metric-exporter    alphagov/paas-metric-exporter-boshrelease    main
 setup_release_pipeline observability      alphagov/paas-observability-release          main
-setup_release_pipeline rds-broker         alphagov/paas-rds-broker-boshrelease         main
 setup_release_pipeline s3-broker          alphagov/paas-s3-broker-boshrelease          main
 setup_release_pipeline sqs-broker         alphagov/paas-sqs-broker-boshrelease         main
 setup_release_pipeline uaa-customized     alphagov/paas-uaa-customized-boshrelease     main
