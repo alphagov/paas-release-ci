@@ -9,13 +9,13 @@ resources:
   type: git
   source:
     uri: https://github.com/alphagov/paas-tech-docs.git
-    branch: master
+    branch: main
 
 - name: paas-semver-resource
   type: git
   source:
     uri: https://github.com/alphagov/paas-semver-resource.git
-    branch: gds_master
+    branch: gds_main
 
 - name: paas-grafana-annotation-resource
   type: git
@@ -27,7 +27,7 @@ resources:
   type: git
   source:
     uri: https://github.com/alphagov/paas-s3-resource.git
-    branch: gds_master
+    branch: gds_main
 
 - name: paas-prometheus-exporter
   type: git

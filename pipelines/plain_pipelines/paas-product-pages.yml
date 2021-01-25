@@ -11,7 +11,7 @@ resources:
     check_every: 1m
     source:
       uri: https://github.com/alphagov/paas-product-pages.git
-      branch: master
+      branch: main
 
   - name: slack-notification
     type: slack-notification-resource

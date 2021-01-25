@@ -19,7 +19,7 @@ resources:
     check_every: 1m
     source:
       uri: https://github.com/alphagov/paas-team-manual.git
-      branch: master
+      branch: main
 
   - name: ssh-private-key
     type: s3-iam

@@ -18,7 +18,7 @@ resources:
     check_every: 1m
     source:
       uri: https://github.com/alphagov/paas-rubbernecker.git
-      branch: master
+      branch: main
 
   - name: slack-notification
     type: slack-notification-resource
