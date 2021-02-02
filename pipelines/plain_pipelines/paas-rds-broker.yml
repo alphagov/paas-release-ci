@@ -1,0 +1,209 @@
+---
+resource_types:
+  - name: pull-request
+    type: docker-image
+    check_every: 24h
+    source:
+      # temporary until there is a version which contains the submodule param
+      repository: governmentpaas/teliaoss-github-pr-resource
+      tag: c41729d09b4da671765979933fd7e24388c34e05
+
+  - name: s3-iam
+    type: docker-image
+    check_every: 24h
+    source:
+      repository: ghcr.io/alphagov/paas/s3-resource
+      tag: 97e441efbfb06ac7fb09786fd74c64b05f9cc907
+
+resources:
+  - name: pr
+    type: pull-request
+    check_every: 1m
+    source:
+      repository: alphagov/paas-rds-broker
+      access_token: ((github_access_token))
+      disable_forks: true
+
+  - name: release-repository
+    type: git
+    check_every: 1m
+    source:
+      branch: main
+      ignore_paths:
+        - rds-broker.version
+      private_key: ((tagging_key))
+      uri: https://github.com/alphagov/paas-rds-broker
+
+  - name: resource-version
+    type: semver
+    check_every: 24h
+    source:
+      branch: main
+      driver: git
+      file: rds-broker.version
+      git_user: "GovUK-PaaS-CI-User <the-multi-cloud-paas-team+ci-github-user@digital.cabinet-office.gov.uk>"
+      initial_version: 0.48.0 # This was the next version for the `paas-rds-broker-boshrelease` repository when we migrated away from it
+      private_key: ((tagging_key))
+      uri: https://github.com/alphagov/paas-rds-broker
+
+  - name: bosh-release-tarballs
+    type: s3-iam
+    check_every: 24h
+    source:
+      bucket: ((releases_bucket_name))
+      region_name: ((aws_region))
+      regexp: ([a-z0-9]+).tgz
+
+jobs:
+  - name: integration-test
+    serial: true
+    plan:
+      - get: repo
+        resource: pr
+        version: every
+        trigger: true
+        params:
+          integration_tool: checkout
+          submodules: true
+
+      - put: update-repo
+        resource: pr
+        params:
+          path: repo
+          context: ((github_status_context))
+          status: PENDING
+        get_params:
+          skip_download: true
+
+      - task: run-tests
+        file: repo/ci/integration.yml
+
+    on_failure:
+      put: repo
+      resource: pr
+      params:
+        path: repo
+        context: ((github_status_context))
+        status: FAILURE
+      get_params:
+        skip_download: true
+
+  - name: build-dev-release
+    serial: true
+    plan:
+      - get: pr
+        trigger: true
+        passed: [integration-test]
+        params:
+          integration_tool: checkout
+          submodules: true
+
+      - task: build-dev-release
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ghcr.io/alphagov/paas/bosh-cli-v2
+              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
+          inputs:
+            - name: pr
+          outputs:
+            - name: bosh-release-tarballs
+          params:
+            BUCKET: ((releases_bucket_name))
+            REGION: ((aws_region))
+            TARBALL_DIR: "../bosh-release-tarballs"
+          run:
+            path: bash
+            args:
+              - -e
+              - -c
+              - |
+                cd pr
+                make bosh_release
+
+    on_success:
+      do:
+        - put: bosh-release-tarballs
+          params:
+            file: bosh-release-tarballs/*.tgz
+            acl: public-read
+
+        - put: pr
+          resource: pr
+          params:
+            path: pr
+            context: ((github_status_context))
+            status: SUCCESS
+          get_params:
+            skip_download: true
+    on_failure:
+      put: pr
+      resource: pr
+      params:
+        path: pr
+        context: ((github_status_context))
+        status: FAILURE
+      get_params:
+        skip_download: true
+
+  - name: build-prod-release
+    serial: true
+    plan:
+      - get: repo
+        resource: release-repository
+        trigger: true
+        params:
+          integration_tool: checkout
+          submodules: true
+      - get: resource-version
+        params:
+          bump: minor
+
+      - task: run-tests
+        file: repo/ci/integration.yml
+        on_success:
+          put: resource-version
+          params:
+            file: resource-version/number
+
+      - task: build-prod-release
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ghcr.io/alphagov/paas/bosh-cli-v2
+              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
+          inputs:
+            - name: repo
+            - name: resource-version
+          outputs:
+            - name: bosh-release-tarballs
+          params:
+            BUCKET: ((releases_bucket_name))
+            REGION: ((aws_region))
+            TARBALL_DIR: "../bosh-release-tarballs"
+          run:
+            path: bash
+            args:
+              - -e
+              - -c
+              - |
+                cd repo
+
+                make bosh_release VERSION="$(cat ../bosh-release-version/number)"
+
+    on_success:
+      do:
+        - put: release-repository
+          params:
+            only_tag: true
+            repository: repo
+            tag: resource-version/number
+            tag_prefix: "v"
+        - put: bosh-release-tarballs
+          params:
+            file: bosh-release-tarballs/*.tgz
+            acl: public-read

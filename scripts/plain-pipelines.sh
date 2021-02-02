@@ -8,7 +8,8 @@ $("${SCRIPTS_DIR}/environment.sh")
 "${SCRIPTS_DIR}/fly_sync_and_login.sh"
 
 generate_vars_file() {
-   cat <<EOF
+  SSH_KEY=$(aws s3 cp s3://"${STATE_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-state}"/ci_build_tag_key -)
+  cat <<EOF
 ---
 aws_account: ${AWS_ACCOUNT}
 deploy_env: ${DEPLOY_ENV}
@@ -17,7 +18,9 @@ aws_region: ${AWS_DEFAULT_REGION:-eu-west-1}
 cf_apps_domain: ${CF_APPS_DOMAIN}
 cf_system_domain: ${CF_SYSTEM_DOMAIN}
 github_status_context: ${DEPLOY_ENV}/status
+releases_bucket_name: ${RELEASES_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-releases}
 EOF
+echo -e "tagging_key: |\n  ${SSH_KEY//$'\n'/$'\n'  }"
 }
 
 for pipeline_path in "${SCRIPTS_DIR}"/../pipelines/plain_pipelines/* ; do
