@@ -64,7 +64,7 @@ resources:
       bucket: ((releases_bucket_name))
       region_name: ((aws_region))
       key: rds-broker-release.version
-      initial_version: 0.2.0
+      initial_version: 1.0.0
 
 jobs:
   - name: integration-test
