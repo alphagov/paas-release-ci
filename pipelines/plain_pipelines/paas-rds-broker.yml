@@ -15,6 +15,18 @@ resource_types:
       repository: ghcr.io/alphagov/paas/s3-resource
       tag: 97e441efbfb06ac7fb09786fd74c64b05f9cc907
 
+  - name: slack-notification-resource
+    type: docker-image
+    source:
+      repository: cfcommunity/slack-notification-resource
+
+  - name: semver-iam
+    type: docker-image
+    check_every: 24h
+    source:
+      repository: ghcr.io/alphagov/paas/semver-resource
+      tag: f2a80c95481056aa57d837e3b14f0012b542fdb3
+
 resources:
   - name: pr
     type: pull-request
@@ -30,7 +42,7 @@ resources:
     source:
       branch: main
       private_key: ((tagging_key))
-      uri: https://github.com/alphagov/paas-rds-broker
+      uri: https://github.com/alphagov/paas-rds-broker.git
 
   - name: resource-version
     type: semver
@@ -38,11 +50,11 @@ resources:
     source:
       branch: main
       driver: git
-      file: rds-broker.version
+      file: rds-broker-release.version
       git_user: "GovUK-PaaS-CI-User <the-multi-cloud-paas-team+ci-github-user@digital.cabinet-office.gov.uk>"
-      initial_version: 0.48.0 # This was the next version for the `paas-rds-broker-boshrelease` repository when we migrated away from it
+      initial_version: 0.2.0 # This was the next version for the `paas-rds-broker-boshrelease` repository when we migrated away from it
       private_key: ((tagging_key))
-      uri: https://github.com/alphagov/paas-rds-broker
+      uri: git@github.com:alphagov/paas-rds-broker.git
 
   - name: bosh-release-tarballs
     type: s3-iam
@@ -51,6 +63,20 @@ resources:
       bucket: ((releases_bucket_name))
       region_name: ((aws_region))
       regexp: ([a-z0-9]+).tgz
+
+  - name: slack-notification
+    type: slack-notification-resource
+    source:
+      url: ((slack_webhook_url))
+
+  - name: bosh-release-version
+    type: semver-iam
+    check_every: 24h
+    source:
+      bucket: ((releases_bucket_name))
+      region_name: ((aws_region))
+      key: rds-broker-release.version
+      initial_version: 0.2.0 # This was the next version for the `paas-rds-broker-boshrelease` repository when we migrated away from it
 
 jobs:
   - name: integration-test
@@ -158,13 +184,9 @@ jobs:
       - get: resource-version
         params:
           bump: minor
-
-      - task: run-tests
-        file: repo/ci/integration.yml
-        on_success:
-          put: resource-version
-          params:
-            file: resource-version/number
+      - get: bosh-release-version
+        params:
+          bump: patch
 
       - task: build-prod-release
         config:
@@ -176,7 +198,7 @@ jobs:
               tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
           inputs:
             - name: repo
-            - name: resource-version
+            - name: bosh-release-version
           outputs:
             - name: bosh-release-tarballs
           params:
@@ -192,6 +214,10 @@ jobs:
                 cd repo
 
                 make bosh_release VERSION="$(cat ../bosh-release-version/number)"
+        on_success:
+          put: resource-version
+          params:
+            file: resource-version/number
 
     on_success:
       do:
@@ -205,3 +231,30 @@ jobs:
           params:
             file: bosh-release-tarballs/*.tgz
             acl: public-read
+        - put: bosh-release-version
+          params:
+            file: bosh-release-version/number
+
+  - name: run-prod-integration-tests
+    plan:
+      - get: repo
+        resource: release-repository
+        trigger: true
+        params:
+          integration_tool: checkout
+          submodules: all
+
+      - task: run-tests
+        file: repo/ci/integration.yml
+
+    on_failure:
+      put: slack-notification
+      params:
+        text: |
+          RDS broker integration tests on the main branch have failed.
+
+          They are run in parallel with creating a new Bosh release in the interests of reducing iteration times.
+
+          The Bosh release generated for the same commit may already be in use. If so, consider rolling it back.
+
+          Check the logs at $ATC_EXTERNAL_URL/builds/$BUILD_ID."
