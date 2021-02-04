@@ -29,8 +29,6 @@ resources:
     check_every: 1m
     source:
       branch: main
-      ignore_paths:
-        - rds-broker.version
       private_key: ((tagging_key))
       uri: https://github.com/alphagov/paas-rds-broker
 
@@ -64,7 +62,7 @@ jobs:
         trigger: true
         params:
           integration_tool: checkout
-          submodules: true
+          submodules: all
 
       - put: update-repo
         resource: pr
@@ -96,7 +94,7 @@ jobs:
         passed: [integration-test]
         params:
           integration_tool: checkout
-          submodules: true
+          submodules: all
 
       - task: build-dev-release
         config:
@@ -156,7 +154,7 @@ jobs:
         trigger: true
         params:
           integration_tool: checkout
-          submodules: true
+          submodules: all
       - get: resource-version
         params:
           bump: minor
