@@ -15,6 +15,18 @@ resource_types:
       repository: ghcr.io/alphagov/paas/s3-resource
       tag: 97e441efbfb06ac7fb09786fd74c64b05f9cc907
 
+  - name: slack-notification-resource
+    type: docker-image
+    source:
+      repository: cfcommunity/slack-notification-resource
+
+  - name: semver-iam
+    type: docker-image
+    check_every: 24h
+    source:
+      repository: ghcr.io/alphagov/paas/semver-resource
+      tag: f2a80c95481056aa57d837e3b14f0012b542fdb3
+
 resources:
   - name: pr
     type: pull-request
@@ -24,27 +36,13 @@ resources:
       access_token: ((github_access_token))
       disable_forks: true
 
-  - name: release-repository
+  - name: broker-repo
     type: git
     check_every: 1m
     source:
       branch: main
-      ignore_paths:
-        - rds-broker.version
       private_key: ((tagging_key))
-      uri: https://github.com/alphagov/paas-rds-broker
-
-  - name: resource-version
-    type: semver
-    check_every: 24h
-    source:
-      branch: main
-      driver: git
-      file: rds-broker.version
-      git_user: "GovUK-PaaS-CI-User <the-multi-cloud-paas-team+ci-github-user@digital.cabinet-office.gov.uk>"
-      initial_version: 0.48.0 # This was the next version for the `paas-rds-broker-boshrelease` repository when we migrated away from it
-      private_key: ((tagging_key))
-      uri: https://github.com/alphagov/paas-rds-broker
+      uri: git@github.com:alphagov/paas-rds-broker.git
 
   - name: bosh-release-tarballs
     type: s3-iam
@@ -54,18 +52,34 @@ resources:
       region_name: ((aws_region))
       regexp: ([a-z0-9]+).tgz
 
+  - name: slack-notification
+    type: slack-notification-resource
+    source:
+      url: ((slack_webhook_url))
+
+  - name: bosh-release-version
+    type: semver-iam
+    check_every: 24h
+    source:
+      bucket: ((releases_bucket_name))
+      region_name: ((aws_region))
+      key: rds-broker-release.version
+      initial_version: 1.0.0
+
 jobs:
   - name: integration-test
     serial: true
     plan:
+      # Grab the PR content
       - get: repo
         resource: pr
         version: every
         trigger: true
         params:
           integration_tool: checkout
-          submodules: true
+          submodules: all
 
+      # Set the GitHub check status to "PENDING"
       - put: update-repo
         resource: pr
         params:
@@ -75,10 +89,12 @@ jobs:
         get_params:
           skip_download: true
 
+      # Run integration tests against the PR
       - task: run-tests
         file: repo/ci/integration.yml
 
     on_failure:
+      # Set the GitHub check status to "FAILURE"
       put: repo
       resource: pr
       params:
@@ -91,13 +107,15 @@ jobs:
   - name: build-dev-release
     serial: true
     plan:
+      # Get PR content
       - get: pr
         trigger: true
         passed: [integration-test]
         params:
           integration_tool: checkout
-          submodules: true
+          submodules: all
 
+      # Create a bosh release from it
       - task: build-dev-release
         config:
           platform: linux
@@ -125,11 +143,13 @@ jobs:
 
     on_success:
       do:
+        # Upload the bosh release
         - put: bosh-release-tarballs
           params:
             file: bosh-release-tarballs/*.tgz
             acl: public-read
 
+        # Mark the PR as passing
         - put: pr
           resource: pr
           params:
@@ -139,6 +159,7 @@ jobs:
           get_params:
             skip_download: true
     on_failure:
+      # Set the GitHub check status to "FAILURE"
       put: pr
       resource: pr
       params:
@@ -151,23 +172,21 @@ jobs:
   - name: build-prod-release
     serial: true
     plan:
+      # Get the repo content on `main`
       - get: repo
-        resource: release-repository
+        resource: broker-repo
         trigger: true
         params:
           integration_tool: checkout
-          submodules: true
-      - get: resource-version
+          submodules: all
+
+      # Get the latest version of the Bosh release
+      # and increment the minor version
+      - get: bosh-release-version
         params:
           bump: minor
 
-      - task: run-tests
-        file: repo/ci/integration.yml
-        on_success:
-          put: resource-version
-          params:
-            file: resource-version/number
-
+      # Build a Bosh release from the repository
       - task: build-prod-release
         config:
           platform: linux
@@ -178,7 +197,7 @@ jobs:
               tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
           inputs:
             - name: repo
-            - name: resource-version
+            - name: bosh-release-version
           outputs:
             - name: bosh-release-tarballs
           params:
@@ -197,13 +216,48 @@ jobs:
 
     on_success:
       do:
-        - put: release-repository
+        # Tag the broker repo commit with the latest version number
+        - put: broker-repo
           params:
             only_tag: true
             repository: repo
-            tag: resource-version/number
+            tag: bosh-release-version/number
             tag_prefix: "v"
+
+        # Upload the Bosh release
         - put: bosh-release-tarballs
           params:
             file: bosh-release-tarballs/*.tgz
             acl: public-read
+
+        # Update the latest version of the Bosh release
+        - put: bosh-release-version
+          params:
+            file: bosh-release-version/number
+
+  - name: run-prod-integration-tests
+    plan:
+      # Get the repo content on `main`
+      - get: repo
+        resource: broker-repo
+        trigger: true
+        params:
+          integration_tool: checkout
+          submodules: all
+
+      # Run integration tests
+      - task: run-tests
+        file: repo/ci/integration.yml
+
+    on_failure:
+      # Notify slack if the tests fail
+      put: slack-notification
+      params:
+        text: |
+          RDS broker integration tests on the main branch have failed.
+
+          They are run in parallel with creating a new Bosh release in the interests of reducing iteration times.
+
+          The Bosh release generated for the same commit may already be in use. If so, consider rolling it back.
+
+          Check the logs at $ATC_EXTERNAL_URL/builds/$BUILD_ID."
