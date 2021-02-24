@@ -23,7 +23,7 @@ EOF
 echo -e "tagging_key: |\n  ${SSH_KEY//$'\n'/$'\n'  }"
 }
 
-for pipeline_path in "${SCRIPTS_DIR}"/../pipelines/plain_pipelines/* ; do
+for pipeline_path in "${SCRIPTS_DIR}"/../pipelines/plain_pipelines/*.yml ; do
   (
     pipeline_name=${pipeline_path##*/}
     pipeline_name=${pipeline_name%%.yml}
