@@ -77,7 +77,7 @@ jobs:
         trigger: true
         params:
           integration_tool: checkout
-          submodules: all
+          submodules: true
 
       # Set the GitHub check status to "PENDING"
       - put: update-repo
@@ -113,7 +113,7 @@ jobs:
         passed: [integration-test]
         params:
           integration_tool: checkout
-          submodules: all
+          submodules: true
 
       # Create a bosh release from it
       - task: build-dev-release
@@ -178,7 +178,7 @@ jobs:
         trigger: true
         params:
           integration_tool: checkout
-          submodules: all
+          submodules: true
 
       # Get the latest version of the Bosh release
       # and increment the minor version
@@ -243,7 +243,7 @@ jobs:
         trigger: true
         params:
           integration_tool: checkout
-          submodules: all
+          submodules: true
 
       # Run integration tests
       - task: run-tests
