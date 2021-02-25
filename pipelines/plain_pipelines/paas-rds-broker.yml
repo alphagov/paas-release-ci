@@ -178,7 +178,7 @@ jobs:
         trigger: true
         params:
           integration_tool: checkout
-          submodules: true
+          submodules: all
 
       # Get the latest version of the Bosh release
       # and increment the minor version
@@ -243,7 +243,7 @@ jobs:
         trigger: true
         params:
           integration_tool: checkout
-          submodules: true
+          submodules: all
 
       # Run integration tests
       - task: run-tests
