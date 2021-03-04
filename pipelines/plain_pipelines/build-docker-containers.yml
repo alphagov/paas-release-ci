@@ -35,6 +35,12 @@ resources:
     uri: https://github.com/alphagov/paas-prometheus-exporter.git
     branch: main
 
+- name: slack-notification-resource
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry-community/slack-notification-resource.git
+    branch: master
+
 - name: psql-docker-registry
   type: registry-image
   icon: docker
@@ -146,6 +152,14 @@ resources:
     username: ((github_username))
     password: ((github_registry_access_token))
     repository: ghcr.io/alphagov/paas/ruby
+
+- name: slack-notification-resource-github-registry
+  type: registry-image
+  icon: github
+  source: &build-image-source-github-registry
+    username: ((github_username))
+    password: ((github_registry_access_token))
+    repository: ghcr.io/alphagov/paas/slack-notification-resource
 
 - name: spruce-docker-registry
   type: registry-image
@@ -1224,6 +1238,56 @@ jobs:
 
             echo "${git_branch_name} ${git_commit_sha}" > image/tags
   - put: s3-resource-github-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+
+- name: build-slack-notification-resource
+  plan:
+  - get: slack-notification-resource
+    trigger: true
+  - task: build
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: slack-notification-resource
+        path: .
+      outputs:
+      - name: image
+      run:
+        path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: vito/oci-build-task
+      inputs:
+      - name: slack-notification-resource
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd slack-notification-resource && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd slack-notification-resource && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+  - put: slack-notification-resource-github-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
