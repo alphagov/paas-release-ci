@@ -5,7 +5,7 @@ resource_types:
     check_every: 24h
     source:
       # temporary until there is a version which contains the submodule param
-      repository: governmentpaas/teliaoss-github-pr-resource
+      repository: ghcr.io/alphagov/paas/teliaoss-github-pr-resource
       tag: c41729d09b4da671765979933fd7e24388c34e05
 
   - name: s3-iam
