@@ -100,91 +100,91 @@ resources:
   type: registry-image
   source:
     <<: *build-image-source
-    repository: governmentpaas/spruce
+    repository: ghcr.io/alphagov/paas/spruce
 
 - name: json-minify
   type: registry-image
   source:
     <<: *build-image-source
-    repository: governmentpaas/json-minify
+    repository: ghcr.io/alphagov/paas/json-minify
 
 - name: terraform
   type: registry-image
   source:
     <<: *build-image-source
-    repository: governmentpaas/terraform
+    repository: ghcr.io/alphagov/paas/terraform
 
 - name: self-update-pipelines
   type: registry-image
   source:
     <<: *build-image-source
-    repository: governmentpaas/self-update-pipelines
+    repository: ghcr.io/alphagov/paas/self-update-pipelines
 
 - name: git-ssh
   type: registry-image
   source:
     <<: *build-image-source
-    repository: governmentpaas/git-ssh
+    repository: ghcr.io/alphagov/paas/git-ssh
 
 - name: curl-ssl
   type: registry-image
   source:
     <<: *build-image-source
-    repository: governmentpaas/curl-ssl
+    repository: ghcr.io/alphagov/paas/curl-ssl
 
 - name: cf-cli
   type: registry-image
   source:
     <<: *build-image-source
-    repository: governmentpaas/cf-cli
+    repository: ghcr.io/alphagov/paas/cf-cli
 
 - name: cf-acceptance-tests
   type: registry-image
   source:
     <<: *build-image-source
-    repository: governmentpaas/cf-acceptance-tests
+    repository: ghcr.io/alphagov/paas/cf-acceptance-tests
 
 - name: cf-uaac
   type: registry-image
   source:
     <<: *build-image-source
-    repository: governmentpaas/cf-uaac
+    repository: gghcr.io/alphagov/paas/cf-uaac
 
 - name: certstrap
   type: registry-image
   source:
     <<: *build-image-source
-    repository: governmentpaas/certstrap
+    repository: ghcr.io/alphagov/paas/certstrap
 
 - name: bosh-cli-v2
   type: registry-image
   source:
     <<: *build-image-source
-    repository: governmentpaas/bosh-cli-v2
+    repository: ghcr.io/alphagov/paas/bosh-cli-v2
 
 - name: awscli
   type: registry-image
   source:
     <<: *build-image-source
-    repository: governmentpaas/awscli
+    repository: ghcr.io/alphagov/paas/awscli
 
 - name: tech-docs
   type: registry-image
   source:
     <<: *build-image-source
-    repository: governmentpaas/tech-docs
+    repository: ghcr.io/alphagov/paas/tech-docs
 
 - name: semver-resource
   type: registry-image
   source:
     <<: *build-image-source
-    repository: governmentpaas/semver-resource
+    repository: ghcr.io/alphagov/paas/semver-resource
 
 - name: grafana-annotation-resource
   type: registry-image
   source:
     <<: *build-image-source
-    repository: governmentpaas/grafana-annotation-resource
+    repository: ghcr.io/alphagov/paas/grafana-annotation-resource
 
 jobs:
 - name: build-psql-pr
@@ -211,7 +211,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       params:
         CONTEXT: paas-docker-cloudfoundry-tools-pr/psql
       inputs:
@@ -226,7 +227,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       inputs:
       - name: paas-docker-cloudfoundry-tools-pr
       - name: image
@@ -292,7 +294,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       params:
         CONTEXT: paas-docker-cloudfoundry-tools-pr/alpine
       inputs:
@@ -307,7 +310,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       inputs:
       - name: paas-docker-cloudfoundry-tools-pr
       - name: image
@@ -373,7 +377,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       params:
         CONTEXT: paas-docker-cloudfoundry-tools-pr/golang
       inputs:
@@ -388,7 +393,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       inputs:
       - name: paas-docker-cloudfoundry-tools-pr
       - name: image
@@ -454,7 +460,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       params:
         CONTEXT: paas-docker-cloudfoundry-tools-pr/node
       inputs:
@@ -469,7 +476,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       inputs:
       - name: paas-docker-cloudfoundry-tools-pr
       - name: image
@@ -535,7 +543,7 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
       params:
         CONTEXT: paas-docker-cloudfoundry-tools-pr/olhtbr-metadata-resource
       inputs:
@@ -550,7 +558,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       inputs:
       - name: paas-docker-cloudfoundry-tools-pr
       - name: image
@@ -616,7 +625,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       params:
         CONTEXT: paas-docker-cloudfoundry-tools-pr/concourse-pool-resource
       inputs:
@@ -631,7 +641,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       inputs:
       - name: paas-docker-cloudfoundry-tools-pr
       - name: image
@@ -697,7 +708,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       params:
         CONTEXT: paas-docker-cloudfoundry-tools-pr/ruby
       inputs:
@@ -712,7 +724,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       inputs:
       - name: paas-docker-cloudfoundry-tools-pr
       - name: image
@@ -1342,7 +1355,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       inputs:
       - name: paas-tech-docs-pr
         path: .
@@ -1356,7 +1370,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       inputs:
       - name: paas-tech-docs-pr
       - name: image
@@ -1416,7 +1431,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       inputs:
       - name: paas-semver-resource-pr
         path: .
@@ -1430,7 +1446,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       inputs:
       - name: paas-semver-resource-pr
       - name: image
@@ -1490,7 +1507,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       inputs:
       - name: paas-grafana-annotation-resource-pr
         path: .
@@ -1504,7 +1522,8 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: vito/oci-build-task
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       inputs:
       - name: paas-grafana-annotation-resource-pr
       - name: image
