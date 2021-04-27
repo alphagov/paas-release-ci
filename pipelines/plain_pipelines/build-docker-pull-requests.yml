@@ -148,7 +148,7 @@ resources:
   type: registry-image
   source:
     <<: *build-image-source
-    repository: gghcr.io/alphagov/paas/cf-uaac
+    repository: ghcr.io/alphagov/paas/cf-uaac
 
 - name: certstrap
   type: registry-image
