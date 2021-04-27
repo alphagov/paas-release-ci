@@ -544,6 +544,7 @@ jobs:
         type: registry-image
         source:
           repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
       params:
         CONTEXT: paas-docker-cloudfoundry-tools-pr/olhtbr-metadata-resource
       inputs:
