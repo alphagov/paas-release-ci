@@ -1065,7 +1065,32 @@ jobs:
       run:
         path: build
   - task: create-image-tag
-    config: *create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
+      inputs:
+        - name: paas-tech-docs
+        - name: image
+      outputs:
+        - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-tech-docs && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-tech-docs && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
   - put: tech-docs-docker-registry
     params:
       image: image/image.tar
@@ -1151,7 +1176,32 @@ jobs:
       run:
         path: build
   - task: create-image-tag
-    config: *create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
+      inputs:
+        - name: paas-prometheus-exporter
+        - name: image
+      outputs:
+        - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-prometheus-exporter && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-prometheus-exporter && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
   - put: paas-prometheus-exporter-docker-registry
     params:
       image: image/image.tar
