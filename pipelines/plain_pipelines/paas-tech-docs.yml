@@ -132,8 +132,6 @@ jobs:
                 applications:
                 - name: paas-tech-docs
                   memory: 64M
-                  path: build
-                  buildpack: staticfile_buildpack
                   instances: 2
                   stack: cflinuxfs3
                   routes:
