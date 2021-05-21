@@ -1094,10 +1094,12 @@ jobs:
   - put: tech-docs-docker-registry
     params:
       image: image/image.tar
+      additional_tags: image/tags
 
   - put: tech-docs-github-registry
     params:
       image: image/image.tar
+      additional_tags: image/tags
 
 - name: build-paas-semver-resource
   plan:
@@ -1205,10 +1207,12 @@ jobs:
   - put: paas-prometheus-exporter-docker-registry
     params:
       image: image/image.tar
+      additional_tags: image/tags
 
   - put: paas-prometheus-exporter-github-registry
     params:
       image: image/image.tar
+      additional_tags: image/tags
 
 - name: build-paas-grafana-annotation-resource
   plan:
