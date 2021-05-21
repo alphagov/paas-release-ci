@@ -440,7 +440,7 @@ jobs:
             git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
                      git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
   - put: psql-docker-registry
     params:
       image: image/image.tar
@@ -539,7 +539,7 @@ jobs:
             git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
                      git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
   - put: alpine-docker-registry
     params:
       image: image/image.tar
@@ -596,7 +596,7 @@ jobs:
             git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
                      git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
   - put: golang-docker-registry
     params:
       image: image/image.tar
@@ -653,7 +653,7 @@ jobs:
             git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
                      git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
   - put: node-docker-registry
     params:
       image: image/image.tar
@@ -710,7 +710,7 @@ jobs:
             git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
                      git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
   - put: olhtbr-metadata-resource-docker-registry
     params:
       image: image/image.tar
@@ -767,7 +767,7 @@ jobs:
             git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
                      git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
   - put: concourse-pool-resource-docker-registry
     params:
       image: image/image.tar
@@ -824,7 +824,7 @@ jobs:
             git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
                      git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
   - put: ruby-docker-registry
     params:
       image: image/image.tar
@@ -1090,7 +1090,7 @@ jobs:
             git_commit_sha="$(cd paas-tech-docs && \
                      git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
   - put: tech-docs-docker-registry
     params:
       image: image/image.tar
@@ -1147,7 +1147,7 @@ jobs:
             git_commit_sha="$(cd paas-semver-resource && \
                      git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
   - put: semver-resource-docker-registry
     params:
       image: image/image.tar
@@ -1203,7 +1203,7 @@ jobs:
             git_commit_sha="$(cd paas-prometheus-exporter && \
                      git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
   - put: paas-prometheus-exporter-docker-registry
     params:
       image: image/image.tar
@@ -1260,7 +1260,7 @@ jobs:
             git_commit_sha="$(cd paas-grafana-annotation-resource && \
                      git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
   - put: grafana-annotation-resource-docker-registry
     params:
       image: image/image.tar
@@ -1316,7 +1316,7 @@ jobs:
             git_commit_sha="$(cd s3-resource-src && \
                       git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
   - put: s3-resource-github-registry
     params:
       image: image/image.tar
@@ -1368,7 +1368,7 @@ jobs:
             git_commit_sha="$(cd slack-notification-resource && \
                      git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
   - put: slack-notification-resource-github-registry
     params:
       image: image/image.tar
