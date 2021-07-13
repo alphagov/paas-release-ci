@@ -72,6 +72,14 @@ resources:
     repository: ghcr.io/alphagov/paas/node
     tag: pr-build
 
+- name: node-chromium
+  type: registry-image
+  source: &build-image-source
+    username: ((github_username))
+    password: ((github_registry_access_token))
+    repository: ghcr.io/alphagov/paas/node-chromium
+    tag: pr-build
+
 - name: olhtbr-metadata-resource
   type: registry-image
   source: &build-image-source
@@ -515,6 +523,89 @@ jobs:
       params:
         path: paas-docker-cloudfoundry-tools-pr
         context: ((github_status_context))/build-node-pr
+        status: FAILURE
+      get_params:
+        skip_download: true
+
+- name: build-node-chromium-pr
+  serial: true
+  plan:
+  - get: paas-docker-cloudfoundry-tools-pr
+    version: every
+    trigger: true
+    params:
+      integration_tool: checkout
+      submodules: true
+  - put: update-paas-docker-cloudfoundry-tools-pr
+    resource: paas-docker-cloudfoundry-tools-pr
+    params:
+      path: paas-docker-cloudfoundry-tools-pr
+      context: ((github_status_context))/build-node-chromium-pr
+      status: PENDING
+    get_params:
+      skip_download: true
+  - task: build
+    privileged: true
+    config: &build-image-config
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
+      params:
+        CONTEXT: paas-docker-cloudfoundry-tools-pr/node-chromium
+      inputs:
+      - name: paas-docker-cloudfoundry-tools-pr
+      outputs:
+      - name: image
+      run:
+        path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
+      inputs:
+      - name: paas-docker-cloudfoundry-tools-pr
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-docker-cloudfoundry-tools-pr && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-docker-cloudfoundry-tools-pr && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha}" > image/tags
+    on_success:
+      do:
+        - put: node-chromium
+          params:
+            image: image/image.tar
+            additional_tags: image/tags
+        - put: paas-docker-cloudfoundry-tools-pr
+          params:
+            path: paas-docker-cloudfoundry-tools-pr
+            context: ((github_status_context))/build-node-chromium-pr
+            status: SUCCESS
+          get_params:
+            skip_download: true
+    on_failure:
+      put: paas-docker-cloudfoundry-tools-pr
+      params:
+        path: paas-docker-cloudfoundry-tools-pr
+        context: ((github_status_context))/build-node-chromium-pr
         status: FAILURE
       get_params:
         skip_download: true

@@ -105,6 +105,22 @@ resources:
     password: ((github_registry_access_token))
     repository: ghcr.io/alphagov/paas/node
 
+- name: node-chromium-docker-registry
+  type: registry-image
+  icon: docker
+  source: &build-image-source-docker-registry
+    username: ((dockerhub_username))
+    password: ((dockerhub_password))
+    repository: governmentpaas/node-chromium
+
+- name: node-chromium-github-registry
+  type: registry-image
+  icon: github
+  source: &build-image-source-github-registry
+    username: ((github_username))
+    password: ((github_registry_access_token))
+    repository: ghcr.io/alphagov/paas/node-chromium
+
 - name: olhtbr-metadata-resource-docker-registry
   type: registry-image
   icon: docker
@@ -659,6 +675,63 @@ jobs:
       image: image/image.tar
       additional_tags: image/tags
   - put: node-github-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+
+- name: build-node-chromium
+  plan:
+  - get: paas-docker-cloudfoundry-tools
+    trigger: true
+  - task: build
+    privileged: true
+    config: &build-image-config
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
+      params:
+        CONTEXT: paas-docker-cloudfoundry-tools/node-chromium
+      inputs:
+      - name: paas-docker-cloudfoundry-tools
+      outputs:
+      - name: image
+      run:
+        path: build
+  - task: create-image-tag
+    config: &create-image-tag
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: ghcr.io/alphagov/paas/vito-oci-build-task
+          tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
+      inputs:
+      - name: paas-docker-cloudfoundry-tools
+      - name: image
+      outputs:
+      - name: image
+      run:
+        path: sh
+        args:
+          - -e
+          - -u
+          - -c
+          - |
+            git_branch_name="$(cd paas-docker-cloudfoundry-tools && \
+                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+            git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
+                     git log --pretty=format:'%H' -n 1)"
+
+            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
+  - put: node-chromium-docker-registry
+    params:
+      image: image/image.tar
+      additional_tags: image/tags
+  - put: node-chromium-github-registry
     params:
       image: image/image.tar
       additional_tags: image/tags
