@@ -40,6 +40,14 @@ resources:
     access_token: ((github_access_token))
     disable_forks: true
 
+- name: paas-prometheus-exporter
+  type: pull-request
+  check_every: 1m
+  source:
+    repository: alphagov/paas-prometheus-exporter
+    access_token: ((github_access_token))
+    disable_forks: true
+
 - name: psql
   type: registry-image
   source: &build-image-source
@@ -193,6 +201,13 @@ resources:
   source:
     <<: *build-image-source
     repository: ghcr.io/alphagov/paas/grafana-annotation-resource
+
+- name: paas-prometheus-exporter-resource
+  type: registry-image
+  icon: github
+  source:
+    <<: *build-image-source
+    repository: ghcr.io/alphagov/paas/paas-prometheus-exporter
 
 jobs:
 - name: build-psql-pr
@@ -1498,6 +1513,58 @@ jobs:
         status: FAILURE
       get_params:
         skip_download: true
+
+- name: build-paas-prometheus-exporter-pr
+  plan:
+    - get: paas-prometheus-exporter
+      trigger: true
+    - task: build
+      privileged: true
+      config:
+        platform: linux
+        image_resource:
+          type: registry-image
+          source:
+            repository: ghcr.io/alphagov/paas/vito-oci-build-task
+            tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
+        inputs:
+          - name: paas-prometheus-exporter
+            path: .
+        outputs:
+          - name: image
+        run:
+          path: build
+    - task: create-image-tag
+      config:
+        platform: linux
+        image_resource:
+          type: registry-image
+          source:
+            repository: ghcr.io/alphagov/paas/vito-oci-build-task
+            tag: a2eab04d2bd63dff09201f65f95a5c3fc704ee35
+        inputs:
+          - name: paas-prometheus-exporter
+          - name: image
+        outputs:
+          - name: image
+        run:
+          path: sh
+          args:
+            - -e
+            - -u
+            - -c
+            - |
+              git_branch_name="$(cd paas-prometheus-exporter && \
+                            git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+
+              git_commit_sha="$(cd paas-prometheus-exporter && \
+                       git log --pretty=format:'%H' -n 1)"
+
+              echo "${git_branch_name} ${git_commit_sha}" > image/tags
+    - put: paas-prometheus-exporter-resource
+      params:
+        image: image/image.tar
+        additional_tags: image/tags
 
 - name: build-paas-semver-resource-pr
   serial: true
