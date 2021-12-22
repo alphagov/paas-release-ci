@@ -49,6 +49,7 @@ remove_release_pipeline() {
 }
 
 echo Setting fork pipelines
+setup_release_pipeline app-autoscaler     alphagov/paas-app-autoscaler-release            gds_main
 setup_release_pipeline awslogs            alphagov/paas-awslogs-boshrelease            gds_main
 setup_release_pipeline bosh               alphagov/paas-bosh                           gds_main
 setup_release_pipeline bosh-aws-cpi       alphagov/paas-bosh-aws-cpi-release           gds_main
