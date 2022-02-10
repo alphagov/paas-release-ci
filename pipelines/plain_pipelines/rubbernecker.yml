@@ -83,6 +83,7 @@ jobs:
             PIVOTAL_TRACKER_PROJECT_ID: ((pivotal_tracker_project_id))
             PIVOTAL_TRACKER_API_TOKEN: ((pivotal_tracker_api_token))
             PAGERDUTY_AUTHTOKEN: ((pagerduty_authtoken))
+            GITHUB_TOKEN: ((github_access_token))
           run:
             path: sh
             args:
@@ -113,6 +114,7 @@ jobs:
                     PIVOTAL_TRACKER_PROJECT_ID: "${PIVOTAL_TRACKER_PROJECT_ID}"
                     PIVOTAL_TRACKER_API_TOKEN: "${PIVOTAL_TRACKER_API_TOKEN}"
                     PAGERDUTY_AUTHTOKEN: "${PAGERDUTY_AUTHTOKEN}"
+                    GITHUB_TOKEN: "${GITHUB_TOKEN}"
                     GO111MODULE: on
                     GOPACKAGENAME: github.com/alphagov/paas-rubbernecker
                     GOVERSION: go1.16
