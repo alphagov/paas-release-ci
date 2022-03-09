@@ -69,6 +69,7 @@ resources:
 jobs:
   - name: integration-test
     serial: true
+    serial_groups: [ rds-calls-throttled ]
     plan:
       # Grab the PR content
       - get: repo
@@ -236,6 +237,7 @@ jobs:
             file: bosh-release-version/number
 
   - name: run-prod-integration-tests
+    serial_groups: [ rds-calls-throttled ]
     plan:
       # Get the repo content on `main`
       - get: repo
