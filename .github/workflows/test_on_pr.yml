@@ -1,0 +1,59 @@
+on: pull_request
+
+env:
+  TF_VERSION: "1.0.8"
+  SHELLCHECK_VERSION: "0.7.1"
+  GO_VERSION: "1.17"
+  RUBY_VERSION: "2.7"
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      ## Setup
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Install Shellcheck
+        run: |
+          wget -qO- "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.x86_64.tar.xz" | tar -xJv
+          sudo cp "shellcheck-v${SHELLCHECK_VERSION}/shellcheck" /usr/local/bin
+
+      - name: "Install Terraform ${{env.TF_VERSION}}"
+        run: |
+          cd "${{runner.temp}}"
+          wget -q -O terraform.zip "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
+          unzip terraform.zip
+          chmod +x ./terraform
+          sudo mv -f ./terraform /usr/local/bin
+
+      - name: "Install Go ${{env.GO_VERSION}}"
+        uses: actions/setup-go@v2
+        with:
+          go-version: "${{env.GO_VERSION}}"
+
+      - name: "Install Pipecleaner"
+        run: |
+          go get -u github.com/alphagov/paas-cf/tools/pipecleaner
+
+      - name: Install Python packages
+        run: pip install --user yamllint
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "${{env.RUBY_VERSION}}"
+
+      - name: Install bundle
+        run: |
+          gem install bundler
+          bundle install --jobs 4 --retry 3
+
+      ## Tests
+      - name: "make test"
+        env:
+          TMPDIR: "${{runner.temp}}"
+          TF_IN_AUTOMATION: yes
+          GOPATH: "/home/runner/go"
+          GOBIN: "/home/runner/go/bin"
+        run: "make test"
