@@ -79,6 +79,12 @@ jobs:
 
                 new_remote="$(git remote -v | sed -n 's|origin.*https://\([^/]*\)/\([^ ]*\).*fetch.*|git@\1:\2|p')"
                 git remote set-url origin "$new_remote"
+                
+                echo "Forcing it to use new bundler"
+                gem update --system
+                BUNDLER_VERSION="tail -1 Gemfile.lock | tr -d \" \""
+                
+                gem install bundler -v $BUNDLER_VERSION
 
                 bundle install
                 bundle exec rake publish
