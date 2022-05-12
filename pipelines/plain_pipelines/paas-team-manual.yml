@@ -48,7 +48,7 @@ jobs:
             type: docker-image
             source:
               repository: ruby
-              tag: 2.7-slim
+              tag: 2.7.2-slim
           inputs:
             - name: paas-team-manual
             - name: ssh-private-key
@@ -79,6 +79,11 @@ jobs:
 
                 new_remote="$(git remote -v | sed -n 's|origin.*https://\([^/]*\)/\([^ ]*\).*fetch.*|git@\1:\2|p')"
                 git remote set-url origin "$new_remote"
+
+                echo "Forcing it to use new bundler"
+                gem update --system
+                BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")
+                gem install bundler -v $BUNDLER_VERSION
 
                 bundle install
                 bundle exec rake publish
