@@ -82,9 +82,9 @@ jobs:
                 
                 echo "Forcing it to use new bundler"
                 gem update --system
-                BUNDLER_VERSION="tail -1 Gemfile.lock | tr -d \" \""
+                BUNDLER_VERSION="$(tail -1 Gemfile.lock | tr -d " ")"
                 
-                gem install bundler -v $BUNDLER_VERSION
+                gem install bundler -v "${BUNDLER_VERSION}"
 
                 bundle install
                 bundle exec rake publish
