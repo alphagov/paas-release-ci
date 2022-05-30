@@ -115,7 +115,7 @@ jobs:
                     PAGERDUTY_AUTHTOKEN: "${PAGERDUTY_AUTHTOKEN}"
                     GO111MODULE: on
                     GOPACKAGENAME: github.com/alphagov/paas-rubbernecker
-                    GOVERSION: go1.16
+                    GOVERSION: go1.18
                 EOF
 
                 cf push rubbernecker -f manifest.yml --strategy rolling
