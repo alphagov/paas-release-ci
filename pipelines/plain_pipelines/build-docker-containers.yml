@@ -49,14 +49,6 @@ resources:
       password: ((dockerhub_password))
       repository: governmentpaas/psql
 
-  - name: psql-github-registry
-    type: registry-image
-    icon: github
-    source: &build-image-source-github-registry
-      username: ((github_username))
-      password: ((github_registry_access_token))
-      repository: ghcr.io/alphagov/paas/psql
-
   - name: alpine-docker-registry
     type: registry-image
     icon: docker
@@ -64,14 +56,6 @@ resources:
       username: ((dockerhub_username))
       password: ((dockerhub_password))
       repository: governmentpaas/alpine
-
-  - name: alpine-github-registry
-    type: registry-image
-    icon: github
-    source: &build-image-source-github-registry
-      username: ((github_username))
-      password: ((github_registry_access_token))
-      repository: ghcr.io/alphagov/paas/alpine
 
   - name: golang-docker-registry
     type: registry-image
@@ -81,14 +65,6 @@ resources:
       password: ((dockerhub_password))
       repository: governmentpaas/golang
 
-  - name: golang-github-registry
-    type: registry-image
-    icon: github
-    source: &build-image-source-github-registry
-      username: ((github_username))
-      password: ((github_registry_access_token))
-      repository: ghcr.io/alphagov/paas/golang
-
   - name: node-docker-registry
     type: registry-image
     icon: docker
@@ -96,14 +72,6 @@ resources:
       username: ((dockerhub_username))
       password: ((dockerhub_password))
       repository: governmentpaas/node
-
-  - name: node-github-registry
-    type: registry-image
-    icon: github
-    source: &build-image-source-github-registry
-      username: ((github_username))
-      password: ((github_registry_access_token))
-      repository: ghcr.io/alphagov/paas/node
 
   - name: node-chromium-docker-registry
     type: registry-image
@@ -113,14 +81,6 @@ resources:
       password: ((dockerhub_password))
       repository: governmentpaas/node-chromium
 
-  - name: node-chromium-github-registry
-    type: registry-image
-    icon: github
-    source: &build-image-source-github-registry
-      username: ((github_username))
-      password: ((github_registry_access_token))
-      repository: ghcr.io/alphagov/paas/node-chromium
-
   - name: olhtbr-metadata-resource-docker-registry
     type: registry-image
     icon: docker
@@ -128,14 +88,6 @@ resources:
       username: ((dockerhub_username))
       password: ((dockerhub_password))
       repository: governmentpaas/olhtbr-metadata-resource
-
-  - name: olhtbr-metadata-resource-github-registry
-    type: registry-image
-    icon: github
-    source: &build-image-source-github-registry
-      username: ((github_username))
-      password: ((github_registry_access_token))
-      repository: ghcr.io/alphagov/paas/olhtbr-metadata-resource
 
   - name: concourse-pool-resource-docker-registry
     type: registry-image
@@ -145,14 +97,6 @@ resources:
       password: ((dockerhub_password))
       repository: governmentpaas/concourse-pool-resource
 
-  - name: concourse-pool-resource-github-registry
-    type: registry-image
-    icon: github
-    source: &build-image-source-github-registry
-      username: ((github_username))
-      password: ((github_registry_access_token))
-      repository: ghcr.io/alphagov/paas/concourse-pool-resource
-
   - name: ruby-docker-registry
     type: registry-image
     icon: docker
@@ -160,14 +104,6 @@ resources:
       username: ((dockerhub_username))
       password: ((dockerhub_password))
       repository: governmentpaas/ruby
-
-  - name: ruby-github-registry
-    type: registry-image
-    icon: github
-    source: &build-image-source-github-registry
-      username: ((github_username))
-      password: ((github_registry_access_token))
-      repository: ghcr.io/alphagov/paas/ruby
 
   - name: slack-notification-resource-github-registry
     type: registry-image
@@ -184,26 +120,12 @@ resources:
       <<: *build-image-source-docker-registry
       repository: governmentpaas/spruce
 
-  - name: spruce-github-registry
-    type: registry-image
-    icon: github
-    source:
-      <<: *build-image-source-github-registry
-      repository: ghcr.io/alphagov/paas/spruce
-
   - name: json-minify-docker-registry
     type: registry-image
     icon: docker
     source:
       <<: *build-image-source-docker-registry
       repository: governmentpaas/json-minify
-
-  - name: json-minify-github-registry
-    type: registry-image
-    icon: github
-    source:
-      <<: *build-image-source-github-registry
-      repository: ghcr.io/alphagov/paas/json-minify
 
   - name: terraform-docker-registry
     type: registry-image
@@ -212,26 +134,12 @@ resources:
       <<: *build-image-source-docker-registry
       repository: governmentpaas/terraform
 
-  - name: terraform-github-registry
-    type: registry-image
-    icon: github
-    source:
-      <<: *build-image-source-github-registry
-      repository: ghcr.io/alphagov/paas/terraform
-
   - name: self-update-pipelines-docker-registry
     type: registry-image
     icon: docker
     source:
       <<: *build-image-source-docker-registry
       repository: governmentpaas/self-update-pipelines
-
-  - name: self-update-pipelines-github-registry
-    type: registry-image
-    icon: github
-    source:
-      <<: *build-image-source-github-registry
-      repository: ghcr.io/alphagov/paas/self-update-pipelines
 
   - name: git-ssh-docker-registry
     type: registry-image
@@ -240,26 +148,12 @@ resources:
       <<: *build-image-source-docker-registry
       repository: governmentpaas/git-ssh
 
-  - name: git-ssh-github-registry
-    type: registry-image
-    icon: github
-    source:
-      <<: *build-image-source-github-registry
-      repository: ghcr.io/alphagov/paas/git-ssh
-
   - name: curl-ssl-docker-registry
     type: registry-image
     icon: docker
     source:
       <<: *build-image-source-docker-registry
       repository: governmentpaas/curl-ssl
-
-  - name: curl-ssl-github-registry
-    type: registry-image
-    icon: github
-    source:
-      <<: *build-image-source-github-registry
-      repository: ghcr.io/alphagov/paas/curl-ssl
 
   - name: cf-cli-docker-registry
     type: registry-image
@@ -268,26 +162,12 @@ resources:
       <<: *build-image-source-docker-registry
       repository: governmentpaas/cf-cli
 
-  - name: cf-cli-github-registry
-    type: registry-image
-    icon: github
-    source:
-      <<: *build-image-source-github-registry
-      repository: ghcr.io/alphagov/paas/cf-cli
-
   - name: cf-acceptance-tests-docker-registry
     type: registry-image
     icon: docker
     source:
       <<: *build-image-source-docker-registry
       repository: governmentpaas/cf-acceptance-tests
-
-  - name: cf-acceptance-tests-github-registry
-    type: registry-image
-    icon: github
-    source:
-      <<: *build-image-source-github-registry
-      repository: ghcr.io/alphagov/paas/cf-acceptance-tests
 
   - name: cf-uaac-docker-registry
     type: registry-image
@@ -296,26 +176,12 @@ resources:
       <<: *build-image-source-docker-registry
       repository: governmentpaas/cf-uaac
 
-  - name: cf-uaac-github-registry
-    type: registry-image
-    icon: github
-    source:
-      <<: *build-image-source-github-registry
-      repository: ghcr.io/alphagov/paas/cf-uaac
-
   - name: certstrap-docker-registry
     type: registry-image
     icon: docker
     source:
       <<: *build-image-source-docker-registry
       repository: governmentpaas/certstrap
-
-  - name: certstrap-github-registry
-    type: registry-image
-    icon: github
-    source:
-      <<: *build-image-source-github-registry
-      repository: ghcr.io/alphagov/paas/certstrap
 
   - name: bosh-cli-v2-docker-registry
     type: registry-image
@@ -324,26 +190,12 @@ resources:
       <<: *build-image-source-docker-registry
       repository: governmentpaas/bosh-cli-v2
 
-  - name: bosh-cli-v2-github-registry
-    type: registry-image
-    icon: github
-    source:
-      <<: *build-image-source-github-registry
-      repository: ghcr.io/alphagov/paas/bosh-cli-v2
-
   - name: awscli-docker-registry
     type: registry-image
     icon: docker
     source:
       <<: *build-image-source-docker-registry
       repository: governmentpaas/awscli
-
-  - name: awscli-github-registry
-    type: registry-image
-    icon: github
-    source:
-      <<: *build-image-source-github-registry
-      repository: ghcr.io/alphagov/paas/awscli
 
   - name: tech-docs-docker-registry
     type: registry-image
@@ -461,10 +313,6 @@ jobs:
         params:
           image: image/image.tar
           additional_tags: image/tags
-      - put: psql-github-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
 
   - name: build-spruce
     plan:
@@ -482,10 +330,6 @@ jobs:
         params:
           image: image/image.tar
           additional_tags: image/tags
-      - put: spruce-github-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
 
   - name: build-json-minify
     plan:
@@ -500,10 +344,6 @@ jobs:
       - task: create-image-tag
         config: *create-image-tag
       - put: json-minify-docker-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
-      - put: json-minify-github-registry
         params:
           image: image/image.tar
           additional_tags: image/tags
@@ -560,10 +400,6 @@ jobs:
         params:
           image: image/image.tar
           additional_tags: image/tags
-      - put: alpine-github-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
 
   - name: build-golang
     plan:
@@ -614,10 +450,6 @@ jobs:
 
                 echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
       - put: golang-docker-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
-      - put: golang-github-registry
         params:
           image: image/image.tar
           additional_tags: image/tags
@@ -674,10 +506,6 @@ jobs:
         params:
           image: image/image.tar
           additional_tags: image/tags
-      - put: node-github-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
 
   - name: build-node-chromium
     plan:
@@ -728,10 +556,6 @@ jobs:
 
                 echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
       - put: node-chromium-docker-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
-      - put: node-chromium-github-registry
         params:
           image: image/image.tar
           additional_tags: image/tags
@@ -788,10 +612,6 @@ jobs:
         params:
           image: image/image.tar
           additional_tags: image/tags
-      - put: olhtbr-metadata-resource-github-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
 
   - name: build-concourse-pool-resource
     plan:
@@ -842,10 +662,6 @@ jobs:
 
                 echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
       - put: concourse-pool-resource-docker-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
-      - put: concourse-pool-resource-github-registry
         params:
           image: image/image.tar
           additional_tags: image/tags
@@ -902,10 +718,6 @@ jobs:
         params:
           image: image/image.tar
           additional_tags: image/tags
-      - put: ruby-github-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
 
   - name: build-terraform
     plan:
@@ -920,10 +732,6 @@ jobs:
       - task: create-image-tag
         config: *create-image-tag
       - put: terraform-docker-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
-      - put: terraform-github-registry
         params:
           image: image/image.tar
           additional_tags: image/tags
@@ -944,10 +752,6 @@ jobs:
         params:
           image: image/image.tar
           additional_tags: image/tags
-      - put: self-update-pipelines-github-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
 
   - name: build-git-ssh
     plan:
@@ -962,10 +766,6 @@ jobs:
       - task: create-image-tag
         config: *create-image-tag
       - put: git-ssh-docker-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
-      - put: git-ssh-github-registry
         params:
           image: image/image.tar
           additional_tags: image/tags
@@ -986,10 +786,6 @@ jobs:
         params:
           image: image/image.tar
           additional_tags: image/tags
-      - put: curl-ssl-github-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
 
   - name: build-cf-cli
     plan:
@@ -1004,10 +800,6 @@ jobs:
       - task: create-image-tag
         config: *create-image-tag
       - put: cf-cli-docker-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
-      - put: cf-cli-github-registry
         params:
           image: image/image.tar
           additional_tags: image/tags
@@ -1028,10 +820,6 @@ jobs:
         params:
           image: image/image.tar
           additional_tags: image/tags
-      - put: cf-acceptance-tests-github-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
 
   - name: build-cf-uaac
     plan:
@@ -1046,10 +834,6 @@ jobs:
       - task: create-image-tag
         config: *create-image-tag
       - put: cf-uaac-docker-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
-      - put: cf-uaac-github-registry
         params:
           image: image/image.tar
           additional_tags: image/tags
@@ -1070,10 +854,6 @@ jobs:
         params:
           image: image/image.tar
           additional_tags: image/tags
-      - put: certstrap-github-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
 
   - name: build-bosh-cli-v2
     plan:
@@ -1091,10 +871,6 @@ jobs:
         params:
           image: image/image.tar
           additional_tags: image/tags
-      - put: bosh-cli-v2-github-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
 
   - name: build-awscli
     plan:
@@ -1109,10 +885,6 @@ jobs:
       - task: create-image-tag
         config: *create-image-tag
       - put: awscli-docker-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
-      - put: awscli-github-registry
         params:
           image: image/image.tar
           additional_tags: image/tags
