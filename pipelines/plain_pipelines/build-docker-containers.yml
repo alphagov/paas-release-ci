@@ -1,1448 +1,439 @@
 resources:
-- name: paas-docker-cloudfoundry-tools
-  type: git
-  source:
-    uri: https://github.com/alphagov/paas-docker-cloudfoundry-tools.git
-    branch: main
+  - name: paas-tech-docs
+    type: git
+    source:
+      uri: https://github.com/alphagov/paas-tech-docs.git
+      branch: main
 
-- name: paas-tech-docs
-  type: git
-  source:
-    uri: https://github.com/alphagov/paas-tech-docs.git
-    branch: main
+  - name: paas-semver-resource
+    type: git
+    source:
+      uri: https://github.com/alphagov/paas-semver-resource.git
+      branch: gds_main
 
-- name: paas-semver-resource
-  type: git
-  source:
-    uri: https://github.com/alphagov/paas-semver-resource.git
-    branch: gds_main
+  - name: paas-grafana-annotation-resource
+    type: git
+    source:
+      uri: https://github.com/alphagov/paas-grafana-annotation-resource.git
+      branch: main
 
-- name: paas-grafana-annotation-resource
-  type: git
-  source:
-    uri: https://github.com/alphagov/paas-grafana-annotation-resource.git
-    branch: main
+  - name: s3-resource-src
+    type: git
+    source:
+      uri: https://github.com/alphagov/paas-s3-resource.git
+      branch: gds_main
 
-- name: s3-resource-src
-  type: git
-  source:
-    uri: https://github.com/alphagov/paas-s3-resource.git
-    branch: gds_main
+  - name: paas-prometheus-exporter
+    type: git
+    source:
+      uri: https://github.com/alphagov/paas-prometheus-exporter.git
+      branch: main
 
-- name: paas-prometheus-exporter
-  type: git
-  source:
-    uri: https://github.com/alphagov/paas-prometheus-exporter.git
-    branch: main
+  - name: slack-notification-resource
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry-community/slack-notification-resource.git
+      branch: master
 
-- name: slack-notification-resource
-  type: git
-  source:
-    uri: https://github.com/cloudfoundry-community/slack-notification-resource.git
-    branch: master
+  - name: slack-notification-resource-github-registry
+    type: registry-image
+    icon: github
+    source: &build-image-source-github-registry
+      username: ((github_username))
+      password: ((github_registry_access_token))
+      repository: ghcr.io/alphagov/paas/slack-notification-resource
 
-- name: psql-docker-registry
-  type: registry-image
-  icon: docker
-  source: &build-image-source-docker-registry
-    username: ((dockerhub_username))
-    password: ((dockerhub_password))
-    repository: governmentpaas/psql
+  - name: tech-docs-docker-registry
+    type: registry-image
+    icon: docker
+    source: &build-image-source-docker-registry
+      username: ((dockerhub_username))
+      password: ((dockerhub_password))
+      repository: governmentpaas/tech-docs
 
-- name: psql-github-registry
-  type: registry-image
-  icon: github
-  source: &build-image-source-github-registry
-    username: ((github_username))
-    password: ((github_registry_access_token))
-    repository: ghcr.io/alphagov/paas/psql
+  - name: tech-docs-github-registry
+    type: registry-image
+    icon: github
+    source:
+      <<: *build-image-source-github-registry
+      repository: ghcr.io/alphagov/paas/tech-docs
 
-- name: alpine-docker-registry
-  type: registry-image
-  icon: docker
-  source: &build-image-source-docker-registry
-    username: ((dockerhub_username))
-    password: ((dockerhub_password))
-    repository: governmentpaas/alpine
+  - name: semver-resource-docker-registry
+    type: registry-image
+    icon: docker
+    source:
+      <<: *build-image-source-docker-registry
+      repository: governmentpaas/semver-resource
 
-- name: alpine-github-registry
-  type: registry-image
-  icon: github
-  source: &build-image-source-github-registry
-    username: ((github_username))
-    password: ((github_registry_access_token))
-    repository: ghcr.io/alphagov/paas/alpine
+  - name: semver-resource-github-registry
+    type: registry-image
+    icon: github
+    source:
+      <<: *build-image-source-github-registry
+      repository: ghcr.io/alphagov/paas/semver-resource
 
-- name: golang-docker-registry
-  type: registry-image
-  icon: docker
-  source: &build-image-source-docker-registry
-    username: ((dockerhub_username))
-    password: ((dockerhub_password))
-    repository: governmentpaas/golang
+  - name: grafana-annotation-resource-docker-registry
+    type: registry-image
+    icon: docker
+    source:
+      <<: *build-image-source-docker-registry
+      repository: governmentpaas/grafana-annotation-resource
 
-- name: golang-github-registry
-  type: registry-image
-  icon: github
-  source: &build-image-source-github-registry
-    username: ((github_username))
-    password: ((github_registry_access_token))
-    repository: ghcr.io/alphagov/paas/golang
+  - name: grafana-annotation-resource-github-registry
+    type: registry-image
+    icon: github
+    source:
+      <<: *build-image-source-github-registry
+      repository: ghcr.io/alphagov/paas/grafana-annotation-resource
 
-- name: node-docker-registry
-  type: registry-image
-  icon: docker
-  source: &build-image-source-docker-registry
-    username: ((dockerhub_username))
-    password: ((dockerhub_password))
-    repository: governmentpaas/node
+  - name: s3-resource-github-registry
+    type: registry-image
+    icon: github
+    source:
+      <<: *build-image-source-github-registry
+      repository: ghcr.io/alphagov/paas/s3-resource
 
-- name: node-github-registry
-  type: registry-image
-  icon: github
-  source: &build-image-source-github-registry
-    username: ((github_username))
-    password: ((github_registry_access_token))
-    repository: ghcr.io/alphagov/paas/node
+  - name: paas-prometheus-exporter-docker-registry
+    type: registry-image
+    icon: docker
+    source:
+      <<: *build-image-source-docker-registry
+      repository: governmentpaas/paas-prometheus-exporter
 
-- name: node-chromium-docker-registry
-  type: registry-image
-  icon: docker
-  source: &build-image-source-docker-registry
-    username: ((dockerhub_username))
-    password: ((dockerhub_password))
-    repository: governmentpaas/node-chromium
-
-- name: node-chromium-github-registry
-  type: registry-image
-  icon: github
-  source: &build-image-source-github-registry
-    username: ((github_username))
-    password: ((github_registry_access_token))
-    repository: ghcr.io/alphagov/paas/node-chromium
-
-- name: olhtbr-metadata-resource-docker-registry
-  type: registry-image
-  icon: docker
-  source: &build-image-source-docker-registry
-    username: ((dockerhub_username))
-    password: ((dockerhub_password))
-    repository: governmentpaas/olhtbr-metadata-resource
-
-- name: olhtbr-metadata-resource-github-registry
-  type: registry-image
-  icon: github
-  source: &build-image-source-github-registry
-    username: ((github_username))
-    password: ((github_registry_access_token))
-    repository: ghcr.io/alphagov/paas/olhtbr-metadata-resource
-
-- name: concourse-pool-resource-docker-registry
-  type: registry-image
-  icon: docker
-  source: &build-image-source-docker-registry
-    username: ((dockerhub_username))
-    password: ((dockerhub_password))
-    repository: governmentpaas/concourse-pool-resource
-
-- name: concourse-pool-resource-github-registry
-  type: registry-image
-  icon: github
-  source: &build-image-source-github-registry
-    username: ((github_username))
-    password: ((github_registry_access_token))
-    repository: ghcr.io/alphagov/paas/concourse-pool-resource
-
-- name: ruby-docker-registry
-  type: registry-image
-  icon: docker
-  source: &build-image-source-docker-registry
-    username: ((dockerhub_username))
-    password: ((dockerhub_password))
-    repository: governmentpaas/ruby
-
-- name: ruby-github-registry
-  type: registry-image
-  icon: github
-  source: &build-image-source-github-registry
-    username: ((github_username))
-    password: ((github_registry_access_token))
-    repository: ghcr.io/alphagov/paas/ruby
-
-- name: slack-notification-resource-github-registry
-  type: registry-image
-  icon: github
-  source: &build-image-source-github-registry
-    username: ((github_username))
-    password: ((github_registry_access_token))
-    repository: ghcr.io/alphagov/paas/slack-notification-resource
-
-- name: spruce-docker-registry
-  type: registry-image
-  icon: docker
-  source:
-    <<: *build-image-source-docker-registry
-    repository: governmentpaas/spruce
-
-- name: spruce-github-registry
-  type: registry-image
-  icon: github
-  source:
-    <<: *build-image-source-github-registry
-    repository: ghcr.io/alphagov/paas/spruce
-
-- name: json-minify-docker-registry
-  type: registry-image
-  icon: docker
-  source:
-    <<: *build-image-source-docker-registry
-    repository: governmentpaas/json-minify
-
-- name: json-minify-github-registry
-  type: registry-image
-  icon: github
-  source:
-    <<: *build-image-source-github-registry
-    repository: ghcr.io/alphagov/paas/json-minify
-
-- name: terraform-docker-registry
-  type: registry-image
-  icon: docker
-  source:
-    <<: *build-image-source-docker-registry
-    repository: governmentpaas/terraform
-
-- name: terraform-github-registry
-  type: registry-image
-  icon: github
-  source:
-    <<: *build-image-source-github-registry
-    repository: ghcr.io/alphagov/paas/terraform
-
-- name: self-update-pipelines-docker-registry
-  type: registry-image
-  icon: docker
-  source:
-    <<: *build-image-source-docker-registry
-    repository: governmentpaas/self-update-pipelines
-
-- name: self-update-pipelines-github-registry
-  type: registry-image
-  icon: github
-  source:
-    <<: *build-image-source-github-registry
-    repository: ghcr.io/alphagov/paas/self-update-pipelines
-
-- name: git-ssh-docker-registry
-  type: registry-image
-  icon: docker
-  source:
-    <<: *build-image-source-docker-registry
-    repository: governmentpaas/git-ssh
-
-- name: git-ssh-github-registry
-  type: registry-image
-  icon: github
-  source:
-    <<: *build-image-source-github-registry
-    repository: ghcr.io/alphagov/paas/git-ssh
-
-- name: curl-ssl-docker-registry
-  type: registry-image
-  icon: docker
-  source:
-    <<: *build-image-source-docker-registry
-    repository: governmentpaas/curl-ssl
-
-- name: curl-ssl-github-registry
-  type: registry-image
-  icon: github
-  source:
-    <<: *build-image-source-github-registry
-    repository: ghcr.io/alphagov/paas/curl-ssl
-
-- name: cf-cli-docker-registry
-  type: registry-image
-  icon: docker
-  source:
-    <<: *build-image-source-docker-registry
-    repository: governmentpaas/cf-cli
-
-- name: cf-cli-github-registry
-  type: registry-image
-  icon: github
-  source:
-    <<: *build-image-source-github-registry
-    repository: ghcr.io/alphagov/paas/cf-cli
-
-- name: cf-acceptance-tests-docker-registry
-  type: registry-image
-  icon: docker
-  source:
-    <<: *build-image-source-docker-registry
-    repository: governmentpaas/cf-acceptance-tests
-
-- name: cf-acceptance-tests-github-registry
-  type: registry-image
-  icon: github
-  source:
-    <<: *build-image-source-github-registry
-    repository: ghcr.io/alphagov/paas/cf-acceptance-tests
-
-- name: cf-uaac-docker-registry
-  type: registry-image
-  icon: docker
-  source:
-    <<: *build-image-source-docker-registry
-    repository: governmentpaas/cf-uaac
-
-- name: cf-uaac-github-registry
-  type: registry-image
-  icon: github
-  source:
-    <<: *build-image-source-github-registry
-    repository: ghcr.io/alphagov/paas/cf-uaac
-
-- name: certstrap-docker-registry
-  type: registry-image
-  icon: docker
-  source:
-    <<: *build-image-source-docker-registry
-    repository: governmentpaas/certstrap
-
-- name: certstrap-github-registry
-  type: registry-image
-  icon: github
-  source:
-    <<: *build-image-source-github-registry
-    repository: ghcr.io/alphagov/paas/certstrap
-
-- name: bosh-cli-v2-docker-registry
-  type: registry-image
-  icon: docker
-  source:
-    <<: *build-image-source-docker-registry
-    repository: governmentpaas/bosh-cli-v2
-
-- name: bosh-cli-v2-github-registry
-  type: registry-image
-  icon: github
-  source:
-    <<: *build-image-source-github-registry
-    repository: ghcr.io/alphagov/paas/bosh-cli-v2
-
-- name: awscli-docker-registry
-  type: registry-image
-  icon: docker
-  source:
-    <<: *build-image-source-docker-registry
-    repository: governmentpaas/awscli
-
-- name: awscli-github-registry
-  type: registry-image
-  icon: github
-  source:
-    <<: *build-image-source-github-registry
-    repository: ghcr.io/alphagov/paas/awscli
-
-- name: tech-docs-docker-registry
-  type: registry-image
-  icon: docker
-  source:
-    <<: *build-image-source-docker-registry
-    repository: governmentpaas/tech-docs
-
-- name: tech-docs-github-registry
-  type: registry-image
-  icon: github
-  source:
-    <<: *build-image-source-github-registry
-    repository: ghcr.io/alphagov/paas/tech-docs
-
-- name: semver-resource-docker-registry
-  type: registry-image
-  icon: docker
-  source:
-    <<: *build-image-source-docker-registry
-    repository: governmentpaas/semver-resource
-
-- name: semver-resource-github-registry
-  type: registry-image
-  icon: github
-  source:
-    <<: *build-image-source-github-registry
-    repository: ghcr.io/alphagov/paas/semver-resource
-
-- name: grafana-annotation-resource-docker-registry
-  type: registry-image
-  icon: docker
-  source:
-    <<: *build-image-source-docker-registry
-    repository: governmentpaas/grafana-annotation-resource
-
-- name: grafana-annotation-resource-github-registry
-  type: registry-image
-  icon: github
-  source:
-    <<: *build-image-source-github-registry
-    repository: ghcr.io/alphagov/paas/grafana-annotation-resource
-
-- name: s3-resource-github-registry
-  type: registry-image
-  icon: github
-  source:
-    <<: *build-image-source-github-registry
-    repository: ghcr.io/alphagov/paas/s3-resource
-
-- name: paas-prometheus-exporter-docker-registry
-  type: registry-image
-  icon: docker
-  source:
-    <<: *build-image-source-docker-registry
-    repository: governmentpaas/paas-prometheus-exporter
-
-- name: paas-prometheus-exporter-github-registry
-  type: registry-image
-  icon: github
-  source:
-    <<: *build-image-source-github-registry
-    repository: ghcr.io/alphagov/paas/paas-prometheus-exporter
+  - name: paas-prometheus-exporter-github-registry
+    type: registry-image
+    icon: github
+    source:
+      <<: *build-image-source-github-registry
+      repository: ghcr.io/alphagov/paas/paas-prometheus-exporter
 
 jobs:
-- name: build-psql
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config: &build-image-config
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/psql
-      inputs:
-      - name: paas-docker-cloudfoundry-tools
-      outputs:
-      - name: image
-      run:
-        path: build
-  - task: create-image-tag
-    config: &create-image-tag
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: paas-docker-cloudfoundry-tools
-      - name: image
-      outputs:
-      - name: image
-      run:
-        path: sh
-        args:
-          - -e
-          - -u
-          - -c
-          - |
-            git_branch_name="$(cd paas-docker-cloudfoundry-tools && \
-                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+  - name: build-paas-tech-docs
+    plan:
+      - get: paas-tech-docs
+        trigger: true
+      - task: build
+        privileged: true
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: ghcr.io/alphagov/paas/concourse-oci-build-task
+              tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
+          inputs:
+            - name: paas-tech-docs
+              path: .
+          outputs:
+            - name: image
+          run:
+            path: build
+      - task: create-image-tag
+        config: &create-image-tag
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: ghcr.io/alphagov/paas/concourse-oci-build-task
+              tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
+          inputs:
+            - name: paas-tech-docs
+            - name: image
+          outputs:
+            - name: image
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                git_branch_name="$(cd paas-tech-docs && \
+                              git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
 
-            git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
-                     git log --pretty=format:'%H' -n 1)"
+                git_commit_sha="$(cd paas-tech-docs && \
+                         git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
-  - put: psql-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: psql-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
+                echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
+      - put: tech-docs-docker-registry
+        params:
+          image: image/image.tar
+          additional_tags: image/tags
 
-- name: build-spruce
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      <<: *build-image-config
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/spruce
-  - task: create-image-tag
-    config: *create-image-tag
-  - put: spruce-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: spruce-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
+      - put: tech-docs-github-registry
+        params:
+          image: image/image.tar
+          additional_tags: image/tags
 
-- name: build-json-minify
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      <<: *build-image-config
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/json-minify
-  - task: create-image-tag
-    config: *create-image-tag
-  - put: json-minify-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: json-minify-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
+  - name: build-paas-semver-resource
+    plan:
+      - get: paas-semver-resource
+        trigger: true
+      - task: build
+        privileged: true
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: ghcr.io/alphagov/paas/concourse-oci-build-task
+              tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
+          inputs:
+            - name: paas-semver-resource
+              path: .
+          outputs:
+            - name: image
+          run:
+            path: build
+      - task: create-image-tag
+        config: &create-image-tag
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: ghcr.io/alphagov/paas/concourse-oci-build-task
+              tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
+          inputs:
+            - name: paas-semver-resource
+            - name: image
+          outputs:
+            - name: image
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                git_branch_name="$(cd paas-semver-resource && \
+                              git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
 
-- name: build-alpine
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config: &build-image-config
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/alpine
-      inputs:
-      - name: paas-docker-cloudfoundry-tools
-      outputs:
-      - name: image
-      run:
-        path: build
-  - task: create-image-tag
-    config: &create-image-tag
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: paas-docker-cloudfoundry-tools
-      - name: image
-      outputs:
-      - name: image
-      run:
-        path: sh
-        args:
-          - -e
-          - -u
-          - -c
-          - |
-            git_branch_name="$(cd paas-docker-cloudfoundry-tools && \
-                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+                git_commit_sha="$(cd paas-semver-resource && \
+                         git log --pretty=format:'%H' -n 1)"
 
-            git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
-                     git log --pretty=format:'%H' -n 1)"
+                echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
+      - put: semver-resource-docker-registry
+        params:
+          image: image/image.tar
+          additional_tags: image/tags
+      - put: semver-resource-github-registry
+        params:
+          image: image/image.tar
+          additional_tags: image/tags
 
-            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
-  - put: alpine-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: alpine-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
+  - name: build-paas-prometheus-exporter
+    plan:
+      - get: paas-prometheus-exporter
+        trigger: true
+      - task: build
+        privileged: true
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: ghcr.io/alphagov/paas/concourse-oci-build-task
+              tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
+          inputs:
+            - name: paas-prometheus-exporter
+              path: .
+          outputs:
+            - name: image
+          run:
+            path: build
+      - task: create-image-tag
+        config: &create-image-tag
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: ghcr.io/alphagov/paas/concourse-oci-build-task
+              tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
+          inputs:
+            - name: paas-prometheus-exporter
+            - name: image
+          outputs:
+            - name: image
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                git_branch_name="$(cd paas-prometheus-exporter && \
+                              git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
 
-- name: build-golang
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config: &build-image-config
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/golang
-      inputs:
-      - name: paas-docker-cloudfoundry-tools
-      outputs:
-      - name: image
-      run:
-        path: build
-  - task: create-image-tag
-    config: &create-image-tag
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: paas-docker-cloudfoundry-tools
-      - name: image
-      outputs:
-      - name: image
-      run:
-        path: sh
-        args:
-          - -e
-          - -u
-          - -c
-          - |
-            git_branch_name="$(cd paas-docker-cloudfoundry-tools && \
-                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+                git_commit_sha="$(cd paas-prometheus-exporter && \
+                         git log --pretty=format:'%H' -n 1)"
 
-            git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
-                     git log --pretty=format:'%H' -n 1)"
+                echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
+      - put: paas-prometheus-exporter-docker-registry
+        params:
+          image: image/image.tar
+          additional_tags: image/tags
 
-            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
-  - put: golang-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: golang-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
+      - put: paas-prometheus-exporter-github-registry
+        params:
+          image: image/image.tar
+          additional_tags: image/tags
 
-- name: build-node
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config: &build-image-config
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/node
-      inputs:
-      - name: paas-docker-cloudfoundry-tools
-      outputs:
-      - name: image
-      run:
-        path: build
-  - task: create-image-tag
-    config: &create-image-tag
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: paas-docker-cloudfoundry-tools
-      - name: image
-      outputs:
-      - name: image
-      run:
-        path: sh
-        args:
-          - -e
-          - -u
-          - -c
-          - |
-            git_branch_name="$(cd paas-docker-cloudfoundry-tools && \
-                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+  - name: build-paas-grafana-annotation-resource
+    plan:
+      - get: paas-grafana-annotation-resource
+        trigger: true
+      - task: build
+        privileged: true
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: ghcr.io/alphagov/paas/concourse-oci-build-task
+              tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
+          inputs:
+            - name: paas-grafana-annotation-resource
+              path: .
+          outputs:
+            - name: image
+          run:
+            path: build
+      - task: create-image-tag
+        config: &create-image-tag
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: ghcr.io/alphagov/paas/concourse-oci-build-task
+              tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
+          inputs:
+            - name: paas-grafana-annotation-resource
+            - name: image
+          outputs:
+            - name: image
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                git_branch_name="$(cd paas-grafana-annotation-resource && \
+                              git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
 
-            git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
-                     git log --pretty=format:'%H' -n 1)"
+                git_commit_sha="$(cd paas-grafana-annotation-resource && \
+                         git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
-  - put: node-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: node-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
+                echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
+      - put: grafana-annotation-resource-docker-registry
+        params:
+          image: image/image.tar
+          additional_tags: image/tags
+      - put: grafana-annotation-resource-github-registry
+        params:
+          image: image/image.tar
+          additional_tags: image/tags
 
-- name: build-node-chromium
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config: &build-image-config
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/node-chromium
-      inputs:
-      - name: paas-docker-cloudfoundry-tools
-      outputs:
-      - name: image
-      run:
-        path: build
-  - task: create-image-tag
-    config: &create-image-tag
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: paas-docker-cloudfoundry-tools
-      - name: image
-      outputs:
-      - name: image
-      run:
-        path: sh
-        args:
-          - -e
-          - -u
-          - -c
-          - |
-            git_branch_name="$(cd paas-docker-cloudfoundry-tools && \
-                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+  - name: build-s3-resource
+    plan:
+      - get: s3-resource-src
+        trigger: true
+      - task: build
+        privileged: true
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: ghcr.io/alphagov/paas/concourse-oci-build-task
+              tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
+          inputs:
+            - name: s3-resource-src
+              path: .
+          outputs:
+            - name: image
+          run:
+            path: build
+      - task: create-image-tag
+        config: &create-image-tag
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: ghcr.io/alphagov/paas/concourse-oci-build-task
+              tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
+          inputs:
+            - name: s3-resource-src
+            - name: image
+          outputs:
+            - name: image
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                git_branch_name="$(cd s3-resource-src && \
+                              git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
 
-            git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
-                     git log --pretty=format:'%H' -n 1)"
+                git_commit_sha="$(cd s3-resource-src && \
+                          git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
-  - put: node-chromium-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: node-chromium-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
+                echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
+      - put: s3-resource-github-registry
+        params:
+          image: image/image.tar
+          additional_tags: image/tags
 
-- name: build-olhtbr-metadata-resource
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config: &build-image-config
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/olhtbr-metadata-resource
-      inputs:
-      - name: paas-docker-cloudfoundry-tools
-      outputs:
-      - name: image
-      run:
-        path: build
-  - task: create-image-tag
-    config: &create-image-tag
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: paas-docker-cloudfoundry-tools
-      - name: image
-      outputs:
-      - name: image
-      run:
-        path: sh
-        args:
-          - -e
-          - -u
-          - -c
-          - |
-            git_branch_name="$(cd paas-docker-cloudfoundry-tools && \
-                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
+  - name: build-slack-notification-resource
+    plan:
+      - get: slack-notification-resource
+        trigger: true
+      - task: build
+        privileged: true
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: ghcr.io/alphagov/paas/concourse-oci-build-task
+              tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
+          inputs:
+            - name: slack-notification-resource
+              path: .
+          outputs:
+            - name: image
+          run:
+            path: build
+      - task: create-image-tag
+        config: &create-image-tag
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: ghcr.io/alphagov/paas/concourse-oci-build-task
+              tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
+          inputs:
+            - name: slack-notification-resource
+            - name: image
+          outputs:
+            - name: image
+          run:
+            path: sh
+            args:
+              - -e
+              - -u
+              - -c
+              - |
+                git_branch_name="$(cd slack-notification-resource && \
+                              git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
 
-            git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
-                     git log --pretty=format:'%H' -n 1)"
+                git_commit_sha="$(cd slack-notification-resource && \
+                         git log --pretty=format:'%H' -n 1)"
 
-            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
-  - put: olhtbr-metadata-resource-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: olhtbr-metadata-resource-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-concourse-pool-resource
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config: &build-image-config
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/concourse-pool-resource
-      inputs:
-      - name: paas-docker-cloudfoundry-tools
-      outputs:
-      - name: image
-      run:
-        path: build
-  - task: create-image-tag
-    config: &create-image-tag
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: paas-docker-cloudfoundry-tools
-      - name: image
-      outputs:
-      - name: image
-      run:
-        path: sh
-        args:
-          - -e
-          - -u
-          - -c
-          - |
-            git_branch_name="$(cd paas-docker-cloudfoundry-tools && \
-                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
-
-            git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
-                     git log --pretty=format:'%H' -n 1)"
-
-            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
-  - put: concourse-pool-resource-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: concourse-pool-resource-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-ruby
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config: &build-image-config
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/ruby
-      inputs:
-      - name: paas-docker-cloudfoundry-tools
-      outputs:
-      - name: image
-      run:
-        path: build
-  - task: create-image-tag
-    config: &create-image-tag
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: paas-docker-cloudfoundry-tools
-      - name: image
-      outputs:
-      - name: image
-      run:
-        path: sh
-        args:
-          - -e
-          - -u
-          - -c
-          - |
-            git_branch_name="$(cd paas-docker-cloudfoundry-tools && \
-                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
-
-            git_commit_sha="$(cd paas-docker-cloudfoundry-tools && \
-                     git log --pretty=format:'%H' -n 1)"
-
-            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
-  - put: ruby-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: ruby-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-terraform
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      <<: *build-image-config
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/terraform
-  - task: create-image-tag
-    config: *create-image-tag
-  - put: terraform-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: terraform-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-self-update-pipelines
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      <<: *build-image-config
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/self-update-pipelines
-  - task: create-image-tag
-    config: *create-image-tag
-  - put: self-update-pipelines-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: self-update-pipelines-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-git-ssh
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      <<: *build-image-config
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/git-ssh
-  - task: create-image-tag
-    config: *create-image-tag
-  - put: git-ssh-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: git-ssh-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-curl-ssl
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      <<: *build-image-config
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/curl-ssl
-  - task: create-image-tag
-    config: *create-image-tag
-  - put: curl-ssl-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: curl-ssl-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-cf-cli
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      <<: *build-image-config
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/cf-cli
-  - task: create-image-tag
-    config: *create-image-tag
-  - put: cf-cli-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: cf-cli-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-cf-acceptance-tests
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      <<: *build-image-config
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/cf-acceptance-tests
-  - task: create-image-tag
-    config: *create-image-tag
-  - put: cf-acceptance-tests-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: cf-acceptance-tests-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-cf-uaac
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      <<: *build-image-config
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/cf-uaac
-  - task: create-image-tag
-    config: *create-image-tag
-  - put: cf-uaac-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: cf-uaac-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-certstrap
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      <<: *build-image-config
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/certstrap
-  - task: create-image-tag
-    config: *create-image-tag
-  - put: certstrap-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: certstrap-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-bosh-cli-v2
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      <<: *build-image-config
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/bosh-cli-v2
-  - task: create-image-tag
-    config: *create-image-tag
-  - put: bosh-cli-v2-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: bosh-cli-v2-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-awscli
-  plan:
-  - get: paas-docker-cloudfoundry-tools
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      <<: *build-image-config
-      params:
-        CONTEXT: paas-docker-cloudfoundry-tools/awscli
-  - task: create-image-tag
-    config: *create-image-tag
-  - put: awscli-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: awscli-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-paas-tech-docs
-  plan:
-  - get: paas-tech-docs
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: paas-tech-docs
-        path: .
-      outputs:
-      - name: image
-      run:
-        path: build
-  - task: create-image-tag
-    config: &create-image-tag
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-        - name: paas-tech-docs
-        - name: image
-      outputs:
-        - name: image
-      run:
-        path: sh
-        args:
-          - -e
-          - -u
-          - -c
-          - |
-            git_branch_name="$(cd paas-tech-docs && \
-                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
-
-            git_commit_sha="$(cd paas-tech-docs && \
-                     git log --pretty=format:'%H' -n 1)"
-
-            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
-  - put: tech-docs-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-  - put: tech-docs-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-paas-semver-resource
-  plan:
-  - get: paas-semver-resource
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: paas-semver-resource
-        path: .
-      outputs:
-      - name: image
-      run:
-        path: build
-  - task: create-image-tag
-    config: &create-image-tag
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: paas-semver-resource
-      - name: image
-      outputs:
-      - name: image
-      run:
-        path: sh
-        args:
-          - -e
-          - -u
-          - -c
-          - |
-            git_branch_name="$(cd paas-semver-resource && \
-                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
-
-            git_commit_sha="$(cd paas-semver-resource && \
-                     git log --pretty=format:'%H' -n 1)"
-
-            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
-  - put: semver-resource-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: semver-resource-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-paas-prometheus-exporter
-  plan:
-  - get: paas-prometheus-exporter
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: paas-prometheus-exporter
-        path: .
-      outputs:
-      - name: image
-      run:
-        path: build
-  - task: create-image-tag
-    config: &create-image-tag
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-        - name: paas-prometheus-exporter
-        - name: image
-      outputs:
-        - name: image
-      run:
-        path: sh
-        args:
-          - -e
-          - -u
-          - -c
-          - |
-            git_branch_name="$(cd paas-prometheus-exporter && \
-                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
-
-            git_commit_sha="$(cd paas-prometheus-exporter && \
-                     git log --pretty=format:'%H' -n 1)"
-
-            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
-  - put: paas-prometheus-exporter-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-  - put: paas-prometheus-exporter-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-paas-grafana-annotation-resource
-  plan:
-  - get: paas-grafana-annotation-resource
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: paas-grafana-annotation-resource
-        path: .
-      outputs:
-      - name: image
-      run:
-        path: build
-  - task: create-image-tag
-    config: &create-image-tag
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: paas-grafana-annotation-resource
-      - name: image
-      outputs:
-      - name: image
-      run:
-        path: sh
-        args:
-          - -e
-          - -u
-          - -c
-          - |
-            git_branch_name="$(cd paas-grafana-annotation-resource && \
-                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
-
-            git_commit_sha="$(cd paas-grafana-annotation-resource && \
-                     git log --pretty=format:'%H' -n 1)"
-
-            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
-  - put: grafana-annotation-resource-docker-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-  - put: grafana-annotation-resource-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-s3-resource
-  plan:
-  - get: s3-resource-src
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: s3-resource-src
-        path: .
-      outputs:
-      - name: image
-      run:
-        path: build
-  - task: create-image-tag
-    config: &create-image-tag
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: s3-resource-src
-      - name: image
-      outputs:
-      - name: image
-      run:
-        path: sh
-        args:
-          - -e
-          - -u
-          - -c
-          - |
-            git_branch_name="$(cd s3-resource-src && \
-                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
-
-            git_commit_sha="$(cd s3-resource-src && \
-                      git log --pretty=format:'%H' -n 1)"
-
-            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
-  - put: s3-resource-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
-
-- name: build-slack-notification-resource
-  plan:
-  - get: slack-notification-resource
-    trigger: true
-  - task: build
-    privileged: true
-    config:
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: slack-notification-resource
-        path: .
-      outputs:
-      - name: image
-      run:
-        path: build
-  - task: create-image-tag
-    config: &create-image-tag
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: slack-notification-resource
-      - name: image
-      outputs:
-      - name: image
-      run:
-        path: sh
-        args:
-          - -e
-          - -u
-          - -c
-          - |
-            git_branch_name="$(cd slack-notification-resource && \
-                          git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
-
-            git_commit_sha="$(cd slack-notification-resource && \
-                     git log --pretty=format:'%H' -n 1)"
-
-            echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
-  - put: slack-notification-resource-github-registry
-    params:
-      image: image/image.tar
-      additional_tags: image/tags
+                echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
+      - put: slack-notification-resource-github-registry
+        params:
+          image: image/image.tar
+          additional_tags: image/tags
