@@ -121,7 +121,6 @@ test: spec lint_shellcheck lint_terraform lint_yaml lint_concourse
 .PHONY: spec
 spec:
 	cd scripts &&\
-		go get -d -t . &&\
 		go test
 
 .PHONY: lint_shellcheck
