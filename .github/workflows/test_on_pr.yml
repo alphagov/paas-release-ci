@@ -3,7 +3,7 @@ on: pull_request
 env:
   TF_VERSION: "1.0.8"
   SHELLCHECK_VERSION: "0.7.1"
-  GO_VERSION: "1.17"
+  GO_VERSION: "1.18"
   RUBY_VERSION: "2.7"
 
 jobs:
@@ -35,6 +35,7 @@ jobs:
       - name: "Install Pipecleaner"
         run: |
           go get -u github.com/alphagov/paas-cf/tools/pipecleaner
+          go install github.com/alphagov/paas-cf/tools/pipecleaner
 
       - name: Install Python packages
         run: pip install --user yamllint
