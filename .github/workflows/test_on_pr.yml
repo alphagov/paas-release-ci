@@ -34,8 +34,7 @@ jobs:
 
       - name: "Install Pipecleaner"
         run: |
-          go get -u github.com/alphagov/paas-cf/tools/pipecleaner
-          go install github.com/alphagov/paas-cf/tools/pipecleaner
+          go install github.com/alphagov/paas-cf/tools/pipecleaner@main
 
       - name: Install Python packages
         run: pip install --user yamllint
