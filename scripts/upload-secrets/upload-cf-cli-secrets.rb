@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative "./upload-secrets.rb"
+require_relative "./upload-secrets"
 
 `export PASSWORD_STORE_DIR=${CF_CLI_PASSWORD_STORE_DIR}`
 
@@ -20,7 +20,7 @@ secrets = [
     "name" => "/concourse/main/cf_password",
     "type" => "value",
     "value" => cf_password.chomp,
-  }
+  },
 ]
 
 upload_secrets(secrets)

@@ -1,3 +1,5 @@
-source 'https://rubygems.org'
+# frozen_string_literal: true
 
-gem "rubocop-govuk", "~> 3.15"
+source "https://rubygems.org"
+
+gem "rubocop-govuk", "~> 4.9"
