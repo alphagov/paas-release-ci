@@ -9,8 +9,8 @@ $("${SCRIPTS_DIR}/environment.sh")
 "${SCRIPTS_DIR}/fly_sync_and_login.sh"
 
 generate_vars_file() {
-SSH_KEY=$(aws s3 cp s3://"${STATE_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-state}"/ci_build_tag_key -)
-  cat << EOF
+  SSH_KEY=$(aws s3 cp s3://"${STATE_BUCKET_NAME:-gds-paas-${DEPLOY_ENV}-state}"/ci_build_tag_key -)
+  cat <<EOF
 ---
 pipeline_name: ${pipeline_name}
 github_status_context: ${DEPLOY_ENV}/status
@@ -24,7 +24,7 @@ github_repo_uri: git@github.com:${organisation}/${repository}.git
 tag_branch: ${tag_branch}
 version_file: ${version_file}
 EOF
-echo -e "tagging_key: |\n  ${SSH_KEY//$'\n'/$'\n'  }"
+  echo -e "tagging_key: |\n  ${SSH_KEY//$'\n'/$'\n'  }"
 }
 
 setup_test_pipeline() {
@@ -34,7 +34,7 @@ setup_test_pipeline() {
   repository="$3"
   tag_branch="$4"
 
-  generate_vars_file > /dev/null # Check for missing vars
+  generate_vars_file >/dev/null # Check for missing vars
 
   bash "${SCRIPTS_DIR}/deploy-pipeline.sh" \
     "${pipeline_name}" \
@@ -48,8 +48,6 @@ remove_test_pipeline() {
   ${FLY_CMD} -t "${FLY_TARGET}" destroy-pipeline --pipeline "${pipeline_name}" --non-interactive || true
 }
 
-
-setup_test_pipeline rds-broker alphagov paas-rds-broker main
 setup_test_pipeline paas-billing alphagov paas-billing main
 setup_test_pipeline elasticache-broker alphagov paas-elasticache-broker main
 setup_test_pipeline paas-accounts alphagov paas-accounts main
