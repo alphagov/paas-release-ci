@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'securerandom'
-require_relative "./upload-secrets.rb"
+require "securerandom"
+require_relative "./upload-secrets"
 
 `export PASSWORD_STORE_DIR=${HACKMD_PASSWORD_STORE_DIR}`
 

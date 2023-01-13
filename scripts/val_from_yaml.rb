@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
-require 'yaml'
+# frozen_string_literal: true
+
+require "yaml"
 
 class PropertyTree
   def initialize(tree)
@@ -12,40 +14,41 @@ class PropertyTree
 
   def recursive_get(tree, key_array)
     return tree if key_array.empty?
+
     current_key, *next_keys = key_array
 
     next_level = case tree
                  when Hash
                    tree[current_key]
                  when Array
-                   if /\A[-+]?\d+\z/ === current_key # If the key is an int, access by index
+                   if current_key == /\A[-+]?\d+\z/ # If the key is an int, access by index
                      tree[current_key.to_i]
                    else # if not, search for a element with `name: current_key`
-                     tree.select { |x| x.is_a?(Hash) && x['name'] == current_key }.first
+                     tree.select { |x| x.is_a?(Hash) && x["name"] == current_key }.first
                    end
                  end
-    if not next_level.nil?
-      recursive_get(next_level, next_keys)
-    end
+    return if next_level.nil?
+
+    recursive_get(next_level, next_keys)
   end
 
   def get(key)
-    key_array = key.split('.')
-    self.recursive_get(@tree, key_array)
+    key_array = key.split(".")
+    recursive_get(@tree, key_array)
   end
 
   def [](key)
-    self.get(key)
+    get(key)
   end
 end
 
-if __FILE__ == $0 # Only execute if called directly as command
+if __FILE__ == $PROGRAM_NAME # Only execute if called directly as command
   key = ARGV[0] || abort("Usage: #{$PROGRAM_NAME} <key.dot.delimited> [input.yml]")
 
   property_tree = if ARGV[1]
                     PropertyTree.load_yaml(File.open(ARGV[1]).read)
                   else
-                    PropertyTree.load_yaml(STDIN.load)
+                    PropertyTree.load_yaml($stdin.load)
                   end
 
   val = property_tree[key]
