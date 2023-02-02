@@ -1,0 +1,188 @@
+---
+resource_types:
+  - name: pull-request
+    type: docker-image
+    check_every: 24h
+    source:
+      # temporary until there is a version which contains the submodule param
+      repository: ghcr.io/alphagov/paas/teliaoss-github-pr-resource
+      tag: c41729d09b4da671765979933fd7e24388c34e05
+
+  - name: s3-iam
+    type: docker-image
+    check_every: 24h
+    source:
+      repository: ghcr.io/alphagov/paas/s3-resource
+      tag: 97e441efbfb06ac7fb09786fd74c64b05f9cc907
+
+  - name: semver-iam
+    type: docker-image
+    check_every: 24h
+    source:
+      repository: ghcr.io/alphagov/paas/semver-resource
+      tag: f2a80c95481056aa57d837e3b14f0012b542fdb3
+
+resources:
+  - name: pr
+    type: pull-request
+    check_every: 1m
+    source:
+      repository: alphagov/paas-nginx-hosts-reload
+      access_token: ((github_access_token))
+      disable_forks: true
+
+  - name: paas-nginx-hosts-reload-repo
+    type: git
+    check_every: 1m
+    source:
+      branch: main
+      private_key: ((tagging_key))
+      uri: git@github.com:alphagov/paas-nginx-hosts-reload.git
+
+  - name: bosh-release-tarballs
+    type: s3-iam
+    check_every: 24h
+    source:
+      bucket: ((releases_bucket_name))
+      region_name: ((aws_region))
+      regexp: ([a-z0-9]+).tgz
+
+  - name: bosh-release-version
+    type: semver-iam
+    check_every: 24h
+    source:
+      bucket: ((releases_bucket_name))
+      region_name: ((aws_region))
+      key: nginx-hosts-reload-release.version
+      initial_version: 1.0.0
+
+jobs:
+  - name: build-dev-release
+    serial: true
+    plan:
+      # Get PR content
+      - get: pr
+        trigger: true
+        params:
+          integration_tool: checkout
+          submodules: true
+
+      # Create a bosh release from it
+      - task: build-dev-release
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ghcr.io/alphagov/paas/bosh-cli-v2
+              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
+          inputs:
+            - name: pr
+          outputs:
+            - name: bosh-release-tarballs
+          params:
+            BUCKET: ((releases_bucket_name))
+            REGION: ((aws_region))
+            TARBALL_DIR: "../bosh-release-tarballs"
+          run:
+            path: bash
+            args:
+              - -e
+              - -c
+              - |
+                cd pr
+                make bosh_release
+
+    on_success:
+      do:
+        # Upload the bosh release
+        - put: bosh-release-tarballs
+          params:
+            file: bosh-release-tarballs/*.tgz
+            acl: public-read
+
+        # Mark the PR as passing
+        - put: pr
+          resource: pr
+          params:
+            path: pr
+            context: ((github_status_context))
+            status: SUCCESS
+          get_params:
+            skip_download: true
+    on_failure:
+      # Set the GitHub check status to "FAILURE"
+      put: pr
+      resource: pr
+      params:
+        path: pr
+        context: ((github_status_context))
+        status: FAILURE
+      get_params:
+        skip_download: true
+
+  - name: build-prod-release
+    serial: true
+    plan:
+      # Get the repo content on `main`
+      - get: repo
+        resource: paas-nginx-hosts-reload-repo
+        trigger: true
+        params:
+          integration_tool: checkout
+          submodules: all
+
+      # Get the latest version of the Bosh release
+      # and increment the minor version
+      - get: bosh-release-version
+        params:
+          bump: minor
+
+      # Build a Bosh release from the repository
+      - task: build-prod-release
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ghcr.io/alphagov/paas/bosh-cli-v2
+              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
+          inputs:
+            - name: repo
+            - name: bosh-release-version
+          outputs:
+            - name: bosh-release-tarballs
+          params:
+            BUCKET: ((releases_bucket_name))
+            REGION: ((aws_region))
+            TARBALL_DIR: "../bosh-release-tarballs"
+          run:
+            path: bash
+            args:
+              - -e
+              - -c
+              - |
+                cd repo
+
+                make bosh_release VERSION="$(cat ../bosh-release-version/number)"
+
+    on_success:
+      do:
+        # Tag the paas-nginx-hosts repo commit with the latest version number
+        - put: paas-nginx-hosts-reload-repo
+          params:
+            only_tag: true
+            repository: repo
+            tag: bosh-release-version/number
+            tag_prefix: "v"
+
+        # Upload the Bosh release
+        - put: bosh-release-tarballs
+          params:
+            file: bosh-release-tarballs/*.tgz
+            acl: public-read
+
+        # Update the latest version of the Bosh release
+        - put: bosh-release-version
+          params:
+            file: bosh-release-version/number
