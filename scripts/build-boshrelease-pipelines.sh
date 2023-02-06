@@ -69,3 +69,4 @@ setup_release_pipeline observability      alphagov/paas-observability-release   
 setup_release_pipeline s3-broker          alphagov/paas-s3-broker-boshrelease          main
 setup_release_pipeline sqs-broker         alphagov/paas-sqs-broker-boshrelease         main
 setup_release_pipeline uaa-customized     alphagov/paas-uaa-customized-boshrelease     main
+setup_release_pipeline generic            alphagov/paas-generic-boshrelease            main
