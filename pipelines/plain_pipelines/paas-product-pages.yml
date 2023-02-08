@@ -52,7 +52,7 @@ jobs:
               - -c
               - |
                 npm install
-                node "$(npm bin)/rollup" -c && node "$(npm bin)/next" build && node "$(npm bin)/next" export
+                npx rollup -c && npx next build && npx next export
 
       - task: push
         config:
