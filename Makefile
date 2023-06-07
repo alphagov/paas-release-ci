@@ -102,6 +102,10 @@ pipelines: ## Upload setup pipelines to concourse
 boshrelease-pipelines: ## Upload boshrelease pipelines to concourse
 	@scripts/build-boshrelease-pipelines.sh
 
+.PHONY: goalng-boshrelease-pipelines
+golang-boshrelease-pipelines: ## Upload boshrelease pipelines to concourse
+	@scripts/golang-build-boshrelease-pipelines.sh
+
 .PHONY: integration-test-pipelines
 integration-test-pipelines: ## Upload integration test pipelines to concourse
 	@scripts/integration-test-pipelines.sh

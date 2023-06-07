@@ -29,6 +29,19 @@ version_file: ${boshrelease_name}.version
 EOF
 }
 
+setup_golang_bumping() {
+  pipeline_name="golang-bump-${1}-release"
+  boshrelease_name="$1"
+  github_repo="$2"
+
+  generate_vars_file > /dev/null # Check for missing vars
+
+  bash "${SCRIPTS_DIR}/bump-golang.sh" \
+    "${pipeline_name}" \
+    "${PIPELINES_DIR}/build-release.yml" \
+    <(generate_vars_file)
+}
+
 setup_release_pipeline() {
   pipeline_name="${1}-release"
   boshrelease_name="$1"
