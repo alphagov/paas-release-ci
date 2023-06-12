@@ -70,7 +70,7 @@ resources:
     check_every: 1m
     source:
       uri: https://github.com/bosh-packages/golang-release.git
-      branch: master
+      tag_filter: "v*"
 
 jobs:
   - name: build-dev-release
