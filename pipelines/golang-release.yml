@@ -1,0 +1,231 @@
+---
+groups:
+  - name: main
+    jobs:
+      - build-dev-release
+      # - build-final-release
+  # - name: version
+  #   jobs:
+  #     - bump-major
+  #     - bump-minor
+
+resource_types:
+  # - name: pull-request
+  #   type: docker-image
+  #   check_every: 24h
+  #   source:
+  #     # temporary until there is a version which contains the submodule param
+  #     repository: ghcr.io/alphagov/paas/teliaoss-github-pr-resource
+  #     tag: c41729d09b4da671765979933fd7e24388c34e05
+
+  - name: s3-iam
+    type: docker-image
+    check_every: 24h
+    source:
+      repository: ghcr.io/alphagov/paas/s3-resource
+      tag: 97e441efbfb06ac7fb09786fd74c64b05f9cc907
+
+  - name: semver-iam
+    type: docker-image
+    check_every: 24h
+    source:
+      repository: ghcr.io/alphagov/paas/semver-resource
+      tag: f2a80c95481056aa57d837e3b14f0012b542fdb3
+
+resources:
+  # - name: bosh-release-pr
+  #   type: pull-request
+  #   check_every: 1m
+  #   source:
+  #     repository: ((github_repo))
+  #     access_token: ((github_access_token))
+  #     disable_forks: true
+
+  - name: bosh-release-repo
+    type: git
+    check_every: 1m
+    source:
+      uri: ((github_repo_uri))
+      branch: ((final_release_branch))
+
+  - name: bosh-release-tarballs
+    type: s3-iam
+    check_every: 24h
+    source:
+      bucket: ((releases_bucket_name))
+      region_name: ((aws_region))
+      regexp: ([a-z0-9]+).tgz
+
+  # - name: bosh-release-version
+  #   type: semver-iam
+  #   check_every: 24h
+  #   source:
+  #     bucket: ((releases_bucket_name))
+  #     region_name: ((aws_region))
+  #     key: ((version_file))
+  #     initial_version: 0.1.0
+
+  - name: golang-release-repo
+    type: git
+    check_every: 1m
+    source:
+      uri: https://github.com/bosh-packages/golang-release.git
+      branch: master
+
+jobs:
+  - name: build-dev-release
+    serial: true
+    plan:
+      - get: bosh-release-repo
+        trigger: true
+      - get: golang-release-repo
+        trigger: true
+      - task: build
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: ghcr.io/alphagov/paas/bosh-cli-v2
+              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
+          inputs:
+          #   - name: bosh-release-pr
+            - name: bosh-release-repo
+            - name: golang-release-repo
+          outputs:
+            - name: bosh-release-tarballs
+          params:
+            BUCKET: ((releases_bucket_name))
+            REGION: ((aws_region))
+            NAME: ((boshrelease_name))
+            GOLANG_VERSION: "1.20"
+          run:
+            path: bash
+            args:
+              - -e
+              - -c
+              - |
+                cd bosh-release-repo
+
+                VERSION=0.0.$(date +%s)
+                export VERSION
+                echo "Vendoring golang golang-${GOLANG_VERSION}-linux..."
+                bosh vendor-package "golang-${GOLANG_VERSION}-linux" ../golang-release-repo
+                echo "Creating release..."
+                bosh create-release \
+                  --name "${NAME}" \
+                  --version "${VERSION}" \
+                  --tarball "../bosh-release-tarballs/${NAME}-${VERSION}.tgz" \
+                  --force
+                ls -al ../bosh-release-tarballs
+
+                SHA1=$(openssl sha1 "../bosh-release-tarballs/${NAME}-${VERSION}.tgz" | cut -d' ' -f 2)
+                cat <<EOF
+
+                releases:
+                  - name: ${NAME}
+                    version: ${VERSION}
+                    url: https://s3-${REGION}.amazonaws.com/${BUCKET}/${NAME}-${VERSION}.tgz
+                    sha1: ${SHA1}
+                EOF
+                echo "I should automatically create a new branch, and a PR now. I do not."
+                echo git checkout -b "bump-golang-to-${GOLANG_VERSION}"
+                echo git commit -a -m "Bumping Golang to version ${GOLANG_VERSION}"
+                echo git push origin "bump-golang-to-${GOLANG_VERSION}"
+                echo gh pr create --title "Bump Golang to ${GOLANG_VERSION}"
+        on_success:
+          do:
+            - put: bosh-release-tarballs
+              params:
+                file: bosh-release-tarballs/*.tgz
+                acl: public-read
+            # - put: bosh-release-pr
+            #   params:
+            #     path: bosh-release-pr
+            #     context: ((github_status_context))
+            #     status: SUCCESS
+            #   get_params:
+            #     skip_download: true
+        # on_failure:
+        #   put: bosh-release-pr
+        #   params:
+        #     path: bosh-release-pr
+        #     context: ((github_status_context))
+        #     status: FAILURE
+        #   get_params:
+        #     skip_download: true
+
+  # - name: build-final-release
+  #   serial: true
+  #   plan:
+  #     - get: bosh-release-repo
+  #       trigger: true
+  #     - get: bosh-release-version
+  #       params:
+  #         bump: patch
+  #     - task: build
+  #       config:
+  #         platform: linux
+  #         image_resource:
+  #           type: docker-image
+  #           source:
+  #             repository: ghcr.io/alphagov/paas/bosh-cli-v2
+  #             tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
+  #         inputs:
+  #           - name: bosh-release-repo
+  #           - name: bosh-release-version
+  #         outputs:
+  #           - name: bosh-release-tarballs
+  #         params:
+  #           BUCKET: ((releases_bucket_name))
+  #           REGION: ((aws_region))
+  #           NAME: ((boshrelease_name))
+  #         run:
+  #           path: bash
+  #           args:
+  #             - -eu
+  #             - -c
+  #             - |
+  #               cd bosh-release-repo
+
+  #               VERSION=$(cat ../bosh-release-version/number)
+  #               export VERSION
+  #               bosh create-release \
+  #                 --name "${NAME}" \
+  #                 --version "${VERSION}" \
+  #                 --tarball "../bosh-release-tarballs/${NAME}-${VERSION}.tgz" \
+  #                 --force
+  #               cp ../bosh-release-version/number ../bosh-release-tarballs/version
+  #               ls -al ../bosh-release-tarballs
+
+  #               SHA1=$(openssl sha1 "../bosh-release-tarballs/${NAME}-${VERSION}.tgz" | cut -d' ' -f 2)
+  #               cat <<EOF
+
+  #               releases:
+  #                 - name: ${NAME}
+  #                   version: ${VERSION}
+  #                   url: https://s3-${REGION}.amazonaws.com/${BUCKET}/${NAME}-${VERSION}.tgz
+  #                   sha1: ${SHA1}
+  #               EOF
+
+  #       on_success:
+  #         do:
+  #           - put: bosh-release-version
+  #             params:
+  #               file: bosh-release-tarballs/version
+  #           - put: bosh-release-tarballs
+  #             params:
+  #               file: bosh-release-tarballs/*.tgz
+  #               acl: public-read
+
+  # - name: bump-major
+  #   plan:
+  #     - put: bosh-release-version
+  #       params:
+  #         bump: major
+
+  # - name: bump-minor
+  #   plan:
+  #     - put: bosh-release-version
+  #       params:
+  #         bump: minor
