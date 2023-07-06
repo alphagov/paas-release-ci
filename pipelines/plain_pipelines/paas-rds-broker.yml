@@ -1,7 +1,7 @@
 ---
 resource_types:
   - name: pull-request
-    type: docker-image
+    type: registry-image
     check_every: 24h
     source:
       # temporary until there is a version which contains the submodule param
@@ -9,19 +9,19 @@ resource_types:
       tag: c41729d09b4da671765979933fd7e24388c34e05
 
   - name: s3-iam
-    type: docker-image
+    type: registry-image
     check_every: 24h
     source:
       repository: ghcr.io/alphagov/paas/s3-resource
       tag: 97e441efbfb06ac7fb09786fd74c64b05f9cc907
 
   - name: slack-notification-resource
-    type: docker-image
+    type: registry-image
     source:
       repository: cfcommunity/slack-notification-resource
 
   - name: semver-iam
-    type: docker-image
+    type: registry-image
     check_every: 24h
     source:
       repository: ghcr.io/alphagov/paas/semver-resource
@@ -121,10 +121,10 @@ jobs:
         config:
           platform: linux
           image_resource:
-            type: docker-image
+            type: registry-image
             source:
               repository: ghcr.io/alphagov/paas/bosh-cli-v2
-              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
+              tag: 540813b98e23f9865b33c206a840a8d5633287e9
           inputs:
             - name: pr
           outputs:
@@ -192,10 +192,10 @@ jobs:
         config:
           platform: linux
           image_resource:
-            type: docker-image
+            type: registry-image
             source:
               repository: ghcr.io/alphagov/paas/bosh-cli-v2
-              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
+              tag: 540813b98e23f9865b33c206a840a8d5633287e9
           inputs:
             - name: repo
             - name: bosh-release-version

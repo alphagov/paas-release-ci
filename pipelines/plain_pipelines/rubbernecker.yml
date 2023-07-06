@@ -66,10 +66,10 @@ jobs:
         config:
           platform: linux
           image_resource:
-            type: docker-image
+            type: registry-image
             source:
               repository: ghcr.io/alphagov/paas/cf-cli
-              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
+              tag: 540813b98e23f9865b33c206a840a8d5633287e9
           inputs:
             - name: paas-rubbernecker
           params:

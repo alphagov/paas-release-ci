@@ -1,14 +1,14 @@
 ---
 resource_types:
   - name: s3-iam
-    type: docker-image
+    type: registry-image
     check_every: 24h
     source:
       repository: ghcr.io/alphagov/paas/s3-resource
       tag: fda60bf4c5f85e96c16f704e128e5ead9e84d30d
 
   - name: slack-notification-resource
-    type: docker-image
+    type: registry-image
     source:
       repository: cfcommunity/slack-notification-resource
 
@@ -36,7 +36,7 @@ jobs:
         config:
           platform: linux
           image_resource:
-            type: docker-image
+            type: registry-image
             source:
               repository: node
               tag: 10
@@ -63,10 +63,10 @@ jobs:
         config:
           platform: linux
           image_resource:
-            type: docker-image
+            type: registry-image
             source:
               repository: ghcr.io/alphagov/paas/cf-cli
-              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
+              tag: 540813b98e23f9865b33c206a840a8d5633287e9
           inputs:
             - name: paas-codimd
           params:
