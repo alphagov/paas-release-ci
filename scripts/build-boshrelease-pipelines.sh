@@ -59,7 +59,6 @@ setup_release_pipeline concourse          alphagov/paas-concourse-bosh-release  
 setup_release_pipeline oauth2-proxy       alphagov/paas-oauth2-proxy-boshrelease       gds_main
 setup_release_pipeline prometheus         alphagov/paas-prometheus-boshrelease         gds_main
 setup_release_pipeline routing            alphagov/paas-routing-release                gds_main
-setup_release_pipeline uaa                alphagov/paas-uaa-release                    gds_main
 
 echo Setting paas pipelines
 setup_release_pipeline cdn-broker         alphagov/paas-cdn-broker-boshrelease         main
