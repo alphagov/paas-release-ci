@@ -1,19 +1,19 @@
 ---
 resource_types:
   - name: s3-iam
-    type: docker-image
+    type: registry-image
     source:
       repository: ghcr.io/alphagov/paas/s3-resource
       tag: 97e441efbfb06ac7fb09786fd74c64b05f9cc907
 
   - name: semver-iam
-    type: docker-image
+    type: registry-image
     source:
       repository: ghcr.io/alphagov/paas/semver-resource
       tag: f2a80c95481056aa57d837e3b14f0012b542fdb3
 
   - name: slack-notification-resource
-    type: docker-image
+    type: registry-image
     source:
       repository: cfcommunity/slack-notification-resource
 
@@ -89,10 +89,10 @@ jobs:
         config:
           platform: linux
           image_resource:
-            type: docker-image
+            type: registry-image
             source:
               repository: ghcr.io/alphagov/paas/self-update-pipelines
-              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
+              tag: 540813b98e23f9865b33c206a840a8d5633287e9
           inputs:
             - name: paas-release-ci
           params:
@@ -145,10 +145,10 @@ jobs:
         config:
           platform: linux
           image_resource:
-            type: docker-image
+            type: registry-image
             source:
               repository: ghcr.io/alphagov/paas/terraform
-              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
+              tag: 540813b98e23f9865b33c206a840a8d5633287e9
           inputs:
             - name: paas-release-ci
             - name: release-ci-tfstate
@@ -166,11 +166,12 @@ jobs:
               - -c
               - |
                 cp release-ci-tfstate/release-ci.tfstate updated-release-ci-tfstate/release-ci.tfstate
-                terraform init paas-release-ci/terraform
+
+                cd paas-release-ci/terraform || exit
+                terraform init
                 terraform apply \
                   -auto-approve=true \
-                  -state=updated-release-ci-tfstate/release-ci.tfstate \
-                  paas-release-ci/terraform
+                  -state="../../updated-release-ci-tfstate/release-ci.tfstate"
         ensure:
           put: release-ci-tfstate
           params:
@@ -190,10 +191,10 @@ jobs:
         config:
           platform: linux
           image_resource:
-            type: docker-image
+            type: registry-image
             source:
               repository: ghcr.io/alphagov/paas/git-ssh
-              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
+              tag: 540813b98e23f9865b33c206a840a8d5633287e9
           inputs:
             - name: ssh-private-key
             - name: ssh-public-key
@@ -244,10 +245,10 @@ jobs:
         config:
           platform: linux
           image_resource:
-            type: docker-image
+            type: registry-image
             source:
               repository: ghcr.io/alphagov/paas/self-update-pipelines
-              tag: 90f9f534ed5a3887b9c5d55a20cca6561f7de6a4
+              tag: 540813b98e23f9865b33c206a840a8d5633287e9
           inputs:
             - name: paas-release-ci
           params:
