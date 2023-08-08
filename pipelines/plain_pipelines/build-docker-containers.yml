@@ -1,10 +1,4 @@
 resources:
-  - name: paas-tech-docs
-    type: git
-    source:
-      uri: https://github.com/alphagov/paas-tech-docs.git
-      branch: main
-
   - name: paas-semver-resource
     type: git
     source:
@@ -43,26 +37,12 @@ resources:
       password: ((github_registry_access_token))
       repository: ghcr.io/alphagov/paas/slack-notification-resource
 
-  - name: tech-docs-docker-registry
+  - name: semver-resource-docker-registry
     type: registry-image
     icon: docker
     source: &build-image-source-docker-registry
       username: ((dockerhub_username))
       password: ((dockerhub_password))
-      repository: governmentpaas/tech-docs
-
-  - name: tech-docs-github-registry
-    type: registry-image
-    icon: github
-    source:
-      <<: *build-image-source-github-registry
-      repository: ghcr.io/alphagov/paas/tech-docs
-
-  - name: semver-resource-docker-registry
-    type: registry-image
-    icon: docker
-    source:
-      <<: *build-image-source-docker-registry
       repository: governmentpaas/semver-resource
 
   - name: semver-resource-github-registry
@@ -108,63 +88,6 @@ resources:
       repository: ghcr.io/alphagov/paas/paas-prometheus-exporter
 
 jobs:
-  - name: build-paas-tech-docs
-    plan:
-      - get: paas-tech-docs
-        trigger: true
-      - task: build
-        privileged: true
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-              tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-          inputs:
-            - name: paas-tech-docs
-              path: .
-          outputs:
-            - name: image
-          run:
-            path: build
-      - task: create-image-tag
-        config: &create-image-tag
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-              tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-          inputs:
-            - name: paas-tech-docs
-            - name: image
-          outputs:
-            - name: image
-          run:
-            path: sh
-            args:
-              - -e
-              - -u
-              - -c
-              - |
-                git_branch_name="$(cd paas-tech-docs && \
-                              git rev-parse --abbrev-ref HEAD | sed -e 's/^/ /')"
-
-                git_commit_sha="$(cd paas-tech-docs && \
-                         git log --pretty=format:'%H' -n 1)"
-
-                echo "${git_branch_name} ${git_commit_sha} latest HEAD main" > image/tags
-      - put: tech-docs-docker-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
-
-      - put: tech-docs-github-registry
-        params:
-          image: image/image.tar
-          additional_tags: image/tags
-
   - name: build-paas-semver-resource
     plan:
       - get: paas-semver-resource

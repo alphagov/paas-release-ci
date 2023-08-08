@@ -8,14 +8,6 @@ resource_types:
     tag: c41729d09b4da671765979933fd7e24388c34e05
 
 resources:
-- name: paas-tech-docs-pr
-  type: pull-request
-  check_every: 1m
-  source:
-    repository: alphagov/paas-tech-docs
-    access_token: ((github_access_token))
-    disable_forks: true
-
 - name: paas-semver-resource-pr
   type: pull-request
   check_every: 1m
@@ -40,18 +32,12 @@ resources:
     access_token: ((github_access_token))
     disable_forks: true
 
-- name: tech-docs
+- name: semver-resource
   type: registry-image
   source: &build-image-source
     username: ((github_username))
     password: ((github_registry_access_token))
     tag: pr-build
-    repository: ghcr.io/alphagov/paas/tech-docs
-
-- name: semver-resource
-  type: registry-image
-  source:
-    <<: *build-image-source
     repository: ghcr.io/alphagov/paas/semver-resource
 
 - name: grafana-annotation-resource
@@ -68,82 +54,6 @@ resources:
     repository: ghcr.io/alphagov/paas/paas-prometheus-exporter
 
 jobs:
-- name: build-paas-tech-pr
-  serial: true
-  plan:
-  - get: paas-tech-docs-pr
-    version: every
-    trigger: true
-    params:
-      integration_tool: checkout
-      submodules: true
-  - put: update-paas-tech-docs-pr
-    resource: paas-tech-docs-pr
-    params:
-      path: paas-tech-docs-pr
-      context: ((github_status_context))/build-paas-tech-pr
-      status: PENDING
-    get_params:
-      skip_download: true
-  - task: build
-    privileged: true
-    config:
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: paas-tech-docs-pr
-        path: .
-      outputs:
-      - name: image
-      run:
-        path: build
-  - task: create-image-tag
-    config:
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: ghcr.io/alphagov/paas/concourse-oci-build-task
-          tag: e7469f93077d814b34ecca70b98848d9717b4e02ca6e21247164ab1defa1201a
-      inputs:
-      - name: paas-tech-docs-pr
-      - name: image
-      outputs:
-      - name: image
-      run:
-        path: sh
-        args:
-          - -e
-          - -u
-          - -c
-          - |
-            cd paas-tech-docs-pr && git rev-parse --abbrev-ref HEAD > ../image/branch
-    on_success:
-      do:
-        - put: tech-docs
-          params:
-            image: image/image.tar
-            additional_tags: image/branch
-        - put: paas-tech-docs-pr
-          params:
-            path: paas-tech-docs-pr
-            context: ((github_status_context))/build-paas-tech-pr
-            status: SUCCESS
-          get_params:
-            skip_download: true
-    on_failure:
-      put: paas-tech-docs-pr
-      params:
-        path: paas-tech-docs-pr
-        context: ((github_status_context))/build-paas-tech-pr
-        status: FAILURE
-      get_params:
-        skip_download: true
-
 - name: build-paas-prometheus-exporter-pr
   plan:
     - get: paas-prometheus-exporter
