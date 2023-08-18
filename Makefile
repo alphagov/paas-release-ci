@@ -48,13 +48,6 @@ upload-aiven-secrets: check-env-vars require-credhub ## Decrypt and upload Aiven
 	$(if $(wildcard ${AIVEN_PASSWORD_STORE_DIR}),,$(error Password store ${AIVEN_PASSWORD_STORE_DIR} does not exist))
 	@scripts/upload-secrets/upload-aiven-secrets.rb
 
-.PHONY: upload-zendesk-secrets
-upload-zendesk-secrets: check-env-vars require-credhub ## Decrypt and upload Zendesk credentials to Credhub
-	$(eval export ZENDESK_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
-	$(if ${ZENDESK_PASSWORD_STORE_DIR},,$(error Must pass ZENDESK_PASSWORD_STORE_DIR=<path_to_password_store>))
-	$(if $(wildcard ${ZENDESK_PASSWORD_STORE_DIR}),,$(error Password store ${ZENDESK_PASSWORD_STORE_DIR} does not exist))
-	@scripts/upload-secrets/upload-zendesk-secrets.rb
-
 .PHONY: upload-rubbernecker-secrets
 upload-rubbernecker-secrets: check-env-vars require-credhub ## Decrypt and upload Rubbernecker credentials to Credhub
 	$(eval export RUBBERNECKER_PASSWORD_STORE_DIR?=${HOME}/.paas-pass)
@@ -85,7 +78,7 @@ upload-dockerhub-secrets: check-env-vars require-credhub ## Decrypt and upload G
 	@scripts/upload-secrets/upload-dockerhub-secrets.rb
 
 .PHONY: upload-all-secrets
-upload-all-secrets: upload-cf-cli-secrets upload-aiven-secrets upload-zendesk-secrets upload-rubbernecker-secrets upload-github-secrets upload-slack-secrets upload-dockerhub-secrets
+upload-all-secrets: upload-cf-cli-secrets upload-aiven-secrets upload-rubbernecker-secrets upload-github-secrets upload-slack-secrets upload-dockerhub-secrets
 
 .PHONY: pipelines
 pipelines: ## Upload setup pipelines to concourse

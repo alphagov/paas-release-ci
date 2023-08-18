@@ -22,7 +22,7 @@ Create an environment using the [paas-bootstrap repository](https://github.com/a
 
 ### Upload Secrets
 
-This repository defines `make` targets for uploading three types of credentials to the S3 state bucket prior to configuring pipelines:
+This repository defines `make` targets for uploading credentials to the S3 state bucket prior to configuring pipelines.
 
 * CF CLI: this user is used to push apps to Cloud Foundry. For production apps (pushed from the build Concourse in CI) this user's credentials should already exist in the state bucket.
 
@@ -30,13 +30,7 @@ This repository defines `make` targets for uploading three types of credentials 
   DEPLOY_ENV=build make ci upload-cf-cli-secrets
   ```
 
-* ZenDesk token: this is to enable the paas-product-page app to create tickets via the ZenDesk API.
-
-  ```
-  DEPLOY_ENV=build make ci upload-zendesk-secrets
-  ```
-
-All three sets of credentials are stored in [paas-credentials](https://github.com/alphagov/paas-credentials).
+Credentials are stored in [paas-credentials](https://github.com/alphagov/paas-credentials).
 
 ### Push Pipelines
 
