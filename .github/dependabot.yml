@@ -7,3 +7,15 @@ updates:
       interval: weekly
     commit-message:
       prefix: github-action
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: golang
+  - package-ecosystem: bundler
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ruby
