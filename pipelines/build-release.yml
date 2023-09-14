@@ -106,6 +106,12 @@ jobs:
               - |
                 cd bosh-release-pr
 
+                if [ -x "./scripts/vendor_package.sh" ]; then
+                  ./scripts/vendor_package.sh
+                else
+                  echo "No vendor packaging is required."
+                fi
+
                 VERSION=0.0.$(date +%s)
                 export VERSION
                 bosh create-release \
@@ -178,6 +184,12 @@ jobs:
               - -c
               - |
                 cd bosh-release-repo
+
+                if [ -x "./scripts/vendor_package.sh" ]; then
+                  ./scripts/vendor_package.sh
+                else
+                  echo "No vendor packaging is required."
+                fi
 
                 VERSION=$(cat ../bosh-release-version/number)
                 export VERSION
