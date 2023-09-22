@@ -50,7 +50,6 @@ remove_test_pipeline() {
 
 setup_test_pipeline paas-billing alphagov paas-billing main
 setup_test_pipeline elasticache-broker alphagov paas-elasticache-broker main
-setup_test_pipeline paas-accounts alphagov paas-accounts main
 setup_test_pipeline paas-auditor alphagov paas-auditor main
 setup_test_pipeline rds-metric-collector alphagov paas-rds-metric-collector main
 setup_test_pipeline paas-admin alphagov paas-admin main
