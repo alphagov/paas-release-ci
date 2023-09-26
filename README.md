@@ -43,7 +43,7 @@ A pipeline should be created for each Bosh release this repository is currently 
 
 ### Dev environments
 
-When you setup the pipelines in a dev environment they will be paused by default. You can manaully unpause the ones that you need to work on, but be aware that they will submit their results to GitHub pull requests.
+When you setup the pipelines in a dev environment they will be paused by default. You can manually unpause the ones that you need to work on, but be aware that they will submit their results to GitHub pull requests.
 
 * Run `DEPLOY_ENV=... make dev upload-cf-cli-secrets`. You can override the credentials used by setting `CF_USER` and `CF_PASSWORD`.
 * Run `CF_DEPLOY_ENV=... DEPLOY_ENV=... make dev pipelines`, where `CF_DEPLOY_ENV` is the environment name of your Cloud Foundry installation. CF_DEPLOY_ENV defaults to the DEPLOY_ENV.
