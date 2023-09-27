@@ -9,6 +9,8 @@ aws_account = ENV["AWS_ACCOUNT"] || raise("AWS_ACCOUNT env var must be set")
 deploy_env = ENV["DEPLOY_ENV"] || raise("DEPLOY_ENV env var must be set")
 cf_user = ENV["CF_USER"] || `pass #{aws_account}_deployments/#{deploy_env}/cf_app_deployer_user`
 cf_password = ENV["CF_PASSWORD"] || `pass #{aws_account}_deployments/#{deploy_env}/cf_app_deployer_password`
+cf_london_user = ENV["CF_LONDON_USER"] || `pass #{aws_account}_deployments/#{deploy_env}/cf_app_london_deployer_user`
+cf_london_password = ENV["CF_LONDON_PASSWORD"] || `pass #{aws_account}_deployments/#{deploy_env}/cf_app_london_deployer_password`
 
 secrets = [
   {
@@ -20,6 +22,16 @@ secrets = [
     "name" => "/concourse/main/cf_password",
     "type" => "value",
     "value" => cf_password.chomp,
+  },
+  {
+    "name" => "/concourse/main/cf_london_user",
+    "type" => "value",
+    "value" => cf_london_user.chomp,
+  },
+  {
+    "name" => "/concourse/main/cf_london_password",
+    "type" => "value",
+    "value" => cf_london_password.chomp,
   },
 ]
 

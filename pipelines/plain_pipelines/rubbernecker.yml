@@ -74,12 +74,13 @@ jobs:
             - name: paas-rubbernecker
           params:
             CF_API: https://api.((cf_system_domain))
+            CF_LONDON_API: https://api.london.((cf_system_domain))
             CF_USER: ((cf_user))
             CF_PASSWORD: ((cf_password))
+            CF_LONDON_USER: ((cf_london_user))
+            CF_LONDON_PASSWORD: ((cf_london_password))
             CF_ORG: govuk-paas
             CF_SPACE: tools
-            CF_APPS_DOMAIN: ((cf_apps_domain))
-            CF_SYSTEM_DOMAIN: ((cf_system_domain))
             PIVOTAL_TRACKER_PROJECT_ID: ((pivotal_tracker_project_id))
             PIVOTAL_TRACKER_API_TOKEN: ((pivotal_tracker_api_token))
             PAGERDUTY_AUTHTOKEN: ((pagerduty_authtoken))
@@ -97,6 +98,20 @@ jobs:
                   -a "${CF_API}" \
                   -u "${CF_USER}" \
                   -p "${CF_PASSWORD}" \
+                  -o "${CF_ORG}" \
+                  -s "${CF_SPACE}"
+
+                echo "Deploying Rubbernecker redirect to Ireland..."
+                cd redirect
+                cf push paas-rubbernecker-redirect -f manifest.yml --strategy rolling
+                cf logout
+                cd ..
+                
+                echo "Logging on to CloudFoundry London..."
+                cf login \
+                  -a "${CF_LONDON_API}" \
+                  -u "${CF_LONDON_USER}" \
+                  -p "${CF_LONDON_PASSWORD}" \
                   -o "${CF_ORG}" \
                   -s "${CF_SPACE}"
 
