@@ -1,12 +1,5 @@
 ---
 resource_types:
-  - name: s3-iam
-    type: docker-image
-    check_every: 24h
-    source:
-      repository: ghcr.io/alphagov/paas/s3-resource
-      tag: fda60bf4c5f85e96c16f704e128e5ead9e84d30d
-
   - name: slack-notification-resource
     type: docker-image
     source:
@@ -38,7 +31,7 @@ jobs:
             type: docker-image
             source:
               repository: golang
-              tag: 1.18
+              tag: "1.20"
           inputs:
             - name: paas-rubbernecker
           run:
