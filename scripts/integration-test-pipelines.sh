@@ -60,4 +60,3 @@ setup_test_pipeline s3-broker alphagov paas-s3-broker main
 setup_test_pipeline sqs-broker alphagov paas-sqs-broker main
 setup_test_pipeline paas-service-broker-base alphagov paas-service-broker-base main
 setup_test_pipeline paas-prometheus-endpoints alphagov paas-prometheus-endpoints main
-setup_test_pipeline cdn-broker alphagov paas-cdn-broker main
