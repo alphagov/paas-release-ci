@@ -59,7 +59,7 @@ jobs:
             type: registry-image
             source:
               repository: ghcr.io/alphagov/paas/terraform
-              tag: 540813b98e23f9865b33c206a840a8d5633287e9
+              tag: 9d7b91294e91172c6f2d63caae4c7b645fc46036
           inputs:
             - name: paas-release-ci
             - name: release-ci-tfstate
