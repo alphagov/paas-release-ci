@@ -107,17 +107,18 @@ jobs:
 
                 puts
 
-                repos_without_paas_topic = repos
+                repos_without_accepted_topic = repos
                   .select { |repo| repo['name'].match?(/^paas/) }
                   .reject { |repo| repo['topics'].include? 'paas' }
+                  .reject { |repo| repo['topics'].include? 'govuk-pay' }
 
-                if repos_without_paas_topic.empty?
+                if repos_without_accepted_topic.empty?
                   puts 'All repos have "paas" topic'
                   exit
                 end
 
                 puts 'The following repos should have the "paas" topic:'
-                repos_without_paas_topic.each do |repo|
+                repos_without_accepted_topic.each do |repo|
                   puts "  - #{repo['name']}"
                 end
 
