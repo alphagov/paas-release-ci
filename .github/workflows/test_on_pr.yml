@@ -39,7 +39,7 @@ jobs:
         run: pip install --user yamllint
 
       - name: Install Ruby
-        uses: ruby/setup-ruby@5cfe23c062c0aac352e765b1b7cc12ea5255ccc4
+        uses: ruby/setup-ruby@2654679fe7f7c29875c669398a8ec0791b8a64a1
 
       - name: Install bundle
         run: |
