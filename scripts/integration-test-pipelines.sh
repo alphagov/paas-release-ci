@@ -48,7 +48,6 @@ remove_test_pipeline() {
   ${FLY_CMD} -t "${FLY_TARGET}" destroy-pipeline --pipeline "${pipeline_name}" --non-interactive || true
 }
 
-setup_test_pipeline paas-billing alphagov paas-billing main
 setup_test_pipeline elasticache-broker alphagov paas-elasticache-broker main
 setup_test_pipeline paas-accounts alphagov paas-accounts main
 setup_test_pipeline paas-auditor alphagov paas-auditor main
