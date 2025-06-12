@@ -1,6 +1,6 @@
 module github.com/alphagov/paas-release-ci
 
-go 1.20
+go 1.22
 
 require (
 	github.com/onsi/ginkgo/v2 v2.13.0
